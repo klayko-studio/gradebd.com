@@ -1,0 +1,50 @@
+---
+import Base from '../layouts/Base.astro';
+import PageBanner from '../components/PageBanner.astro';
+import QuoteBand from '../components/QuoteBand.astro';
+import { getGallery, getSite } from '../lib/cms';
+
+const [gallery, site] = await Promise.all([getGallery(), getSite()]);
+---
+
+<Base seo={gallery.seo} active="gallery">
+  <PageBanner
+    eyebrow={gallery.banner.eyebrow}
+    title={gallery.banner.title}
+    sub={gallery.banner.sub}
+    image={gallery.banner.image}
+  />
+
+  <section class="section">
+    <!-- Two columns, as the wireframe specifies. -->
+    <div class="rail grid gap-6 md:grid-cols-2" data-reveal-group>
+      {
+        gallery.images.map((plate) => (
+          <figure data-reveal class="flex flex-col gap-3">
+            <div class="overflow-hidden rounded-sharp border border-line-subtle bg-muted-surface">
+              <img
+                src={plate.image.src}
+                alt={plate.image.alt}
+                width={plate.image.width}
+                height={plate.image.height}
+                loading="lazy"
+                decoding="async"
+                class="aspect-[5/3] w-full object-cover"
+              />
+            </div>
+            <figcaption class="flex flex-wrap items-center justify-between gap-2">
+              <span class="t-label-md text-[color:var(--text-primary)]">{plate.caption}</span>
+              <span class="t-label-xs text-[color:var(--text-brand-strong)]">{plate.tag}</span>
+            </figcaption>
+          </figure>
+        ))
+      }
+    </div>
+  </section>
+
+  <QuoteBand
+    site={site}
+    heading="Want to see a sample before you order?"
+    body="Ask for a sample carton and we will arrange it with your quote."
+  />
+</Base>

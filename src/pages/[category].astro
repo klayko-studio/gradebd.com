@@ -1,0 +1,99 @@
+---
+import Base from '../layouts/Base.astro';
+import PageBanner from '../components/PageBanner.astro';
+import ProductCard from '../components/ProductCard.astro';
+import QuoteBand from '../components/QuoteBand.astro';
+import { getCategories, getSite } from '../lib/cms';
+import type { Category, Site } from '../lib/schema';
+
+/**
+ * One route for all five ranges. Adding a sixth category in Directus creates a
+ * new page with no code change — which is the whole point of the shared template.
+ */
+export async function getStaticPaths() {
+  const categories = await getCategories();
+  return categories.map((category) => ({
+    params: { category: category.slug },
+    props: { category },
+  }));
+}
+
+interface Props {
+  category: Category;
+}
+const { category } = Astro.props;
+const site: Site = await getSite();
+
+/** File & Folder has no sub-categories, so the filter row must not render. */
+const hasFilters = category.subcategories.length > 0;
+---
+
+<Base seo={category.seo} active="categories">
+  <PageBanner
+    eyebrow="Product categories"
+    title={category.name}
+    sub={category.summary}
+    image={category.image}
+  />
+
+  {
+    hasFilters && (
+      <div class="border-b border-line-subtle">
+        <div class="rail py-6">
+          <ul class="flex flex-wrap gap-2.5" aria-label={`Filter ${category.name}`}>
+            <li>
+              <span
+                aria-current="true"
+                class="inline-flex rounded-sharp bg-inverse px-4 py-2.5 t-label-md text-[color:var(--text-inverse)]"
+              >
+                All
+              </span>
+            </li>
+            {category.subcategories.map((sub) => (
+              <li>
+                <a
+                  href={`#${sub.slug}`}
+                  class="inline-flex rounded-sharp border border-line px-4 py-2.5 t-label-md
+                         text-[color:var(--text-secondary)] transition-colors hover:border-line-strong hover:text-ink"
+                >
+                  {sub.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    )
+  }
+
+  <section class="section">
+    <div class="rail">
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-line-subtle pb-5">
+        <h2 class="t-heading-sm">{category.items.length} items</h2>
+        <p class="t-label-sm text-[color:var(--text-muted)]">
+          Prices on enquiry · quoted by the carton
+        </p>
+      </div>
+
+      <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-reveal-group>
+        {
+          category.items.map((item) => (
+            <ProductCard
+              name={item.name}
+              meta={item.meta}
+              image={item.image}
+              action="Enquire about this item"
+              href={`/contact/?item=${encodeURIComponent(item.name)}`}
+            />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <QuoteBand
+    site={site}
+    heading={`Need ${category.name.toLowerCase()} in volume?`}
+    body={`Send the specification and quantity. ${site.response_promise}`}
+  />
+</Base>

@@ -1,0 +1,23 @@
+[
+  {
+    "quote": "We moved the whole stationery order to Grade last year. One invoice instead of four suppliers, and the exercise book spec has been identical on every reorder.",
+    "role": "Procurement Officer",
+    "organisation": "Northfield Academy",
+    "rating": 5,
+    "placeholder": true
+  },
+  {
+    "quote": "Quotes come back the same day and the pricing holds. That predictability is worth more to us than shaving a little off a one-off order.",
+    "role": "Office Manager",
+    "organisation": "Meridian Group",
+    "rating": 5,
+    "placeholder": true
+  },
+  {
+    "quote": "They delivered ahead of our January intake without us chasing once. That is the reason we have renewed twice.",
+    "role": "School Administrator",
+    "organisation": "Riverside School",
+    "rating": 5,
+    "placeholder": true
+  }
+]

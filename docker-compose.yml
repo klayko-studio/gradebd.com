@@ -1,0 +1,102 @@
+# Grade Limited — full stack: the Astro site, Directus, and Postgres.
+#
+#   cp .env.example .env      # then edit the secrets
+#   docker compose up -d --build
+#
+#   site      → http://localhost:4321
+#   Directus  → http://localhost:8055
+#
+# The site is usable on its own (`docker compose up -d site`) because content
+# falls back to the seed JSON when DIRECTUS_URL is unset.
+
+services:
+  site:
+    build:
+      context: .
+      args:
+        # Canonical URL baked into <link rel=canonical> and the sitemap.
+        SITE_URL: ${SITE_URL:-http://localhost:4321}
+    image: gradebd-site:latest
+    restart: unless-stopped
+    ports:
+      - '${SITE_PORT:-4321}:4321'
+    environment:
+      # Server-side reads go over the compose network; leave empty to use seed JSON.
+      DIRECTUS_URL: ${DIRECTUS_INTERNAL_URL:-}
+      # Asset URLs written into the HTML must be resolvable from a browser.
+      DIRECTUS_PUBLIC_URL: ${DIRECTUS_PUBLIC_URL:-}
+      DIRECTUS_TOKEN: ${DIRECTUS_TOKEN:-}
+    depends_on:
+      directus:
+        condition: service_started
+
+  directus:
+    image: directus/directus:11
+    restart: unless-stopped
+    ports:
+      - '${DIRECTUS_PORT:-8055}:8055'
+    volumes:
+      # Uploaded images and extensions must outlive the container.
+      - directus-uploads:/directus/uploads
+      - directus-extensions:/directus/extensions
+    environment:
+      # Both are required and must be stable — regenerating them invalidates
+      # every existing session and all encrypted values.
+      KEY: ${DIRECTUS_KEY:?set DIRECTUS_KEY in .env}
+      SECRET: ${DIRECTUS_SECRET:?set DIRECTUS_SECRET in .env}
+
+      DB_CLIENT: pg
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: ${POSTGRES_DB:-gradebd}
+      DB_USER: ${POSTGRES_USER:-gradebd}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+
+      # First-run admin. Change the password after the first login.
+      ADMIN_EMAIL: ${DIRECTUS_ADMIN_EMAIL:-sales@gradebd.com}
+      ADMIN_PASSWORD: ${DIRECTUS_ADMIN_PASSWORD:?set DIRECTUS_ADMIN_PASSWORD in .env}
+
+      PUBLIC_URL: ${DIRECTUS_PUBLIC_URL:-http://localhost:8055}
+
+      # The Visual Editor loads the site in an iframe, so the site's origin has
+      # to be allowed to frame Directus and to call it from the browser.
+      CORS_ENABLED: 'true'
+      CORS_ORIGIN: ${SITE_URL:-http://localhost:4321}
+      CONTENT_SECURITY_POLICY_DIRECTIVES__FRAME_ANCESTORS: ${SITE_URL:-http://localhost:4321}
+
+      # Enquiry notifications. Directus sends these from a Flow on the
+      # `enquiries` collection; without SMTP configured it logs instead of sending.
+      EMAIL_TRANSPORT: ${EMAIL_TRANSPORT:-sendmail}
+      EMAIL_FROM: ${EMAIL_FROM:-no-reply@gradebd.com}
+      EMAIL_SMTP_HOST: ${EMAIL_SMTP_HOST:-}
+      EMAIL_SMTP_PORT: ${EMAIL_SMTP_PORT:-587}
+      EMAIL_SMTP_USER: ${EMAIL_SMTP_USER:-}
+      EMAIL_SMTP_PASSWORD: ${EMAIL_SMTP_PASSWORD:-}
+      EMAIL_SMTP_SECURE: ${EMAIL_SMTP_SECURE:-false}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    # Not published: only Directus needs it. Add a ports mapping if you want to
+    # connect a local client, and understand you are exposing the database.
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-gradebd}
+      POSTGRES_USER: ${POSTGRES_USER:-gradebd}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    healthcheck:
+      # Directus crashes on a database that isn't accepting connections yet.
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-gradebd} -d ${POSTGRES_DB:-gradebd}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+volumes:
+  postgres-data:
+  directus-uploads:
+  directus-extensions:

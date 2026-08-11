@@ -1,0 +1,86 @@
+{
+  "seo": {
+    "title": "Gallery — Grade Limited stationery ranges",
+    "description": "Product, packaging and dispatch photography from across the five stationery ranges supplied by Grade Limited, Dhaka."
+  },
+  "banner": {
+    "eyebrow": "Gallery",
+    "title": "The range, in the room.",
+    "sub": "Product, packaging and dispatch photography from across the five ranges.",
+    "image": {
+      "id": null,
+      "src": "/images/hero/all-items.jpg",
+      "alt": "Stationery arranged on a deep navy surface",
+      "width": 2000,
+      "height": 1200
+    }
+  },
+  "images": [
+    {
+      "image": {
+        "id": null,
+        "src": "/images/gallery/colour-pencils.jpg",
+        "alt": "Colour pencils with shavings and a sharpener",
+        "width": 800,
+        "height": 560
+      },
+      "caption": "Colour pencil range",
+      "tag": "School Stationery"
+    },
+    {
+      "image": {
+        "id": null,
+        "src": "/images/gallery/lever-arch.jpg",
+        "alt": "A row of red lever arch files on a shelf",
+        "width": 1300,
+        "height": 650
+      },
+      "caption": "Lever arch files, A4",
+      "tag": "File & Folder"
+    },
+    {
+      "image": {
+        "id": null,
+        "src": "/images/gallery/warehouse.jpg",
+        "alt": "Warehouse racking stacked with palletised cartons",
+        "width": 1100,
+        "height": 920
+      },
+      "caption": "Racked stock, Dhanmondi",
+      "tag": "Warehouse & dispatch"
+    },
+    {
+      "image": {
+        "id": null,
+        "src": "/images/gallery/exercise-books.jpg",
+        "alt": "A stack of soft-cover exercise books",
+        "width": 800,
+        "height": 560
+      },
+      "caption": "Exercise books, soft cover",
+      "tag": "Exercise Book"
+    },
+    {
+      "image": {
+        "id": null,
+        "src": "/images/gallery/markers.jpg",
+        "alt": "Rows of marker pens seen from above",
+        "width": 800,
+        "height": 560
+      },
+      "caption": "Marker and highlighter display",
+      "tag": "Office Stationery"
+    },
+    {
+      "image": {
+        "id": null,
+        "src": "/images/gallery/in-use.jpg",
+        "alt": "An open notebook and pen on a wooden desk",
+        "width": 800,
+        "height": 560
+      },
+      "caption": "Supplied to a client desk",
+      "tag": "In use"
+    }
+  ]
+}

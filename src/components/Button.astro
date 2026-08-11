@@ -1,0 +1,53 @@
+---
+interface Props {
+  href?: string;
+  variant?: 'primary' | 'secondary' | 'on-dark';
+  type?: 'button' | 'submit';
+  class?: string;
+  /** Trailing arrow advances on hover, matching the Figma button. */
+  arrow?: boolean;
+}
+
+const { href, variant = 'primary', type = 'button', class: className = '', arrow = true } = Astro.props;
+
+const base =
+  'group inline-flex items-center gap-3 rounded-sharp px-6 py-4 t-button transition-colors duration-200 ' +
+  'ease-[var(--ease-standard)] disabled:opacity-60 disabled:pointer-events-none';
+
+const variants: Record<string, string> = {
+  primary: 'bg-brand text-[color:var(--text-on-brand)] hover:bg-brand-hover',
+  secondary:
+    'bg-page text-ink border border-line hover:border-line-strong hover:bg-subtle',
+  'on-dark': 'bg-page text-ink hover:bg-shell',
+};
+
+const arrowColour = variant === 'primary' ? 'currentColor' : 'var(--text-primary)';
+const Tag = href ? 'a' : 'button';
+---
+
+<Tag
+  {...href ? { href } : { type }}
+  class:list={[base, variants[variant], className]}
+>
+  <span><slot /></span>
+  {
+    arrow && (
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        aria-hidden="true"
+        class="transition-transform duration-200 ease-[var(--ease-standard)] group-hover:translate-x-1"
+      >
+        <path
+          d="M5 12h13M12.5 6.5L18 12l-5.5 5.5"
+          stroke={arrowColour}
+          stroke-width="1.6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    )
+  }
+</Tag>

@@ -1,0 +1,144 @@
+{
+  "seo": {
+    "title": "Grade Limited — stationery supplied by the carton, Dhaka",
+    "description": "Pens, exercise books and office supplies for schools, retailers and corporate buyers across Bangladesh. Sourced direct from manufacturers. Request a quote."
+  },
+  "slides": [
+    {
+      "eyebrow": "B2B supplier · Dhaka, Bangladesh",
+      "headline": "Quality stationery, sourced direct.",
+      "body": "Pens, exercise books and office supplies for schools, retailers and corporate buyers — bought from the manufacturer, so you don't pay the middleman.",
+      "image": {
+        "id": null,
+        "src": "/images/hero/all-items.jpg",
+        "alt": "Pencils, clips and washi tape arranged on a deep navy surface",
+        "width": 2000,
+        "height": 1200
+      },
+      "range_slug": null,
+      "label": "All items"
+    },
+    {
+      "eyebrow": "Range 02 · Pen",
+      "headline": "Ball pens, by the carton.",
+      "body": "Consistent ink flow and a specification that does not drift between orders. Quoted per carton for schools and offices.",
+      "image": {
+        "id": null,
+        "src": "/images/ranges/pen.jpg",
+        "alt": "A single retractable ball pen on a pale surface",
+        "width": 800,
+        "height": 560
+      },
+      "range_slug": "pen",
+      "label": "Pen"
+    },
+    {
+      "eyebrow": "Range 03 · Exercise Book",
+      "headline": "Exercise books, made to spec.",
+      "body": "Student and standard sizes, held in stock against repeat orders so a reorder never becomes a renegotiation.",
+      "image": {
+        "id": null,
+        "src": "/images/ranges/exercise-book.jpg",
+        "alt": "A stack of soft-cover exercise books in green, blue, white and red",
+        "width": 800,
+        "height": 560
+      },
+      "range_slug": "exercise-book",
+      "label": "Exercise Book"
+    },
+    {
+      "eyebrow": "Range 04 · School Stationery",
+      "headline": "Everything for the school year.",
+      "body": "Pencils, erasers, sharpeners, scales and boxes — ordered together, invoiced once, delivered on the date agreed.",
+      "image": {
+        "id": null,
+        "src": "/images/ranges/school-stationery.jpg",
+        "alt": "Assorted colour pencils fanned out on a pale background",
+        "width": 900,
+        "height": 650
+      },
+      "range_slug": "school-stationery",
+      "label": "School Stationery"
+    },
+    {
+      "eyebrow": "Range 05 · Office Stationery",
+      "headline": "Desk tools and consumables.",
+      "body": "Staplers, punches, markers and the staples to go with them. Consumables held against the lines you reorder.",
+      "image": {
+        "id": null,
+        "src": "/images/ranges/office-stationery.jpg",
+        "alt": "A strip of staples beside a pile of used staples on a grey surface",
+        "width": 1300,
+        "height": 650
+      },
+      "range_slug": "office-stationery",
+      "label": "Office Stationery"
+    },
+    {
+      "eyebrow": "Range 06 · File & Folder",
+      "headline": "Filing that survives the year.",
+      "body": "Box files, ring binders and suspension files for offices and record keeping, supplied in packs.",
+      "image": {
+        "id": null,
+        "src": "/images/ranges/file-folder.jpg",
+        "alt": "A row of red lever arch files standing on a shelf",
+        "width": 1300,
+        "height": 650
+      },
+      "range_slug": "file-folder",
+      "label": "File & Folder"
+    }
+  ],
+  "stats": [
+    { "value": "Since 2019", "label": "supplying businesses in Bangladesh" },
+    { "value": "300+", "label": "work orders completed" },
+    { "value": "50+", "label": "companies served" },
+    { "value": "Dhaka", "label": "Dhanmondi head office" }
+  ],
+  "who_we_are": {
+    "eyebrow": "Who we are",
+    "heading": "Built for buyers who order by the carton, not the piece.",
+    "body": [
+      "Since 2019 Grade has supplied quality goods to businesses across Bangladesh, sourcing direct from manufacturers and cutting out the intermediaries that inflate prices. Over 300 work orders completed for more than 50 companies.",
+      "This site covers the stationery range: pens, exercise books, school supplies, office consumables and filing — supplied to schools, retailers and corporate procurement teams by the carton."
+    ],
+    "image": {
+      "id": null,
+      "src": "/images/about/warehouse.jpg",
+      "alt": "Warehouse racking stacked with palletised cartons",
+      "width": 1100,
+      "height": 920
+    },
+    "cta_label": "More about Grade"
+  },
+  "categories_intro": {
+    "eyebrow": "Product categories",
+    "heading": "Five ranges, supplied by the carton."
+  },
+  "pillars_intro": {
+    "eyebrow": "Why Grade",
+    "heading": "How we keep your supply predictable."
+  },
+  "pillars": [
+    {
+      "title": "Direct sourcing",
+      "body": "We buy straight from the manufacturer and cut the intermediaries out of the chain, so a quote reflects the goods rather than the layers above them."
+    },
+    {
+      "title": "One-stop supply",
+      "body": "Pens, exercise books, school supplies, office consumables and filing on a single order and a single invoice, instead of five separate suppliers."
+    },
+    {
+      "title": "Consistent specification",
+      "body": "Repeat orders match the last one. Stock is held against agreed lines, so a reorder does not turn into a renegotiation."
+    },
+    {
+      "title": "Delivery on schedule",
+      "body": "Dispatched from Dhanmondi to schools, retailers and corporate buyers across Bangladesh, on the date agreed."
+    }
+  ],
+  "clients_intro": {
+    "eyebrow": "Our corporate clients",
+    "heading": "Trusted by schools, retailers and corporate buyers."
+  }
+}

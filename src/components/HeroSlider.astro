@@ -1,0 +1,195 @@
+---
+import Button from './Button.astro';
+import type { Home } from '../lib/schema';
+
+interface Props {
+  slides: Home['slides'];
+}
+const { slides } = Astro.props;
+---
+
+<section
+  class="relative isolate overflow-hidden bg-inverse"
+  data-slider
+  aria-roledescription="carousel"
+  aria-label="Product ranges"
+>
+  {
+    slides.map((slide, i) => (
+      <div
+        class="absolute inset-0 -z-10"
+        data-slide-media={i}
+        aria-hidden={i === 0 ? undefined : 'true'}
+        style={i === 0 ? 'opacity:1' : 'opacity:0'}
+      >
+        <img
+          src={slide.image.src}
+          alt={slide.image.alt}
+          width={slide.image.width}
+          height={slide.image.height}
+          loading={i === 0 ? 'eager' : 'lazy'}
+          fetchpriority={i === 0 ? 'high' : undefined}
+          class="h-full w-full object-cover"
+          style={i === 0 ? 'transform:scaleX(-1)' : undefined}
+        />
+      </div>
+    ))
+  }
+
+  <div
+    aria-hidden="true"
+    class="absolute inset-0 -z-10"
+    style="background:linear-gradient(90deg,rgb(13 32 56 / 0.94) 0%,rgb(13 32 56 / 0.72) 45%,rgb(13 32 56 / 0.20) 100%)"
+  >
+  </div>
+
+  <div class="rail flex min-h-[520px] flex-col justify-center py-20 md:min-h-[640px]">
+    {
+      slides.map((slide, i) => (
+        <div
+          class:list={['flex max-w-[46rem] flex-col gap-5', i === 0 ? '' : 'hidden']}
+          data-slide-copy={i}
+          role="group"
+          aria-label={`${i + 1} of ${slides.length}: ${slide.label}`}
+        >
+          <p class="flex items-center gap-3 t-eyebrow text-[color:var(--color-red-300)]">
+            <span aria-hidden="true" class="h-[2px] w-6 shrink-0 bg-brand"></span>
+            {slide.eyebrow}
+          </p>
+          <h1 class="t-display-2xl text-[color:var(--text-inverse)]">{slide.headline}</h1>
+          <p class="t-body-lg max-w-[54ch] text-[color:var(--text-inverse-muted)]">{slide.body}</p>
+          <div class="mt-2 flex flex-wrap items-center gap-4">
+            <Button href="/contact/" variant="primary">Request a quote</Button>
+            {slide.range_slug && (
+              <Button href={`/${slide.range_slug}/`} variant="on-dark">
+                View the range
+              </Button>
+            )}
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  <!-- controls -->
+  <div class="rail relative z-10 flex flex-wrap items-center gap-5 pb-8">
+    <p class="t-label-xs text-[color:var(--color-red-300)]" data-slide-counter>
+      01 / {String(slides.length).padStart(2, '0')} — {slides[0].label}
+    </p>
+
+    <div class="flex items-center gap-2" role="tablist" aria-label="Choose slide">
+      {
+        slides.map((slide, i) => (
+          <button
+            type="button"
+            role="tab"
+            data-slide-dot={i}
+            aria-selected={i === 0 ? 'true' : 'false'}
+            aria-label={slide.label}
+            class:list={[
+              'h-[3px] rounded-full transition-all duration-300',
+              i === 0 ? 'w-7 bg-brand' : 'w-2 bg-white/35 hover:bg-white/60',
+            ]}
+          ></button>
+        ))
+      }
+    </div>
+
+    <div class="ms-auto flex items-center gap-2">
+      <button
+        type="button"
+        data-slide-prev
+        aria-label="Previous slide"
+        class="flex h-11 w-11 items-center justify-center rounded-sharp border border-white/35 text-white
+               transition-colors hover:border-white/70"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        data-slide-next
+        aria-label="Next slide"
+        class="flex h-11 w-11 items-center justify-center rounded-sharp border border-white/35 text-white
+               transition-colors hover:border-white/70"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from 'gsap';
+
+  const root = document.querySelector<HTMLElement>('[data-slider]');
+  if (root) {
+    const media = [...root.querySelectorAll<HTMLElement>('[data-slide-media]')];
+    const copies = [...root.querySelectorAll<HTMLElement>('[data-slide-copy]')];
+    const dots = [...root.querySelectorAll<HTMLButtonElement>('[data-slide-dot]')];
+    const counter = root.querySelector<HTMLElement>('[data-slide-counter]');
+    const labels = dots.map((d) => d.getAttribute('aria-label') ?? '');
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let current = 0;
+    let busy = false;
+
+    function show(next: number) {
+      next = (next + media.length) % media.length;
+      if (next === current || busy) return;
+      busy = true;
+
+      const from = current;
+      current = next;
+
+      // Crossfade the photograph, and lift the copy in — the copy is what the
+      // buyer reads, so it gets the movement rather than the image.
+      const duration = reduced ? 0 : 0.55;
+      gsap.to(media[from], { opacity: 0, duration, ease: 'power2.out' });
+      gsap.to(media[next], { opacity: 1, duration, ease: 'power2.out' });
+      media[from].setAttribute('aria-hidden', 'true');
+      media[next].removeAttribute('aria-hidden');
+
+      copies[from].classList.add('hidden');
+      copies[next].classList.remove('hidden');
+      if (!reduced) {
+        gsap.fromTo(
+          copies[next].children,
+          { opacity: 0, y: 18 },
+          { opacity: 1, y: 0, duration: 0.5, stagger: 0.05, ease: 'power3.out' },
+        );
+      }
+
+      dots.forEach((dot, i) => {
+        const active = i === next;
+        dot.setAttribute('aria-selected', String(active));
+        dot.classList.toggle('w-7', active);
+        dot.classList.toggle('bg-brand', active);
+        dot.classList.toggle('w-2', !active);
+        dot.classList.toggle('bg-white/35', !active);
+      });
+
+      if (counter) {
+        counter.textContent =
+          `${String(next + 1).padStart(2, '0')} / ${String(media.length).padStart(2, '0')} — ${labels[next]}`;
+      }
+
+      window.setTimeout(() => {
+        busy = false;
+      }, reduced ? 0 : 560);
+    }
+
+    root.querySelector('[data-slide-next]')?.addEventListener('click', () => show(current + 1));
+    root.querySelector('[data-slide-prev]')?.addEventListener('click', () => show(current - 1));
+    dots.forEach((dot, i) => dot.addEventListener('click', () => show(i)));
+
+    // Keyboard support for the tablist.
+    root.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight') show(current + 1);
+      if (event.key === 'ArrowLeft') show(current - 1);
+    });
+  }
+</script>

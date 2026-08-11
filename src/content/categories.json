@@ -1,0 +1,569 @@
+[
+  {
+    "slug": "pen",
+    "name": "Pen",
+    "summary": "Ball pens supplied by the carton to schools, retailers and offices.",
+    "meta": "Ball Pen · 0.5–1.0 mm",
+    "seo": {
+      "title": "Pen — Grade Limited, Dhaka",
+      "description": "Ball pens supplied by the carton to schools, retailers and offices. Quoted by the carton for schools, retailers and corporate buyers across Bangladesh."
+    },
+    "image": {
+      "id": null,
+      "src": "/images/ranges/pen.jpg",
+      "alt": "Pen range",
+      "width": 800,
+      "height": 560
+    },
+    "subcategories": [
+      {
+        "slug": "ball-pen",
+        "name": "Ball Pen"
+      }
+    ],
+    "sort": 1,
+    "items": [
+      {
+        "id": "pen-01",
+        "name": "Ball Pen — 0.7 mm, retractable",
+        "meta": "Blue · Black · Red",
+        "subcategory": "ball-pen",
+        "image": {
+          "id": null,
+          "src": "/images/items/pen-01.jpg",
+          "alt": "A retractable ball pen with a mint barrel",
+          "width": 800,
+          "height": 560
+        }
+      },
+      {
+        "id": "pen-02",
+        "name": "Ball Pen — assorted barrels",
+        "meta": "Trade pack of 50",
+        "subcategory": "ball-pen",
+        "image": {
+          "id": null,
+          "src": "/images/items/pen-02.jpg",
+          "alt": "A row of assorted dark ball pens",
+          "width": 800,
+          "height": 560
+        }
+      },
+      {
+        "id": "pen-03",
+        "name": "Ball Pen — 0.7 mm, black barrel",
+        "meta": "Medium point",
+        "subcategory": "ball-pen",
+        "image": {
+          "id": null,
+          "src": "/images/items/pen-03.jpg",
+          "alt": "A slim black ball pen on white",
+          "width": 800,
+          "height": 560
+        }
+      },
+      {
+        "id": "pen-04",
+        "name": "Ball Pen — 0.5 mm, fine tip",
+        "meta": "Black ink",
+        "subcategory": "ball-pen",
+        "image": {
+          "id": null,
+          "src": "/images/items/pen-04.jpg",
+          "alt": "A fine-tipped black pen on a white surface",
+          "width": 800,
+          "height": 560
+        }
+      },
+      {
+        "id": "pen-05",
+        "name": "Ball Pen — pastel barrels",
+        "meta": "Box of 10",
+        "subcategory": "ball-pen",
+        "image": {
+          "id": null,
+          "src": "/images/items/pen-05.jpg",
+          "alt": "Pastel-coloured pens held in a hand",
+          "width": 800,
+          "height": 560
+        }
+      },
+      {
+        "id": "pen-06",
+        "name": "Ball Pen — grip barrel, assorted",
+        "meta": "Box of 10",
+        "subcategory": "ball-pen",
+        "image": {
+          "id": null,
+          "src": "/images/items/pen-06.jpg",
+          "alt": "Colourful grip ball pens on a teal surface",
+          "width": 800,
+          "height": 560
+        }
+      }
+    ]
+  },
+  {
+    "slug": "exercise-book",
+    "name": "Exercise Book",
+    "summary": "Student and standard sizes, held in stock against repeat orders.",
+    "meta": "Student · Standard",
+    "seo": {
+      "title": "Exercise Book — Grade Limited, Dhaka",
+      "description": "Student and standard sizes, held in stock against repeat orders. Quoted by the carton for schools, retailers and corporate buyers across Bangladesh."
+    },
+    "image": {
+      "id": null,
+      "src": "/images/ranges/exercise-book.jpg",
+      "alt": "Exercise Book range",
+      "width": 800,
+      "height": 560
+    },
+    "subcategories": [
+      {
+        "slug": "student-large",
+        "name": "Student Large"
+      },
+      {
+        "slug": "standard-large",
+        "name": "Standard Large"
+      }
+    ],
+    "sort": 2,
+    "items": [
+      {
+        "id": "exercise-book-01",
+        "name": "Student Large — 100 pages",
+        "meta": "Ruled · soft cover",
+        "subcategory": "student-large",
+        "image": {
+          "id": null,
+          "src": "/images/items/exercise-book-01.jpg",
+          "alt": "A stack of soft-cover exercise books in four colours",
+          "width": 800,
+          "height": 560
+        }
+      },
+      {
+        "id": "exercise-book-02",
+        "name": "Standard Large — 160 pages",
+        "meta": "Ruled · wire bound",
+        "subcategory": "standard-large",
+        "image": {
+          "id": null,
+          "src": "/images/items/exercise-book-02.jpg",
+          "alt": "Wire-bound notepads laid flat on a pale surface",
+          "width": 800,
+          "height": 560
+        }
+      },
+      {
+        "id": "exercise-book-03",
+        "name": "Student Large — 200 pages",
+        "meta": "Ruled · assorted covers",
+        "subcategory": "student-large",
+        "image": {
+          "id": null,
+          "src": "/images/items/exercise-book-03.jpg",
+          "alt": "A fan of pastel notebooks",
+          "width": 800,
+          "height": 560
+        }
+      },
+      {
+        "id": "exercise-book-04",
+        "name": "Standard Large — 100 pages",
+        "meta": "Ruled · board cover",
+        "subcategory": "standard-large",
+        "image": {
+          "id": null,
+          "src": "/images/items/exercise-book-04.jpg",
+          "alt": "A stack of books seen from the side",
+          "width": 800,
+          "height": 560
+        }
+      },
+      {
+        "id": "exercise-book-05",
+        "name": "Student Large — hard cover",
+        "meta": "200 pages",
+        "subcategory": "student-large",
+        "image": {
+          "id": null,
+          "src": "/images/items/exercise-book-05.jpg",
+          "alt": "Hardback books stacked beside a notepad",
+          "width": 800,
+          "height": 560
+        }
+      },
+      {
+        "id": "exercise-book-06",
+        "name": "Standard Large — 200 pages",
+        "meta": "Plain · board cover",
+        "subcategory": "standard-large",
+        "image": {
+          "id": null,
+          "src": "/images/items/exercise-book-06.jpg",
+          "alt": "A pile of board-covered books",
+          "width": 800,
+          "height": 560
+        }
+      }
+    ]
+  },
+  {
+    "slug": "school-stationery",
+    "name": "School Stationery",
+    "summary": "Pencils, erasers, sharpeners, scales and boxes for the school year.",
+    "meta": "Pencil · Eraser · +5",
+    "seo": {
+      "title": "School Stationery — Grade Limited, Dhaka",
+      "description": "Pencils, erasers, sharpeners, scales and boxes for the school year. Quoted by the carton for schools, retailers and corporate buyers across Bangladesh."
+    },
+    "image": {
+      "id": null,
+      "src": "/images/ranges/school-stationery.jpg",
+      "alt": "School Stationery range",
+      "width": 900,
+      "height": 650
+    },
+    "subcategories": [
+      {
+        "slug": "pencil",
+        "name": "Pencil"
+      },
+      {
+        "slug": "eraser",
+        "name": "Eraser"
+      },
+      {
+        "slug": "sharpener",
+        "name": "Sharpener"
+      },
+      {
+        "slug": "colour-pencil",
+        "name": "Colour Pencil"
+      },
+      {
+        "slug": "scale",
+        "name": "Scale"
+      },
+      {
+        "slug": "pencil-box",
+        "name": "Pencil Box"
+      },
+      {
+        "slug": "clipboard",
+        "name": "Clipboard"
+      }
+    ],
+    "sort": 3,
+    "items": [
+      {
+        "id": "school-stationery-01",
+        "name": "HB Pencil — box of 12",
+        "meta": "Graphite · with eraser",
+        "subcategory": "pencil",
+        "image": {
+          "id": null,
+          "src": "/images/items/school-stationery-01.jpg",
+          "alt": "Two pencils and an eraser on a pale blue surface",
+          "width": 800,
+          "height": 560
+        }
+      },
+      {
+        "id": "school-stationery-02",
+        "name": "Sharpener — metal, single hole",
+        "meta": "Box of 20",
+        "subcategory": "eraser",
+        "image": {
+          "id": null,
+          "src": "/images/items/school-stationery-02.jpg",
+          "alt": "A metal sharpener beside a blue pencil and shavings",
+          "width": 800,
+          "height": 560
+        }
+      },
+      {
+        "id": "school-stationery-03",
+        "name": "Colour Pencil — 12 shades",
+        "meta": "Boxed set",
+        "subcategory": "sharpener",
+        "image": {
+          "id": null,
+          "src": "/images/items/school-stationery-03.jpg",
+          "alt": "Colour pencils with shavings on a dark surface",
+          "width": 800,
+          "height": 560
+        }
+      },
+      {
+        "id": "school-stationery-04",
+        "name": "Scale — 30 cm",
+        "meta": "With colour pencil set",
+        "subcategory": "colour-pencil",
+        "image": {
+          "id": null,
+          "src": "/images/items/school-stationery-04.jpg",
+          "alt": "A ruler beside a row of colour pencils on wood",
+          "width": 800,
+          "height": 560
+        }
+      },
+      {
+        "id": "school-stationery-05",
+        "name": "Pencil & sharpener set",
+        "meta": "School pack",
+        "subcategory": "scale",
+        "image": {
+          "id": null,
+          "src": "/images/items/school-stationery-05.jpg",
+          "alt": "A sharpener and shavings on an open notebook",
+          "width": 800,
+          "height": 560
+        }
+      },
+      {
+        "id": "school-stationery-06",
+        "name": "Desk Sharpener — wooden",
+        "meta": "Single unit",
+        "subcategory": "pencil-box",
+        "image": {
+          "id": null,
+          "src": "/images/items/school-stationery-06.jpg",
+          "alt": "A wooden desk sharpener",
+          "width": 800,
+          "height": 560
+        }
+      }
+    ]
+  },
+  {
+    "slug": "office-stationery",
+    "name": "Office Stationery",
+    "summary": "Desk tools and consumables for offices and corporate procurement.",
+    "meta": "Stapler · Staples · +4",
+    "seo": {
+      "title": "Office Stationery — Grade Limited, Dhaka",
+      "description": "Desk tools and consumables for offices and corporate procurement. Quoted by the carton for schools, retailers and corporate buyers across Bangladesh."
+    },
+    "image": {
+      "id": null,
+      "src": "/images/ranges/office-stationery.jpg",
+      "alt": "Office Stationery range",
+      "width": 1300,
+      "height": 650
+    },
+    "subcategories": [
+      {
+        "slug": "stapler",
+        "name": "Stapler"
+      },
+      {
+        "slug": "punch",
+        "name": "Punch"
+      },
+      {
+        "slug": "pin-remover",
+        "name": "Pin Remover"
+      },
+      {
+        "slug": "staples",
+        "name": "Staples"
+      },
+      {
+        "slug": "highlighter",
+        "name": "Highlighter"
+      },
+      {
+        "slug": "marker",
+        "name": "Marker"
+      },
+      {
+        "slug": "cutter-knife",
+        "name": "Cutter Knife"
+      }
+    ],
+    "sort": 4,
+    "items": [
+      {
+        "id": "office-stationery-01",
+        "name": "Stapler — half strip",
+        "meta": "Steel body · 20 sheets",
+        "subcategory": "stapler",
+        "image": {
+          "id": null,
+          "src": "/images/items/office-stationery-01.jpg",
+          "alt": "A half-strip stapler on a white surface",
+          "width": 800,
+          "height": 560
+        }
+      },
+      {
+        "id": "office-stationery-02",
+        "name": "Staples — 26/6",
+        "meta": "Box of 1000",
+        "subcategory": "punch",
+        "image": {
+          "id": null,
+          "src": "/images/items/office-stationery-02.jpg",
+          "alt": "A strip of staples beside used staples",
+          "width": 1300,
+          "height": 650
+        }
+      },
+      {
+        "id": "office-stationery-03",
+        "name": "Highlighter — 4 pack",
+        "meta": "Chisel tip · assorted",
+        "subcategory": "pin-remover",
+        "image": {
+          "id": null,
+          "src": "/images/items/office-stationery-03.jpg",
+          "alt": "Four highlighters in pink, green, orange and yellow",
+          "width": 800,
+          "height": 560
+        }
+      },
+      {
+        "id": "office-stationery-04",
+        "name": "Marker — assorted colours",
+        "meta": "Display box of 60",
+        "subcategory": "staples",
+        "image": {
+          "id": null,
+          "src": "/images/items/office-stationery-04.jpg",
+          "alt": "Rows of marker pens seen from above",
+          "width": 800,
+          "height": 560
+        }
+      },
+      {
+        "id": "office-stationery-05",
+        "name": "Cutter Knife — retractable",
+        "meta": "Snap-off blade",
+        "subcategory": "highlighter",
+        "image": {
+          "id": null,
+          "src": "/images/items/office-stationery-05.jpg",
+          "alt": "A retractable cutter knife on a dark surface",
+          "width": 800,
+          "height": 560
+        }
+      },
+      {
+        "id": "office-stationery-06",
+        "name": "Note Pad — A5",
+        "meta": "Pack of 5 · plain",
+        "subcategory": "marker",
+        "image": {
+          "id": null,
+          "src": "/images/items/office-stationery-06.jpg",
+          "alt": "A stack of white note pads",
+          "width": 800,
+          "height": 560
+        }
+      }
+    ]
+  },
+  {
+    "slug": "file-folder",
+    "name": "File & Folder",
+    "summary": "Filing and document storage for offices and record keeping.",
+    "meta": "Box file · Ring binder · +4",
+    "seo": {
+      "title": "File & Folder — Grade Limited, Dhaka",
+      "description": "Filing and document storage for offices and record keeping. Quoted by the carton for schools, retailers and corporate buyers across Bangladesh."
+    },
+    "image": {
+      "id": null,
+      "src": "/images/ranges/file-folder.jpg",
+      "alt": "File & Folder range",
+      "width": 1300,
+      "height": 650
+    },
+    "subcategories": [],
+    "sort": 5,
+    "items": [
+      {
+        "id": "file-folder-01",
+        "name": "Lever Arch File — A4, red",
+        "meta": "Board · 75 mm spine",
+        "subcategory": null,
+        "image": {
+          "id": null,
+          "src": "/images/items/file-folder-01.jpg",
+          "alt": "A row of red lever arch files on a shelf",
+          "width": 1300,
+          "height": 650
+        }
+      },
+      {
+        "id": "file-folder-02",
+        "name": "Lever Arch File — assorted",
+        "meta": "Board · 75 mm spine",
+        "subcategory": null,
+        "image": {
+          "id": null,
+          "src": "/images/items/file-folder-02.jpg",
+          "alt": "Lever arch files in purple, teal and green",
+          "width": 800,
+          "height": 560
+        }
+      },
+      {
+        "id": "file-folder-03",
+        "name": "Ring Binder — 2D, A4",
+        "meta": "Assorted colours",
+        "subcategory": null,
+        "image": {
+          "id": null,
+          "src": "/images/items/file-folder-03.jpg",
+          "alt": "Shelves of ring binders in assorted colours",
+          "width": 800,
+          "height": 560
+        }
+      },
+      {
+        "id": "file-folder-04",
+        "name": "Box File — foolscap",
+        "meta": "Board · assorted",
+        "subcategory": null,
+        "image": {
+          "id": null,
+          "src": "/images/items/file-folder-04.jpg",
+          "alt": "Shelving filled with colourful box files",
+          "width": 800,
+          "height": 560
+        }
+      },
+      {
+        "id": "file-folder-05",
+        "name": "Document Wallet — A4",
+        "meta": "Pack of 10",
+        "subcategory": null,
+        "image": {
+          "id": null,
+          "src": "/images/items/file-folder-05.jpg",
+          "alt": "Stacks of tied document bundles",
+          "width": 800,
+          "height": 560
+        }
+      },
+      {
+        "id": "file-folder-06",
+        "name": "Suspension File — A4",
+        "meta": "Pack of 10",
+        "subcategory": null,
+        "image": {
+          "id": null,
+          "src": "/images/items/file-folder-06.jpg",
+          "alt": "An open suspension file drawer",
+          "width": 800,
+          "height": 560
+        }
+      }
+    ]
+  }
+]

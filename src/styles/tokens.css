@@ -1,0 +1,143 @@
+/* ---------------------------------------------------------------------------
+   Grade Limited — design tokens
+   These variable names are the contract with Figma. Every semantic token below
+   carries the same `var(--…)` name as its Figma counterpart's WEB code syntax,
+   so a token renamed in Figma must be renamed here too.
+
+   Primitives are raw ramps. Never reference a primitive from a component —
+   go through the semantic layer, exactly as in Figma.
+   --------------------------------------------------------------------------- */
+
+:root {
+  /* --- primitives: brand red (500 sampled pixel-exact from the client logo) --- */
+  --color-red-50: #feeeef;
+  --color-red-100: #fcd9db;
+  --color-red-200: #f8b4b7;
+  --color-red-300: #f38186;
+  --color-red-400: #ef5259;
+  --color-red-500: #ea1f27;
+  --color-red-600: #d2141b;
+  --color-red-700: #a81016;
+  --color-red-800: #7f1014;
+  --color-red-900: #5c0f12;
+
+  /* --- primitives: navy (agreed supporting colour, hue 214) --- */
+  --color-navy-50: #f0f5fc;
+  --color-navy-100: #dae6f6;
+  --color-navy-200: #b4cbe9;
+  --color-navy-300: #7da3d4;
+  --color-navy-400: #497abc;
+  --color-navy-500: #305d97;
+  --color-navy-600: #24497b;
+  --color-navy-700: #1b3b65;
+  --color-navy-800: #132d4e;
+  --color-navy-900: #0d2038;
+
+  /* --- primitives: neutrals, mixed on the navy hue so greys never look muddy --- */
+  --color-neutral-0: #ffffff;
+  --color-neutral-50: #f9fafb;
+  --color-neutral-100: #f0f2f5;
+  --color-neutral-200: #e1e5ea;
+  --color-neutral-300: #cbd0d8;
+  --color-neutral-400: #9ba4b0;
+  --color-neutral-500: #717e8e;
+  --color-neutral-600: #5a6472;
+  --color-neutral-700: #424b57;
+  --color-neutral-800: #2d343e;
+  --color-neutral-900: #1b2028;
+
+  /* --- semantic: surfaces --- */
+  --bg-page: var(--color-neutral-0);
+  --bg-subtle: var(--color-neutral-50);
+  --bg-muted: var(--color-neutral-100);
+  --bg-shell: var(--color-neutral-100);
+  --bg-placeholder: var(--color-neutral-200);
+  --bg-inverse: var(--color-navy-900);
+  --bg-inverse-soft: var(--color-navy-800);
+  --bg-inverse-elevated: var(--color-navy-800);
+  --bg-brand: var(--color-red-500);
+  --bg-brand-hover: var(--color-red-600);
+  --bg-brand-subtle: var(--color-red-50);
+
+  /* --- semantic: text --- */
+  --text-primary: var(--color-navy-900);
+  --text-secondary: var(--color-neutral-600);
+  --text-muted: var(--color-neutral-500);
+  --text-inverse: var(--color-neutral-0);
+  --text-inverse-muted: var(--color-navy-200);
+  --text-brand: var(--color-red-500);
+  --text-on-brand: var(--color-neutral-0);
+
+  /* Brand red at 16px and below only clears 3.9:1 on white, which fails AA.
+     Small accent text uses red/600 (4.9:1). Large display text may use --text-brand. */
+  --text-brand-strong: var(--color-red-600);
+
+  /* --- semantic: borders --- */
+  --border-subtle: var(--color-neutral-200);
+  --border-default: var(--color-neutral-300);
+  --border-strong: var(--color-neutral-400);
+  --border-brand: var(--color-red-500);
+  --border-inverse: var(--color-navy-700);
+
+  /* --- spacing: 4px rhythm --- */
+  --space-0: 0px;
+  --space-2: 2px;
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-40: 40px;
+  --space-48: 48px;
+  --space-64: 64px;
+  --space-80: 80px;
+  --space-96: 96px;
+  --space-128: 128px;
+
+  /* --- radius: deliberately tight; this is a supplier, not a consumer app --- */
+  --radius-0: 0px;
+  --radius-2: 2px;
+  --radius-3: 3px;
+  --radius-4: 4px;
+  --radius-8: 8px;
+  --radius-full: 999px;
+
+  /* --- layout rails --- */
+  --layout-content-max: 1200px;
+  --layout-gutter: 120px;
+  --layout-grid-gap: 24px;
+
+  /* --- type --- */
+  --font-family-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-family-sans: 'Raleway', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --font-size-11: 11px;
+  --font-size-12: 12px;
+  --font-size-13: 13px;
+  --font-size-14: 14px;
+  --font-size-15: 15px;
+  --font-size-16: 16px;
+  --font-size-18: 18px;
+  --font-size-20: 20px;
+  --font-size-22: 22px;
+  --font-size-28: 28px;
+  --font-size-36: 36px;
+  --font-size-44: 44px;
+  --font-size-56: 56px;
+  --font-size-72: 72px;
+
+  /* --- elevation: shallow only. The catalogue reads better flat with hairlines. --- */
+  --shadow-card: 0 1px 3px 0 rgb(13 32 56 / 0.05);
+  --shadow-raised: 0 4px 12px -2px rgb(13 32 56 / 0.08);
+  --shadow-ambient: 0 18px 48px -12px rgb(13 32 56 / 0.06);
+  --shadow-overlay: 0 12px 32px -4px rgb(13 32 56 / 0.12);
+
+  /* --- motion: one curve, used everywhere --- */
+  --ease-out-quint: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-standard: cubic-bezier(0.32, 0.72, 0, 1);
+  --duration-fast: 200ms;
+  --duration-medium: 320ms;
+  --duration-slow: 700ms;
+}

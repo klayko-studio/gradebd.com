@@ -1,0 +1,50 @@
+[
+  {
+    "name": "Northfield",
+    "qualifier": "Academy",
+    "mark": "ring",
+    "placeholder": true
+  },
+  {
+    "name": "Meridian",
+    "qualifier": "Group",
+    "mark": "diamond",
+    "placeholder": true
+  },
+  {
+    "name": "Riverside",
+    "qualifier": "School",
+    "mark": "bars",
+    "placeholder": true
+  },
+  {
+    "name": "Apex",
+    "qualifier": "Traders",
+    "mark": "triangle",
+    "placeholder": true
+  },
+  {
+    "name": "Lakeside",
+    "qualifier": "College",
+    "mark": "dots",
+    "placeholder": true
+  },
+  {
+    "name": "Vertex",
+    "qualifier": "Office",
+    "mark": "square",
+    "placeholder": true
+  },
+  {
+    "name": "Summit",
+    "qualifier": "Retail",
+    "mark": "chevron",
+    "placeholder": true
+  },
+  {
+    "name": "Crestview",
+    "qualifier": "School",
+    "mark": "disc",
+    "placeholder": true
+  }
+]

@@ -1,0 +1,14 @@
+---
+interface Props { rating: number }
+const { rating } = Astro.props;
+---
+<div class="flex items-center gap-1" role="img" aria-label={`Rated ${rating} out of 5`}>
+  {Array.from({ length: 5 }).map((_, i) => (
+    <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        d="M12 2.6l2.9 6.06 6.6.86-4.85 4.55 1.22 6.53L12 17.5l-5.87 3.1 1.22-6.53L2.5 9.52l6.6-.86L12 2.6z"
+        fill={i < rating ? 'var(--bg-brand)' : 'var(--border-default)'}
+      />
+    </svg>
+  ))}
+</div>

@@ -1,0 +1,30 @@
+{
+  "name": "gradebd",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Grade Limited — stationery catalogue and enquiry site",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "build:fast": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/node": "^9.5.5",
+    "@astrojs/sitemap": "^3.6.0",
+    "astro": "^5.16.0",
+    "gsap": "^3.13.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@tailwindcss/vite": "^4.1.16",
+    "sharp": "^0.34.4",
+    "tailwindcss": "^4.1.16",
+    "typescript": "^5.9.3"
+  }
+}

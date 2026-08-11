@@ -1,0 +1,318 @@
+---
+import Base from '../layouts/Base.astro';
+import PageBanner from '../components/PageBanner.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Button from '../components/Button.astro';
+import { getContact, getSite } from '../lib/cms';
+
+const [contact, site] = await Promise.all([getContact(), getSite()]);
+
+/* Item cards link here with ?item=… so the enquiry arrives pre-filled. The page is
+   prerendered, so the query string is only known in the browser — see the script below. */
+
+const field =
+  'w-full rounded-sharp border border-line bg-page px-4 py-3.5 t-body-md text-ink ' +
+  'transition-colors placeholder:text-[color:var(--text-muted)] focus:border-line-brand focus:outline-none';
+---
+
+<Base seo={contact.seo} active="contact">
+  <PageBanner
+    eyebrow={contact.banner.eyebrow}
+    title={contact.banner.title}
+    sub={contact.banner.sub}
+    image={contact.banner.image}
+  />
+
+  <section class="section">
+    <div class="rail grid gap-14 lg:grid-cols-[1.4fr_1fr] lg:gap-20">
+      <!-- enquiry form -->
+      <div class="flex flex-col gap-6">
+        <Eyebrow>Query Zone</Eyebrow>
+        <h2 class="t-heading-xl">{contact.form_heading}</h2>
+
+        <form id="enquiry" class="flex flex-col gap-5" novalidate>
+          <div class="grid gap-5 sm:grid-cols-2">
+            <div class="flex flex-col gap-2">
+              <label for="name" class="t-label-md text-ink">
+                Name <span aria-hidden="true" class="text-[color:var(--text-brand-strong)]">*</span>
+              </label>
+              <input id="name" name="name" type="text" autocomplete="name" required class={field} />
+              <p class="t-label-sm text-[color:var(--text-brand-strong)]" data-error="name" hidden></p>
+            </div>
+            <div class="flex flex-col gap-2">
+              <label for="organisation" class="t-label-md text-ink">Organisation</label>
+              <input
+                id="organisation"
+                name="organisation"
+                type="text"
+                autocomplete="organization"
+                class={field}
+              />
+            </div>
+          </div>
+
+          <div class="grid gap-5 sm:grid-cols-2">
+            <div class="flex flex-col gap-2">
+              <label for="email" class="t-label-md text-ink">
+                Email <span aria-hidden="true" class="text-[color:var(--text-brand-strong)]">*</span>
+              </label>
+              <input id="email" name="email" type="email" autocomplete="email" required class={field} />
+              <p class="t-label-sm text-[color:var(--text-brand-strong)]" data-error="email" hidden></p>
+            </div>
+            <div class="flex flex-col gap-2">
+              <label for="phone" class="t-label-md text-ink">
+                Mobile no <span aria-hidden="true" class="text-[color:var(--text-brand-strong)]">*</span>
+              </label>
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                inputmode="tel"
+                autocomplete="tel"
+                placeholder="+880"
+                required
+                class={field}
+              />
+              <p class="t-label-sm text-[color:var(--text-brand-strong)]" data-error="phone" hidden></p>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label for="requirement" class="t-label-md text-ink">
+              What do you need, and how many?
+              <span aria-hidden="true" class="text-[color:var(--text-brand-strong)]">*</span>
+            </label>
+            <textarea
+              id="requirement"
+              name="requirement"
+              rows="5"
+              required
+              class={field}
+              placeholder="e.g. 40 cartons of Student Large exercise books, 100 pages"></textarea>
+            <p class="t-label-sm text-[color:var(--text-brand-strong)]" data-error="requirement" hidden></p>
+          </div>
+
+          <!-- Bots fill this; humans never see it. -->
+          <div class="absolute h-0 w-0 overflow-hidden" aria-hidden="true">
+            <label for="honeypot">Leave this field empty</label>
+            <input id="honeypot" name="honeypot" type="text" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <div class="mt-2 flex flex-wrap items-center gap-5">
+            <Button type="submit" variant="primary">Send enquiry</Button>
+            <p class="t-label-sm text-[color:var(--text-muted)]">
+              * required · {site.response_promise}
+            </p>
+          </div>
+
+          <p
+            role="status"
+            aria-live="polite"
+            class="rounded-sharp border px-4 py-3.5 t-body-sm"
+            data-form-status
+            hidden
+          >
+          </p>
+        </form>
+      </div>
+
+      <!-- head office -->
+      <aside class="flex flex-col gap-6">
+        <div class="flex flex-col gap-3 rounded-sharp border border-line-subtle bg-subtle px-6 py-6">
+          <h2 class="t-label-xs text-[color:var(--text-brand-strong)]">Head Office</h2>
+          <address class="flex flex-col gap-1.5 t-body-md not-italic">
+            <span class="text-ink">{site.company_name}</span>
+            {site.address_lines.map((line) => <span>{line}</span>)}
+          </address>
+          <hr class="my-1 w-10 border-line" />
+          <a href={site.phone_href} class="t-body-md text-ink hover:text-[color:var(--text-brand-strong)]">
+            {site.phone}
+          </a>
+          <a href={`mailto:${site.email}`} class="t-body-md text-ink hover:text-[color:var(--text-brand-strong)]">
+            {site.email}
+          </a>
+          <p class="t-body-sm text-[color:var(--text-muted)]">{site.opening_hours}</p>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <h2 class="t-label-xs text-[color:var(--text-brand-strong)]">Google Map location</h2>
+          {
+            contact.map_embed_url ? (
+              <iframe
+                src={contact.map_embed_url}
+                title="Grade Limited head office on Google Maps"
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                class="aspect-[4/3] w-full rounded-sharp border border-line"
+              />
+            ) : (
+              /* No key configured yet, so we render a labelled placeholder rather
+                 than an empty iframe or a third-party request nobody consented to. */
+              <div
+                class="flex aspect-[4/3] w-full flex-col items-center justify-center gap-1 rounded-sharp
+                       border border-line bg-muted-surface px-6 text-center"
+              >
+                <p class="t-label-md text-[color:var(--text-secondary)]">Map embed</p>
+                <p class="t-label-sm text-[color:var(--text-muted)]">
+                  {site.address_lines.join(' ')}
+                </p>
+              </div>
+            )
+          }
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section bg-subtle">
+    <div class="rail">
+      <SectionHead eyebrow="Frequently asked questions" heading="Before you enquire." />
+      <div class="mt-10 overflow-hidden rounded-sharp border border-line-subtle bg-page" data-reveal>
+        {
+          contact.faqs.map((faq, i) => (
+            <details class="group border-b border-line-subtle last:border-0" open={i === 0}>
+              <summary
+                class="flex cursor-pointer list-none items-center gap-4 px-6 py-5 t-heading-sm
+                       transition-colors hover:bg-subtle"
+              >
+                <span class="grow">{faq.question}</span>
+                <span
+                  aria-hidden="true"
+                  class="relative h-4 w-4 shrink-0 text-[color:var(--text-brand-strong)]"
+                >
+                  <span class="absolute top-1/2 left-0 h-[2px] w-4 -translate-y-1/2 bg-current"></span>
+                  <span
+                    class="absolute top-1/2 left-0 h-[2px] w-4 -translate-y-1/2 rotate-90 bg-current
+                           transition-transform duration-200 group-open:rotate-0"
+                  ></span>
+                </span>
+              </summary>
+              <p class="px-6 pb-6 t-body-md max-w-[80ch]">{faq.answer}</p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('#enquiry');
+  const status = document.querySelector<HTMLElement>('[data-form-status]');
+
+  /* Prefill from ?item=… — a product card sent the buyer here about one line item.
+     Done in the browser because the page itself is prerendered. */
+  const requirement = form?.querySelector<HTMLTextAreaElement>('#requirement');
+  const item = new URLSearchParams(location.search).get('item');
+  if (requirement && item && !requirement.value.trim()) {
+    // Cap the length so a crafted URL can't stuff the field with junk.
+    requirement.value = `I'd like a quote for: ${item.slice(0, 120)}\nQuantity: `;
+    requirement.setSelectionRange(requirement.value.length, requirement.value.length);
+  }
+
+  function setStatus(message: string, kind: 'ok' | 'error' | 'busy') {
+    if (!status) return;
+    status.hidden = false;
+    status.textContent = message;
+    status.style.borderColor =
+      kind === 'error' ? 'var(--border-brand)' : kind === 'ok' ? 'var(--border-default)' : 'var(--border-subtle)';
+    status.style.background = kind === 'error' ? 'var(--bg-brand-subtle)' : 'var(--bg-subtle)';
+    status.style.color = kind === 'error' ? 'var(--text-brand-strong)' : 'var(--text-primary)';
+  }
+
+  function fieldError(name: string) {
+    return form?.querySelector<HTMLElement>(`[data-error="${name}"]`) ?? null;
+  }
+
+  function hideError(name: string) {
+    const el = fieldError(name);
+    if (!el) return;
+    el.hidden = true;
+    el.textContent = '';
+    const input = form?.querySelector<HTMLElement>(`[name="${name}"]`);
+    input?.removeAttribute('aria-invalid');
+    input?.removeAttribute('aria-describedby');
+  }
+
+  function showError(name: string, message: string) {
+    const el = fieldError(name);
+    const input = form?.querySelector<HTMLElement>(`[name="${name}"]`);
+    if (!el) return;
+    el.hidden = false;
+    el.textContent = message;
+    if (input) {
+      input.setAttribute('aria-invalid', 'true');
+      // The message has an id so a screen reader reads it with the field.
+      if (!el.id) el.id = `error-${name}`;
+      input.setAttribute('aria-describedby', el.id);
+    }
+  }
+
+  function clearErrors() {
+    form
+      ?.querySelectorAll<HTMLElement>('[data-error]')
+      .forEach((el) => hideError(el.dataset.error ?? ''));
+  }
+
+  /* Clear a field's error as soon as the buyer starts correcting it — leaving a
+     stale message under a field they have already fixed reads as a broken form. */
+  form?.querySelectorAll<HTMLElement>('[data-error]').forEach((el) => {
+    const name = el.dataset.error;
+    if (!name) return;
+    form
+      .querySelector<HTMLInputElement | HTMLTextAreaElement>(`[name="${name}"]`)
+      ?.addEventListener('input', () => {
+        if (!el.hidden) hideError(name);
+      });
+  });
+
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    clearErrors();
+
+    const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (submit) submit.disabled = true;
+    setStatus('Sending your enquiry…', 'busy');
+
+    const payload = Object.fromEntries(new FormData(form).entries());
+
+    try {
+      const res = await fetch('/api/enquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = (await res.json()) as {
+        ok: boolean;
+        message: string;
+        errors?: Record<string, string[]>;
+      };
+
+      if (!res.ok || !data.ok) {
+        // Field errors land next to their field, not in a summary at the top.
+        if (data.errors) {
+          for (const [name, messages] of Object.entries(data.errors)) {
+            if (messages[0]) showError(name, messages[0]);
+          }
+          // Send focus to the first field that needs attention.
+          const first = Object.keys(data.errors)[0];
+          form.querySelector<HTMLElement>(`[name="${first}"]`)?.focus();
+        }
+        setStatus(data.message ?? 'Something went wrong. Please try again.', 'error');
+        return;
+      }
+
+      form.reset();
+      setStatus(data.message, 'ok');
+    } catch {
+      setStatus(
+        'We could not reach the server. Please email sales@gradebd.com or call 01842-024378.',
+        'error',
+      );
+    } finally {
+      if (submit) submit.disabled = false;
+    }
+  });
+</script>

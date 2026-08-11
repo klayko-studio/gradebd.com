@@ -1,0 +1,33 @@
+---
+import Eyebrow from './Eyebrow.astro';
+import type { Image } from '../lib/schema';
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  sub: string;
+  image: Image;
+}
+const { eyebrow, title, sub, image } = Astro.props;
+---
+<section class="relative isolate overflow-hidden bg-inverse">
+  <img
+    src={image.src}
+    alt={image.alt}
+    width={image.width}
+    height={image.height}
+    class="absolute inset-0 -z-10 h-full w-full object-cover"
+  />
+  <!-- Scrim keeps overlaid type legible whatever photograph a moderator uploads. -->
+  <div
+    aria-hidden="true"
+    class="absolute inset-0 -z-10"
+    style="background:linear-gradient(90deg,rgb(13 32 56 / 0.93) 0%,rgb(13 32 56 / 0.62) 60%,rgb(13 32 56 / 0.28) 100%)"
+  ></div>
+
+  <div class="rail flex min-h-[280px] flex-col justify-center gap-4 py-16 md:min-h-[340px]">
+    <Eyebrow tone="dark">{eyebrow}</Eyebrow>
+    <h1 class="t-display-lg max-w-[24ch] text-[color:var(--text-inverse)]">{title}</h1>
+    <p class="t-body-md max-w-[62ch] text-[color:var(--text-inverse-muted)]">{sub}</p>
+  </div>
+</section>

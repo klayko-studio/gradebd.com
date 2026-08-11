@@ -1,0 +1,201 @@
+---
+import Button from './Button.astro';
+import type { Category, Site } from '../lib/schema';
+
+interface Props {
+  site: Site;
+  categories: Category[];
+  active?: 'home' | 'about' | 'categories' | 'gallery' | 'contact';
+  transparent?: boolean;
+}
+
+const { site, categories, active, transparent = false } = Astro.props;
+
+const nav = [
+  { key: 'home', label: 'Home', href: '/' },
+  { key: 'about', label: 'About Us', href: '/about/' },
+  { key: 'categories', label: 'Product Categories', href: `/${categories[0]?.slug ?? ''}/` },
+  { key: 'gallery', label: 'Gallery', href: '/gallery/' },
+  { key: 'contact', label: 'Contact', href: '/contact/' },
+] as const;
+---
+
+<header
+  class:list={[
+    'sticky top-0 z-40 border-b bg-page/95 backdrop-blur-sm',
+    transparent ? 'border-line-subtle' : 'border-line-subtle',
+  ]}
+>
+  <div class="rail flex items-center gap-6 py-4">
+    <a href="/" class="shrink-0" aria-label={`${site.company_name} — home`}>
+      <!-- The supplied logo is a lockup whose tagline is white, so the header
+           uses the wordmark band only. The full lockup appears on the navy footer. -->
+      <span class="block h-9 w-[132px] overflow-hidden">
+        <img
+          src="/images/brand/grade-logo.png"
+          alt={site.company_name}
+          width="132"
+          height="47"
+          class="w-[132px] max-w-none -translate-y-[3px]"
+        />
+      </span>
+    </a>
+
+    <!-- desktop nav -->
+    <nav class="ms-auto hidden items-center gap-8 lg:flex" aria-label="Main">
+      {
+        nav.map((item) =>
+          item.key === 'categories' ? (
+            <div class="group relative">
+              <a
+                href={item.href}
+                aria-current={active === item.key ? 'page' : undefined}
+                aria-haspopup="true"
+                class:list={[
+                  'flex flex-col items-center gap-1.5 t-nav transition-colors',
+                  active === item.key
+                    ? 'text-[color:var(--text-brand-strong)]'
+                    : 'text-ink hover:text-[color:var(--text-brand-strong)]',
+                ]}
+              >
+                {item.label}
+                <span
+                  class:list={[
+                    'h-[2px] w-5 rounded-full bg-brand transition-opacity',
+                    active === item.key ? 'opacity-100' : 'opacity-0',
+                  ]}
+                ></span>
+              </a>
+
+              <!-- Hover zone spans the trigger and the panel, so moving the
+                   pointer down into the menu does not dismiss it. -->
+              <div
+                class="invisible absolute left-1/2 top-full z-50 w-[290px] -translate-x-1/2 pt-4 opacity-0
+                       transition-[opacity,visibility] duration-150 group-hover:visible group-hover:opacity-100
+                       group-focus-within:visible group-focus-within:opacity-100"
+              >
+                <ul
+                  class="overflow-hidden rounded-sharp border border-line-subtle bg-page py-2 shadow-[var(--shadow-raised)]"
+                >
+                  {
+                    categories.map((c) => (
+                      <li>
+                        <a
+                          href={`/${c.slug}/`}
+                          class="flex items-center gap-3 px-5 py-3 t-label-md text-ink transition-colors hover:bg-subtle"
+                        >
+                          <span class="grow">{c.name}</span>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path
+                              d="M5 12h13M12.5 6.5L18 12l-5.5 5.5"
+                              stroke="var(--bg-brand)"
+                              stroke-width="1.6"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            />
+                          </svg>
+                        </a>
+                      </li>
+                    ))
+                  }
+                </ul>
+              </div>
+            </div>
+          ) : (
+            <a
+              href={item.href}
+              aria-current={active === item.key ? 'page' : undefined}
+              class:list={[
+                'flex flex-col items-center gap-1.5 t-nav transition-colors',
+                active === item.key
+                  ? 'text-[color:var(--text-brand-strong)]'
+                  : 'text-ink hover:text-[color:var(--text-brand-strong)]',
+              ]}
+            >
+              {item.label}
+              <span
+                class:list={[
+                  'h-[2px] w-5 rounded-full bg-brand transition-opacity',
+                  active === item.key ? 'opacity-100' : 'opacity-0',
+                ]}
+              ></span>
+            </a>
+          ),
+        )
+      }
+    </nav>
+
+    <div class="ms-auto flex items-center gap-3 lg:ms-0">
+      <Button href="/contact/" variant="primary" class="hidden sm:inline-flex">Request a quote</Button>
+
+      <!-- mobile menu -->
+      <button
+        type="button"
+        class="flex h-11 w-11 items-center justify-center rounded-sharp border border-line lg:hidden"
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="mobile-nav"
+        data-menu-toggle
+      >
+        <span class="relative block h-3 w-5">
+          <span class="absolute inset-x-0 top-0 h-[2px] bg-[color:var(--text-primary)] transition-transform duration-200" data-bar="top"></span>
+          <span class="absolute inset-x-0 bottom-0 h-[2px] bg-[color:var(--text-primary)] transition-transform duration-200" data-bar="bottom"></span>
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <!-- mobile panel -->
+  <div id="mobile-nav" hidden class="border-t border-line-subtle bg-page lg:hidden">
+    <nav class="rail flex flex-col py-2" aria-label="Mobile">
+      {
+        nav.map((item) => (
+          <a
+            href={item.href}
+            aria-current={active === item.key ? 'page' : undefined}
+            class:list={[
+              'border-b border-line-subtle py-3.5 t-nav last:border-0',
+              active === item.key ? 'text-[color:var(--text-brand-strong)]' : 'text-ink',
+            ]}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+      <ul class="flex flex-col border-t border-line-subtle pt-2">
+        {
+          categories.map((c) => (
+            <li>
+              <a href={`/${c.slug}/`} class="block py-2.5 t-label-md text-[color:var(--text-secondary)]">
+                — {c.name}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <a
+        href="/contact/"
+        class="my-4 inline-flex items-center justify-center rounded-sharp bg-brand px-6 py-4 t-button text-[color:var(--text-on-brand)] sm:hidden"
+      >
+        Request a quote
+      </a>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  const panel = document.getElementById('mobile-nav');
+  const top = document.querySelector<HTMLElement>('[data-bar="top"]');
+  const bottom = document.querySelector<HTMLElement>('[data-bar="bottom"]');
+
+  toggle?.addEventListener('click', () => {
+    const open = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!open));
+    toggle.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
+    if (panel) panel.hidden = open;
+    // Morph the two bars into a cross rather than swapping icons.
+    if (top) top.style.transform = open ? '' : 'translateY(5px) rotate(45deg)';
+    if (bottom) bottom.style.transform = open ? '' : 'translateY(-5px) rotate(-45deg)';
+  });
+</script>

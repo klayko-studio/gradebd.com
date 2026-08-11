@@ -1,0 +1,48 @@
+---
+import Base from '../layouts/Base.astro';
+import Button from '../components/Button.astro';
+import { getCategories, getSite } from '../lib/cms';
+
+const [categories, site] = await Promise.all([getCategories(), getSite()]);
+---
+
+<Base
+  seo={{
+    title: 'Page not found — Grade Limited',
+    description: 'The page you were looking for is not here. Browse our stationery ranges instead.',
+    noindex: true,
+  }}
+>
+  <section class="section">
+    <div class="rail flex max-w-[70ch] flex-col gap-6">
+      <p class="t-label-xs text-[color:var(--text-brand-strong)]">Error 404</p>
+      <h1 class="t-display-lg">This page isn’t here.</h1>
+      <p class="t-body-lg">
+        The link may be out of date. Pick a range below, or tell us what you need and we will quote it.
+      </p>
+
+      <ul class="mt-2 flex flex-wrap gap-2">
+        {
+          categories.map((category) => (
+            <li>
+              <a
+                href={`/${category.slug}/`}
+                class="inline-flex rounded-sharp border border-line px-4 py-2 t-label-md
+                       transition-colors hover:border-line-brand hover:text-[color:var(--text-brand-strong)]"
+              >
+                {category.name}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="mt-4 flex flex-wrap items-center gap-4">
+        <Button href="/">Back to home</Button>
+        <a href={site.phone_href} class="t-body-md text-ink hover:text-[color:var(--text-brand-strong)]">
+          Or call {site.phone}
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>

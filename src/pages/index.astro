@@ -1,0 +1,178 @@
+---
+import Base from '../layouts/Base.astro';
+import HeroSlider from '../components/HeroSlider.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import ProductCard from '../components/ProductCard.astro';
+import ClientMark from '../components/ClientMark.astro';
+import Stars from '../components/Stars.astro';
+import QuoteBand from '../components/QuoteBand.astro';
+import Button from '../components/Button.astro';
+import { getHome, getSite, getCategories, getClients, getReviews } from '../lib/cms';
+
+const [home, site, categories, clients, reviews] = await Promise.all([
+  getHome(),
+  getSite(),
+  getCategories(),
+  getClients(),
+  getReviews(),
+]);
+---
+
+<Base seo={home.seo} active="home">
+  <HeroSlider slides={home.slides} />
+
+  <!-- credibility strip -->
+  <section class="border-b border-line-subtle">
+    <div class="rail grid grid-cols-2 gap-y-8 py-8 md:grid-cols-4" data-reveal-group>
+      {
+        home.stats.map((stat, i) => (
+          <div
+            data-reveal
+            class:list={['flex flex-col gap-1 md:px-8', i > 0 && 'md:border-l md:border-line-subtle', i === 0 && 'md:pl-0']}
+          >
+            <p class="t-heading-sm">{stat.value}</p>
+            <p class="t-body-sm text-[color:var(--text-muted)]">{stat.label}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- who we are -->
+  <section class="section">
+    <div class="rail grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
+      <div class="flex flex-col gap-5">
+        <Eyebrow data-reveal>{home.who_we_are.eyebrow}</Eyebrow>
+        <h2 class="t-heading-xl max-w-[24ch]" data-reveal>{home.who_we_are.heading}</h2>
+        {home.who_we_are.body.map((para) => <p class="t-body-md max-w-[58ch]" data-reveal>{para}</p>)}
+        <div data-reveal class="mt-2">
+          <Button href="/about/" variant="secondary">{home.who_we_are.cta_label}</Button>
+        </div>
+      </div>
+      <div data-reveal class="overflow-hidden rounded-sharp border border-line-subtle">
+        <img
+          src={home.who_we_are.image.src}
+          alt={home.who_we_are.image.alt}
+          width={home.who_we_are.image.width}
+          height={home.who_we_are.image.height}
+          loading="lazy"
+          class="aspect-[5/4] w-full object-cover"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- the five ranges -->
+  <section class="section pt-0">
+    <div class="rail">
+      <div class="flex flex-wrap items-end justify-between gap-6">
+        <SectionHead eyebrow={home.categories_intro.eyebrow} heading={home.categories_intro.heading} />
+        <a
+          href={`/${categories[0].slug}/`}
+          data-reveal
+          class="group flex items-center gap-2 t-button text-[color:var(--text-brand-strong)]"
+        >
+          See all
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"
+            class="transition-transform duration-200 group-hover:translate-x-1">
+            <path d="M5 12h13M12.5 6.5L18 12l-5.5 5.5" stroke="currentColor" stroke-width="1.6"
+              stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </a>
+      </div>
+
+      <div
+        class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+        data-reveal-group
+      >
+        {
+          categories.map((c) => (
+            <ProductCard
+              name={c.name}
+              meta={c.meta}
+              image={c.image}
+              action="View range"
+              href={`/${c.slug}/`}
+              imageHeight="short"
+            />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- why grade -->
+  <section class="section bg-subtle">
+    <div class="rail">
+      <SectionHead eyebrow={home.pillars_intro.eyebrow} heading={home.pillars_intro.heading} />
+      <div class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4" data-reveal-group>
+        {
+          home.pillars.map((pillar, i) => (
+            <div data-reveal class="flex flex-col gap-3 border-t-2 border-line-brand pt-5">
+              <p class="t-label-xs text-[color:var(--text-brand-strong)]">
+                {String(i + 1).padStart(2, '0')}
+              </p>
+              <h3 class="t-heading-md">{pillar.title}</h3>
+              <p class="t-body-sm">{pillar.body}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- clients + reviews -->
+  <section class="section" id="clients">
+    <div class="rail">
+      <SectionHead eyebrow={home.clients_intro.eyebrow} heading={home.clients_intro.heading} />
+
+      <div
+        class="mt-10 grid gap-3 rounded-sharp border border-line-subtle bg-subtle p-5 sm:grid-cols-2 lg:grid-cols-4"
+        data-reveal-group
+      >
+        {
+          clients.map((client) => (
+            <div
+              data-reveal
+              class="flex items-center gap-3 rounded-sharp bg-page px-5 py-4"
+              title={client.placeholder ? 'Placeholder — real logo pending client permission' : undefined}
+            >
+              <ClientMark mark={client.mark} />
+              <span class="flex flex-col leading-tight">
+                <span class="t-heading-sm text-[color:var(--text-secondary)]">{client.name}</span>
+                <span class="t-label-xs text-[color:var(--text-muted)]">{client.qualifier}</span>
+              </span>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="mt-6 grid gap-6 md:grid-cols-3" data-reveal-group>
+        {
+          reviews.map((review) => (
+            <figure
+              data-reveal
+              class="flex h-full flex-col gap-4 rounded-sharp border border-line-subtle bg-page px-7 py-7"
+            >
+              <Stars rating={review.rating} />
+              <blockquote class="grow t-body-md text-[color:var(--text-primary)]">
+                “{review.quote}”
+              </blockquote>
+              <figcaption class="flex flex-col gap-0.5 border-t border-line-subtle pt-4">
+                <span class="t-label-md text-[color:var(--text-primary)]">{review.role}</span>
+                <span class="t-body-sm text-[color:var(--text-muted)]">{review.organisation}</span>
+              </figcaption>
+            </figure>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <QuoteBand
+    site={site}
+    heading="Need a quote for your school or office?"
+    body={`Tell us what you need and how many. ${site.response_promise}`}
+  />
+</Base>

@@ -1,0 +1,32 @@
+# Build outputs and caches — always rebuilt inside the image.
+node_modules
+dist
+.astro
+.vercel
+.netlify
+
+# Local environment. Secrets are passed in at run time, never baked into a layer.
+.env
+.env.*
+!.env.example
+
+# Not part of the running site.
+docs
+scripts
+design-system
+.claude
+.git
+.gitignore
+.vscode
+.idea
+*.log
+npm-debug.log*
+
+# Docker's own files.
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# OS noise.
+.DS_Store
+Thumbs.db

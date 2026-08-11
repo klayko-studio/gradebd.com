@@ -1,0 +1,58 @@
+{
+  "seo": {
+    "title": "About Grade Limited — supplying Bangladesh since 2019",
+    "description": "Grade Limited sources stationery direct from manufacturers for schools, retailers and corporate buyers across Bangladesh. Over 300 work orders for more than 50 companies."
+  },
+  "banner": {
+    "eyebrow": "About Grade",
+    "title": "Supplying Bangladesh since 2019.",
+    "sub": "Over 300 work orders completed for more than 50 companies, from a base in Dhanmondi, Dhaka.",
+    "image": {
+      "id": null,
+      "src": "/images/about/warehouse.jpg",
+      "alt": "Warehouse racking stacked with palletised cartons",
+      "width": 1100,
+      "height": 920
+    }
+  },
+  "vision": {
+    "eyebrow": "Our Vision",
+    "heading": "A supply chain with nothing hidden in it.",
+    "body": "Grade exists to take the guesswork out of buying stationery in Bangladesh. One supplier, one invoice, and prices that reflect the goods rather than the chain that carried them — against a specification a school or an office can plan a year around."
+  },
+  "mission": {
+    "eyebrow": "Our Mission",
+    "heading": "Cut the intermediaries, hold the specification.",
+    "body": "We buy direct from the manufacturers who make the goods, hold stock against the lines our customers reorder, and return a quote within one working day. No intermediaries, no drifting specification, and no chasing a delivery date."
+  },
+  "values_intro": {
+    "eyebrow": "Our Values",
+    "heading": "What we hold ourselves to."
+  },
+  "values": [
+    {
+      "title": "Transparency",
+      "body": "A quote shows what the goods cost, not what the chain adds. Buyers see the same pricing structure on every order."
+    },
+    {
+      "title": "Consistency",
+      "body": "The same specification on the first order and the fiftieth."
+    },
+    {
+      "title": "Reliability",
+      "body": "Dispatch on the date agreed, without the buyer having to chase it."
+    },
+    {
+      "title": "Value",
+      "body": "Direct sourcing passed on as price, not absorbed as margin."
+    }
+  ],
+  "story": {
+    "eyebrow": "About Us",
+    "heading": "From B2B supplier to a one-stop procurement partner.",
+    "body": [
+      "Since its inception in 2019, Grade has grown from a B2B supplier into a platform serving both traditional supply and end-consumer purchasing. The B2B side holds to the same commitment throughout: eliminate the intermediaries, source direct from manufacturers, and pass the difference on.",
+      "This site covers the stationery range only — pens, exercise books, school supplies, office consumables and filing. Orders are quoted by the carton for schools, retailers and corporate procurement teams across Bangladesh."
+    ]
+  }
+}

@@ -1,0 +1,194 @@
+import { z } from 'zod';
+
+/**
+ * The shape of every Directus collection this site reads.
+ *
+ * These schemas are the single source of truth. The local seed files are parsed
+ * through them at build time, so a malformed seed fails the build rather than
+ * rendering a half-empty page. When Directus comes online the same schemas
+ * validate the API response, which means a moderator deleting a required field
+ * surfaces as a clear error instead of `undefined` in the markup.
+ */
+
+/** A Directus file reference. `id` is what the API returns; `src` is resolved for us. */
+export const imageSchema = z.object({
+  id: z.string().nullable().default(null),
+  src: z.string(),
+  alt: z.string(),
+  width: z.number().int().positive().optional(),
+  height: z.number().int().positive().optional(),
+});
+export type Image = z.infer<typeof imageSchema>;
+
+export const seoSchema = z.object({
+  title: z.string().min(1),
+  description: z.string().min(1),
+  /** Keeps utility pages (404) out of the index. */
+  noindex: z.boolean().optional(),
+});
+export type Seo = z.infer<typeof seoSchema>;
+
+/* ---------------------------------------------------------------- singletons */
+
+export const siteSchema = z.object({
+  company_name: z.string(),
+  tagline: z.string(),
+  founded_year: z.number().int(),
+  address_lines: z.array(z.string()).min(1),
+  phone: z.string(),
+  phone_href: z.string(),
+  email: z.string().email(),
+  opening_hours: z.string(),
+  utility_message: z.string(),
+  response_promise: z.string(),
+  socials: z.array(
+    z.object({
+      platform: z.enum(['facebook', 'instagram', 'youtube', 'x', 'linkedin']),
+      url: z.string(),
+      /** Only Facebook and LinkedIn are confirmed to exist. */
+      confirmed: z.boolean().default(false),
+    }),
+  ),
+});
+export type Site = z.infer<typeof siteSchema>;
+
+export const homeSchema = z.object({
+  seo: seoSchema,
+  slides: z
+    .array(
+      z.object({
+        eyebrow: z.string(),
+        headline: z.string(),
+        body: z.string(),
+        image: imageSchema,
+        /** Where the slide's secondary link points, if any. */
+        range_slug: z.string().nullable().default(null),
+        label: z.string(),
+      }),
+    )
+    .min(1),
+  stats: z
+    .array(z.object({ value: z.string(), label: z.string() }))
+    .min(1),
+  who_we_are: z.object({
+    eyebrow: z.string(),
+    heading: z.string(),
+    body: z.array(z.string()).min(1),
+    image: imageSchema,
+    cta_label: z.string(),
+  }),
+  categories_intro: z.object({ eyebrow: z.string(), heading: z.string() }),
+  pillars_intro: z.object({ eyebrow: z.string(), heading: z.string() }),
+  pillars: z
+    .array(z.object({ title: z.string(), body: z.string() }))
+    .min(1),
+  clients_intro: z.object({ eyebrow: z.string(), heading: z.string() }),
+});
+export type Home = z.infer<typeof homeSchema>;
+
+export const aboutSchema = z.object({
+  seo: seoSchema,
+  banner: z.object({ eyebrow: z.string(), title: z.string(), sub: z.string(), image: imageSchema }),
+  vision: z.object({ eyebrow: z.string(), heading: z.string(), body: z.string() }),
+  mission: z.object({ eyebrow: z.string(), heading: z.string(), body: z.string() }),
+  values_intro: z.object({ eyebrow: z.string(), heading: z.string() }),
+  values: z.array(z.object({ title: z.string(), body: z.string() })).min(1),
+  story: z.object({ eyebrow: z.string(), heading: z.string(), body: z.array(z.string()).min(1) }),
+});
+export type About = z.infer<typeof aboutSchema>;
+
+export const gallerySchema = z.object({
+  seo: seoSchema,
+  banner: z.object({ eyebrow: z.string(), title: z.string(), sub: z.string(), image: imageSchema }),
+  images: z
+    .array(z.object({ image: imageSchema, caption: z.string(), tag: z.string() }))
+    .min(1),
+});
+export type Gallery = z.infer<typeof gallerySchema>;
+
+export const contactSchema = z.object({
+  seo: seoSchema,
+  banner: z.object({ eyebrow: z.string(), title: z.string(), sub: z.string(), image: imageSchema }),
+  form_heading: z.string(),
+  map_embed_url: z.string().nullable().default(null),
+  faqs: z.array(z.object({ question: z.string(), answer: z.string() })).min(1),
+});
+export type Contact = z.infer<typeof contactSchema>;
+
+/* -------------------------------------------------------------- collections */
+
+export const itemSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  meta: z.string(),
+  /** Sub-category slug this item belongs to, or null for categories with no children. */
+  subcategory: z.string().nullable().default(null),
+  image: imageSchema,
+});
+export type Item = z.infer<typeof itemSchema>;
+
+export const categorySchema = z.object({
+  slug: z.string(),
+  name: z.string(),
+  /** Short line used on the category banner. */
+  summary: z.string(),
+  /** Condensed sub-category list shown on the home page card. */
+  meta: z.string(),
+  seo: seoSchema,
+  image: imageSchema,
+  /** Empty for File & Folder — the template must not render a filter row. */
+  subcategories: z.array(z.object({ slug: z.string(), name: z.string() })),
+  items: z.array(itemSchema).min(1),
+  sort: z.number().int(),
+});
+export type Category = z.infer<typeof categorySchema>;
+
+export const clientSchema = z.object({
+  name: z.string(),
+  qualifier: z.string(),
+  mark: z.enum(['ring', 'diamond', 'bars', 'triangle', 'dots', 'square', 'chevron', 'disc']),
+  /** Real client logos need permission; placeholders are flagged so they can't ship unnoticed. */
+  placeholder: z.boolean().default(true),
+});
+export type Client = z.infer<typeof clientSchema>;
+
+export const reviewSchema = z.object({
+  quote: z.string(),
+  role: z.string(),
+  organisation: z.string(),
+  rating: z.number().int().min(1).max(5),
+  placeholder: z.boolean().default(true),
+});
+export type Review = z.infer<typeof reviewSchema>;
+
+/* --------------------------------------------------------- enquiry (write) */
+
+/**
+ * Enquiry payload. Deliberately strict: a quantity in the first message is what
+ * turns an enquiry into a quote without three emails of back-and-forth.
+ */
+export const enquirySchema = z.object({
+  name: z.string().trim().min(2, 'Please enter your name.').max(120),
+  organisation: z.string().trim().max(160).optional().or(z.literal('')),
+  email: z.string().trim().email('Please enter a valid email address.').max(200),
+  phone: z
+    .string()
+    .trim()
+    .min(6, 'Please enter a phone number we can reach you on.')
+    .max(40)
+    .regex(/^[+\d][\d\s\-()]*$/, 'Please use digits, spaces, brackets or a leading +.'),
+  requirement: z
+    .string()
+    .trim()
+    .min(12, 'Tell us what you need and roughly how many.')
+    .max(4000),
+  /**
+   * The spam trap. Hidden from users, so only a bot fills it in. Deliberately
+   * permissive: rejecting it here would return a validation error naming the
+   * trap, which tells the bot exactly what to leave blank next time — and would
+   * show a real user an error against a field they cannot see. The endpoint
+   * checks it instead and answers with a plain success.
+   */
+  honeypot: z.string().optional(),
+});
+export type Enquiry = z.infer<typeof enquirySchema>;
