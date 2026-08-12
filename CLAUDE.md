@@ -86,7 +86,11 @@ added. Do not "improve" its layout again without being asked. What that page doe
 - Category pages have no page title; the "Art Work" band is image-only.
 - Contact: labels sit *inside* the fields (`Name:`), Send is a wide centred bar, Head Office sits beside
   the map, and the FAQ section opens with a centred dark bar.
-- Footer is plain white — address block left, five social icons right.
+- Footer is a **navy band** — full logo lockup above the address block on the left, five social icons
+  right. The wireframe drew it white, but navy is the only ground that renders the supplied lockup
+  whole (red wordmark + white "For Every People" tagline), so the client approved navy here.
+  Home also carries a navy band for "Our Corporate Clients", one step lighter (`bg/inverse-soft`)
+  than the footer so the two adjacent navy blocks don't merge into one mass.
 
 Frames `05`/`06` are kept as the record of what was proposed and turned down; leave them alone.
 The Astro build still matches `05`, so the code and `07` have diverged — reconciling them is a separate
