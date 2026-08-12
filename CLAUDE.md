@@ -70,9 +70,35 @@ their own editable fields — avoid hardcoding copy, images, or lists that moder
 ## Design (Figma)
 
 File: `https://www.figma.com/design/wO94lV6gN0lfKHQT9zAkrJ/Website` (fileKey `wO94lV6gN0lfKHQT9zAkrJ`).
-Seven pages: `01 · Foundations` (brand guideline), `02 · Wireframes (low-fi)` (nine page frames),
+Eight pages: `01 · Foundations` (brand guideline), `02 · Wireframes (low-fi)` (nine page frames),
 `03 · Wireframe kit` (shared low-fi components), `04 · Hi-fi kit`, `05 · Hi-fi screens`,
-`06 · Client presentation`, `07 · Wireframe-exact (hi-fi)`.
+`06 · Client presentation`, `07 · Wireframe-exact (hi-fi)`, `08 · Colour revision (call)`.
+
+### Colours agreed on the client call (page `08`)
+
+Menu bar **light blue**, footer **red**, from client-supplied Pantone swatches. Values sampled from
+their swatch image and stored as new `Semantic` variables — bind to these, don't hardcode:
+
+| variable | value | note |
+| --- | --- | --- |
+| `bg/menu` | `#A2DFF9` | PANTONE P 115-5 C `#8BD7F7` at the 80% tint they specified |
+| `bg/footer` | `#EE1E2C` | PANTONE P 48-8 C at 100% |
+| `text/on-menu` | `#0D2038` | navy, 11.3:1 on the blue |
+| `text/on-menu-muted` | `#1B3B65` | inactive nav, 7.8:1 on the blue |
+
+Two consequences of the red footer, both unresolved and needing the client:
+
+- **The logo had to come out of the footer.** Its wordmark *is* this red, so on a red band it vanishes
+  and only the white tagline would survive. Page `08` footers are text-only until a reversed all-white
+  logo arrives. This is the same lockup defect described above, now blocking a second placement.
+- **White on `#EE1E2C` is 4.32:1** — under the 4.5:1 AA floor for body text (fine for large/bold). The
+  14px footer address lines are the affected text. Fixes, in order of preference: darken the footer red
+  slightly (`#D2141B` gives 5.45:1), or set that text ≥18.66px semibold so the 3:1 large-text rule
+  applies. Do not "fix" it by tinting the white down — that makes it worse.
+
+Note the brand red on page `07` and elsewhere is `#EA1F27`, sampled from the logo; the call's
+`#EE1E2C` is a slightly different red. Ask the client whether the Pantone should now become the brand
+red everywhere, or stay a footer-only colour.
 
 ### The client rejected the layout improvements on `05 · Hi-fi screens`
 
