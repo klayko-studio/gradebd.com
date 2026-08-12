@@ -64,17 +64,33 @@ their own editable fields — avoid hardcoding copy, images, or lists that moder
 ## Planned workflow (from `readme.md`)
 
 1. Generate a brand guideline. **Done** — see Design below.
-2. Design in Figma: wireframe → low-fi → hi-fi. **Low-fi done**; hi-fi pending client review.
-3. Then build with Astro + Directus. Not started.
-
-Respect the ordering — don't jump to implementation while hi-fi design is still open, unless the user
-asks to.
+2. Design in Figma: wireframe → low-fi → hi-fi. **Done**, then revised — see the client verdict below.
+3. Then build with Astro + Directus. **Astro build done and running in Docker**; Directus not wired yet.
 
 ## Design (Figma)
 
 File: `https://www.figma.com/design/wO94lV6gN0lfKHQT9zAkrJ/Website` (fileKey `wO94lV6gN0lfKHQT9zAkrJ`).
-Three pages: `01 · Foundations` (brand guideline), `02 · Wireframes (low-fi)` (nine page frames),
-`03 · Wireframe kit` (shared low-fi components).
+Seven pages: `01 · Foundations` (brand guideline), `02 · Wireframes (low-fi)` (nine page frames),
+`03 · Wireframe kit` (shared low-fi components), `04 · Hi-fi kit`, `05 · Hi-fi screens`,
+`06 · Client presentation`, `07 · Wireframe-exact (hi-fi)`.
+
+### The client rejected the layout improvements on `05 · Hi-fi screens`
+
+They want the paper wireframes followed literally. `07 · Wireframe-exact (hi-fi)` is that version and is
+**the current design direction** — brand palette and type applied to the client's own layout, nothing
+added. Do not "improve" its layout again without being asked. What that page does differently:
+
+- Header is logo + centred-right nav + search icon only. **No utility bar, no "Request a quote" button.**
+- The hero slider sits inside the 1200 content column — it is not a full-screen hero.
+- Product/category cards put the **name above the image**, as drawn.
+- Category pages have no page title; the "Art Work" band is image-only.
+- Contact: labels sit *inside* the fields (`Name:`), Send is a wide centred bar, Head Office sits beside
+  the map, and the FAQ section opens with a centred dark bar.
+- Footer is plain white — address block left, five social icons right.
+
+Frames `05`/`06` are kept as the record of what was proposed and turned down; leave them alone.
+The Astro build still matches `05`, so the code and `07` have diverged — reconciling them is a separate
+job the user has not asked for yet.
 
 Design tokens live as Figma variables in two collections — `Primitives` (raw ramps, scoped `[]` so they
 stay out of pickers) and `Semantic` (aliases onto primitives, each carrying its `var(--…)` WEB code
