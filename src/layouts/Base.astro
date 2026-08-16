@@ -1,6 +1,5 @@
 ---
 import '../styles/global.css';
-import UtilityBar from '../components/UtilityBar.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { getSite, getCategories } from '../lib/cms';
@@ -10,11 +9,9 @@ interface Props {
   seo: Seo;
   /** Which nav item is the current page. */
   active?: 'home' | 'about' | 'categories' | 'gallery' | 'contact';
-  /** Hero pages paint their own dark band behind the header. */
-  transparentHeader?: boolean;
 }
 
-const { seo, active, transparentHeader = false } = Astro.props;
+const { seo, active } = Astro.props;
 const site = await getSite();
 const categories = await getCategories();
 const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://www.gradebd.com').href;
@@ -69,8 +66,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://www.gradebd
       Skip to content
     </a>
 
-    <UtilityBar site={site} />
-    <Header site={site} categories={categories} active={active} transparent={transparentHeader} />
+    <Header site={site} categories={categories} active={active} />
 
     <main id="main">
       <slot />

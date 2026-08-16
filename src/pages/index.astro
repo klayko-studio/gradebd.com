@@ -6,13 +6,12 @@ import Eyebrow from '../components/Eyebrow.astro';
 import ProductCard from '../components/ProductCard.astro';
 import ClientMark from '../components/ClientMark.astro';
 import Stars from '../components/Stars.astro';
-import QuoteBand from '../components/QuoteBand.astro';
+import BrandBand from '../components/BrandBand.astro';
 import Button from '../components/Button.astro';
-import { getHome, getSite, getCategories, getClients, getReviews } from '../lib/cms';
+import { getHome, getCategories, getClients, getReviews } from '../lib/cms';
 
-const [home, site, categories, clients, reviews] = await Promise.all([
+const [home, categories, clients, reviews] = await Promise.all([
   getHome(),
-  getSite(),
   getCategories(),
   getClients(),
   getReviews(),
@@ -92,6 +91,7 @@ const [home, site, categories, clients, reviews] = await Promise.all([
               name={c.name}
               meta={c.meta}
               image={c.image}
+              accent={c.accent}
               action="View range"
               href={`/${c.slug}/`}
               imageHeight="short"
@@ -123,32 +123,47 @@ const [home, site, categories, clients, reviews] = await Promise.all([
   </section>
 
   <!-- clients + reviews -->
-  <section class="section" id="clients">
+  <section class="section bg-inverse text-[color:var(--text-inverse)]" id="clients">
     <div class="rail">
-      <SectionHead eyebrow={home.clients_intro.eyebrow} heading={home.clients_intro.heading} />
+      <SectionHead
+        eyebrow={home.clients_intro.eyebrow}
+        heading={home.clients_intro.heading}
+        tone="dark"
+      />
 
       <div
-        class="mt-10 grid gap-3 rounded-sharp border border-line-subtle bg-subtle p-5 sm:grid-cols-2 lg:grid-cols-4"
+        class="mt-10 grid gap-x-8 gap-y-7 sm:grid-cols-2 lg:grid-cols-4"
         data-reveal-group
       >
         {
           clients.map((client) => (
             <div
               data-reveal
-              class="flex items-center gap-3 rounded-sharp bg-page px-5 py-4"
+              class="flex items-center gap-3"
               title={client.placeholder ? 'Placeholder — real logo pending client permission' : undefined}
             >
-              <ClientMark mark={client.mark} />
+              <ClientMark mark={client.mark} tone="dark" />
               <span class="flex flex-col leading-tight">
-                <span class="t-heading-sm text-[color:var(--text-secondary)]">{client.name}</span>
-                <span class="t-label-xs text-[color:var(--text-muted)]">{client.qualifier}</span>
+                <span class="t-heading-sm text-[color:var(--text-inverse)]">{client.name}</span>
+                <span class="t-label-xs text-[color:var(--text-inverse-muted)]">{client.qualifier}</span>
               </span>
             </div>
           ))
         }
       </div>
 
-      <div class="mt-6 grid gap-6 md:grid-cols-3" data-reveal-group>
+    </div>
+  </section>
+
+  <!-- what buyers say -->
+  <section class="section">
+    <div class="rail">
+      <SectionHead
+        eyebrow={home.reviews_intro.eyebrow}
+        heading={home.reviews_intro.heading}
+      />
+
+      <div class="mt-10 grid gap-6 md:grid-cols-3" data-reveal-group>
         {
           reviews.map((review) => (
             <figure
@@ -170,9 +185,9 @@ const [home, site, categories, clients, reviews] = await Promise.all([
     </div>
   </section>
 
-  <QuoteBand
-    site={site}
-    heading="Need a quote for your school or office?"
-    body={`Tell us what you need and how many. ${site.response_promise}`}
+  <BrandBand
+    eyebrow="For every people"
+    heading="Stocked for the whole school year."
+    body="From the first pencil box in January to the last file of the audit season — quoted by the carton, delivered on the date agreed."
   />
 </Base>

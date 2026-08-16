@@ -5,31 +5,44 @@ interface Props {
   name: string;
   meta: string;
   image: Image;
+  /** Used as the accessible name — the card itself is the link. */
   action: string;
   href: string;
   /** Category cards sit shorter than item cards. */
   imageHeight?: 'short' | 'tall';
+  /** Range accent shown as a bar above the name. */
+  accent?: string;
 }
 
-const { name, meta, image, action, href, imageHeight = 'tall' } = Astro.props;
+const { name, meta, image, action, href, imageHeight = 'tall', accent } = Astro.props;
 const ratio = imageHeight === 'short' ? 'aspect-[16/10]' : 'aspect-[4/3]';
 ---
 
-<a
-  href={href}
-  data-reveal
-  class="group relative flex flex-col overflow-hidden rounded-sharp border border-line-subtle bg-page
-         transition-[border-color,box-shadow] duration-200 ease-[var(--ease-standard)]
-         hover:border-line-brand hover:shadow-[var(--shadow-ambient)]"
->
-  <!-- Red rule wipes across the top on hover. No image scaling — deliberately. -->
-  <span
-    aria-hidden="true"
-    class="absolute inset-x-0 top-0 z-10 h-[2px] origin-left scale-x-0 bg-brand
-           transition-transform duration-300 ease-[var(--ease-standard)] group-hover:scale-x-100"
-  ></span>
+<!-- The client's wireframes put the name ABOVE the photograph, which is also
+     how their packaging reads. No image scaling on hover — deliberately. -->
+<a href={href} data-reveal aria-label={`${name} — ${action}`} class="group flex flex-col gap-1.5">
+  {
+    accent && (
+      <span
+        aria-hidden="true"
+        class="h-[4px] w-8 rounded-full transition-[width] duration-300 ease-[var(--ease-standard)] group-hover:w-14"
+        style={`background:${accent}`}
+      />
+    )
+  }
+  <h3 class="t-heading-sm transition-colors group-hover:text-[color:var(--text-brand-strong)]">
+    {name}
+  </h3>
+  <p class="t-label-sm text-[color:var(--text-muted)]">{meta}</p>
 
-  <div class:list={['w-full overflow-hidden bg-muted-surface', ratio]}>
+  <div
+    class:list={[
+      'relative mt-2 w-full overflow-hidden rounded-sharp border border-line-subtle bg-muted-surface',
+      'transition-[border-color,box-shadow] duration-200 ease-[var(--ease-standard)]',
+      'group-hover:border-line-brand group-hover:shadow-[var(--shadow-ambient)]',
+      ratio,
+    ]}
+  >
     <img
       src={image.src}
       alt={image.alt}
@@ -39,29 +52,19 @@ const ratio = imageHeight === 'short' ? 'aspect-[16/10]' : 'aspect-[4/3]';
       decoding="async"
       class="h-full w-full object-cover"
     />
-  </div>
-
-  <div class="flex grow flex-col gap-1 px-6 py-5">
-    <h3 class="t-heading-sm">{name}</h3>
-    <p class="t-body-sm text-[color:var(--text-muted)]">{meta}</p>
-
-    <span class="mt-4 flex items-center gap-3 t-label-md text-[color:var(--text-brand-strong)]">
-      <span class="grow">{action}</span>
-      <svg
-        width="18"
-        height="18"
-        viewBox="0 0 24 24"
-        fill="none"
-        aria-hidden="true"
-        class="transition-transform duration-200 ease-[var(--ease-standard)] group-hover:translate-x-1"
-      >
+    <span
+      aria-hidden="true"
+      class="absolute bottom-3 right-3 flex h-9 w-9 translate-y-1 items-center justify-center rounded-full
+             bg-brand opacity-0 transition-[opacity,transform] duration-200 ease-[var(--ease-standard)]
+             group-hover:translate-y-0 group-hover:opacity-100"
+    >
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
         <path
           d="M5 12h13M12.5 6.5L18 12l-5.5 5.5"
-          stroke="currentColor"
-          stroke-width="1.6"
+          stroke="var(--text-on-brand)"
+          stroke-width="1.8"
           stroke-linecap="round"
-          stroke-linejoin="round"
-        />
+          stroke-linejoin="round"></path>
       </svg>
     </span>
   </div>

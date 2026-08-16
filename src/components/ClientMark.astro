@@ -1,8 +1,12 @@
 ---
 /** Placeholder geometric marks so the logo wall reads as distinct brands. */
-interface Props { mark: string }
-const { mark } = Astro.props;
-const ink = 'var(--text-muted)';
+interface Props {
+  mark: string;
+  /** On the deep-blue band the wall is mono white, as a logo wall usually is. */
+  tone?: 'light' | 'dark';
+}
+const { mark, tone = 'light' } = Astro.props;
+const ink = tone === 'dark' ? 'rgb(255 255 255 / 0.92)' : 'var(--text-muted)';
 ---
 <span class="block h-7 w-7 shrink-0" aria-hidden="true">
   <svg viewBox="0 0 28 28" width="28" height="28" fill="none">

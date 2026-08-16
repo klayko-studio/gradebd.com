@@ -9,67 +9,89 @@
    --------------------------------------------------------------------------- */
 
 :root {
-  /* --- primitives: brand red (500 sampled pixel-exact from the client logo) --- */
-  --color-red-50: #feeeef;
-  --color-red-100: #fcd9db;
-  --color-red-200: #f8b4b7;
-  --color-red-300: #f38186;
-  --color-red-400: #ef5259;
-  --color-red-500: #ea1f27;
+  /* --- primitives: brand red. 500 is PANTONE P 48-8 C, from the packaging --- */
+  --color-red-50: #fdecee;
+  --color-red-100: #fbd3d6;
+  --color-red-200: #f6a9ae;
+  --color-red-300: #f27a82;
+  --color-red-400: #f14c58;
+  --color-red-500: #ee1e2c;
   --color-red-600: #d2141b;
-  --color-red-700: #a81016;
-  --color-red-800: #7f1014;
-  --color-red-900: #5c0f12;
+  --color-red-700: #c4141f;
+  --color-red-800: #a8101a;
+  --color-red-900: #7d0d14;
 
-  /* --- primitives: navy (agreed supporting colour, hue 214) --- */
-  --color-navy-50: #f0f5fc;
-  --color-navy-100: #dae6f6;
-  --color-navy-200: #b4cbe9;
-  --color-navy-300: #7da3d4;
-  --color-navy-400: #497abc;
-  --color-navy-500: #305d97;
-  --color-navy-600: #24497b;
-  --color-navy-700: #1b3b65;
-  --color-navy-800: #132d4e;
-  --color-navy-900: #0d2038;
+  /* --- primitives: their blue. 400 is PANTONE P 115-5 C; 300 is the 80% tint
+         the client specified for the menu bar. 800/900 are the dark grounds
+         that replaced navy — same hue, so the palette stays theirs. --- */
+  --color-sky-50: #f2fbfe;
+  --color-sky-100: #e9f8fe;
+  --color-sky-200: #c6edfc;
+  --color-sky-300: #a2dff9;
+  --color-sky-400: #8bd7f7;
+  --color-sky-500: #45b6e3;
+  --color-sky-600: #1b93c6;
+  --color-sky-700: #0f6e96;
+  --color-sky-800: #0a5273;
+  --color-sky-900: #073b54;
 
-  /* --- primitives: neutrals, mixed on the navy hue so greys never look muddy --- */
+  /* --- primitives: neutrals. Hue-neutral on purpose — the old ramp carried a
+         navy cast, and navy is out of this direction. --- */
   --color-neutral-0: #ffffff;
-  --color-neutral-50: #f9fafb;
-  --color-neutral-100: #f0f2f5;
-  --color-neutral-200: #e1e5ea;
-  --color-neutral-300: #cbd0d8;
-  --color-neutral-400: #9ba4b0;
-  --color-neutral-500: #717e8e;
-  --color-neutral-600: #5a6472;
-  --color-neutral-700: #424b57;
-  --color-neutral-800: #2d343e;
-  --color-neutral-900: #1b2028;
+  --color-neutral-50: #f7fafb;
+  --color-neutral-100: #f1f6f9;
+  --color-neutral-200: #e2e8ec;
+  --color-neutral-300: #c9d2d8;
+  --color-neutral-400: #97a1aa;
+  --color-neutral-500: #6e7681;
+  --color-neutral-600: #565e68;
+  --color-neutral-700: #3f464e;
+  --color-neutral-800: #2b3138;
+  --color-neutral-900: #1b2026;
+
+  /* --- primitives: accents, sampled from the Neo highlighter range. One per
+         product category, so the ranges read as a set. --- */
+  --color-accent-cyan: #29abe2;
+  --color-accent-orange: #f5901e;
+  --color-accent-green: #5cb947;
+  --color-accent-purple: #8e44ad;
+  --color-accent-pink: #ec008c;
+  --color-accent-yellow: #ffd100;
 
   /* --- semantic: surfaces --- */
   --bg-page: var(--color-neutral-0);
-  --bg-subtle: var(--color-neutral-50);
+  --bg-subtle: var(--color-neutral-100);
   --bg-muted: var(--color-neutral-100);
   --bg-shell: var(--color-neutral-100);
   --bg-placeholder: var(--color-neutral-200);
-  --bg-inverse: var(--color-navy-900);
-  --bg-inverse-soft: var(--color-navy-800);
-  --bg-inverse-elevated: var(--color-navy-800);
+  --bg-inverse: var(--color-sky-800);
+  --bg-inverse-soft: var(--color-sky-900);
+  --bg-inverse-elevated: var(--color-sky-700);
   --bg-brand: var(--color-red-500);
   --bg-brand-hover: var(--color-red-600);
   --bg-brand-subtle: var(--color-red-50);
 
+  /* Menu bar and footer, agreed on the client call. The footer is red/700
+     rather than the 100% Pantone because white body text on the Pantone is
+     4.32:1 — under AA. On red/700 it is 6.06:1. */
+  --bg-menu: var(--color-sky-300);
+  --bg-menu-deep: var(--color-sky-400);
+  --bg-footer: var(--color-red-700);
+  --bg-footer-deep: var(--color-red-800);
+
   /* --- semantic: text --- */
-  --text-primary: var(--color-navy-900);
+  --text-primary: var(--color-neutral-900);
   --text-secondary: var(--color-neutral-600);
   --text-muted: var(--color-neutral-500);
   --text-inverse: var(--color-neutral-0);
-  --text-inverse-muted: var(--color-navy-200);
+  --text-inverse-muted: var(--color-sky-200);
   --text-brand: var(--color-red-500);
   --text-on-brand: var(--color-neutral-0);
+  --text-on-menu: var(--color-neutral-900);
+  --text-on-menu-muted: var(--color-sky-800);
 
-  /* Brand red at 16px and below only clears 3.9:1 on white, which fails AA.
-     Small accent text uses red/600 (4.9:1). Large display text may use --text-brand. */
+  /* Brand red at 16px and below only clears 4.3:1 on white, which fails AA.
+     Small accent text uses red/600 (5.5:1). Large display text may use --text-brand. */
   --text-brand-strong: var(--color-red-600);
 
   /* --- semantic: borders --- */
@@ -77,7 +99,7 @@
   --border-default: var(--color-neutral-300);
   --border-strong: var(--color-neutral-400);
   --border-brand: var(--color-red-500);
-  --border-inverse: var(--color-navy-700);
+  --border-inverse: var(--color-sky-700);
 
   /* --- spacing: 4px rhythm --- */
   --space-0: 0px;
@@ -129,10 +151,10 @@
   --font-size-72: 72px;
 
   /* --- elevation: shallow only. The catalogue reads better flat with hairlines. --- */
-  --shadow-card: 0 1px 3px 0 rgb(13 32 56 / 0.05);
-  --shadow-raised: 0 4px 12px -2px rgb(13 32 56 / 0.08);
-  --shadow-ambient: 0 18px 48px -12px rgb(13 32 56 / 0.06);
-  --shadow-overlay: 0 12px 32px -4px rgb(13 32 56 / 0.12);
+  --shadow-card: 0 1px 3px 0 rgb(27 32 38 / 0.05);
+  --shadow-raised: 0 4px 12px -2px rgb(27 32 38 / 0.08);
+  --shadow-ambient: 0 18px 48px -12px rgb(27 32 38 / 0.06);
+  --shadow-overlay: 0 12px 32px -4px rgb(27 32 38 / 0.12);
 
   /* --- motion: one curve, used everywhere --- */
   --ease-out-quint: cubic-bezier(0.16, 1, 0.3, 1);

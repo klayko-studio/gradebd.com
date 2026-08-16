@@ -7,9 +7,12 @@ interface Props {
   title: string;
   sub: string;
   image: Image;
+  /** Category banners carry that range's accent on the eyebrow rule. */
+  accent?: string;
 }
-const { eyebrow, title, sub, image } = Astro.props;
+const { eyebrow, title, sub, image, accent } = Astro.props;
 ---
+
 <section class="relative isolate overflow-hidden bg-inverse">
   <img
     src={image.src}
@@ -18,16 +21,18 @@ const { eyebrow, title, sub, image } = Astro.props;
     height={image.height}
     class="absolute inset-0 -z-10 h-full w-full object-cover"
   />
-  <!-- Scrim keeps overlaid type legible whatever photograph a moderator uploads. -->
+  <!-- Scrim keeps overlaid type legible whatever photograph a moderator uploads.
+       It is a deep shade of the client's own blue — navy is out of this palette. -->
   <div
     aria-hidden="true"
     class="absolute inset-0 -z-10"
-    style="background:linear-gradient(90deg,rgb(13 32 56 / 0.93) 0%,rgb(13 32 56 / 0.62) 60%,rgb(13 32 56 / 0.28) 100%)"
-  ></div>
+    style="background:linear-gradient(90deg,rgb(10 82 115 / 0.94) 0%,rgb(10 82 115 / 0.72) 45%,rgb(10 82 115 / 0.30) 78%,rgb(10 82 115 / 0.12) 100%)"
+  >
+  </div>
 
-  <div class="rail flex min-h-[280px] flex-col justify-center gap-4 py-16 md:min-h-[340px]">
-    <Eyebrow tone="dark">{eyebrow}</Eyebrow>
+  <div class="rail flex min-h-[300px] flex-col justify-center gap-4 py-16 md:min-h-[380px]">
+    <Eyebrow tone="dark" accent={accent}>{eyebrow}</Eyebrow>
     <h1 class="t-display-lg max-w-[24ch] text-[color:var(--text-inverse)]">{title}</h1>
-    <p class="t-body-md max-w-[62ch] text-[color:var(--text-inverse-muted)]">{sub}</p>
+    <p class="t-body-lg max-w-[58ch] text-[color:var(--text-inverse)]">{sub}</p>
   </div>
 </section>

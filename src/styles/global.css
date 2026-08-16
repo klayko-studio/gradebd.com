@@ -17,6 +17,17 @@
   --color-brand: var(--bg-brand);
   --color-brand-hover: var(--bg-brand-hover);
   --color-brand-subtle: var(--bg-brand-subtle);
+  --color-menu: var(--bg-menu);
+  --color-menu-deep: var(--bg-menu-deep);
+  --color-footer: var(--bg-footer);
+  --color-footer-deep: var(--bg-footer-deep);
+
+  --color-accent-cyan: var(--color-accent-cyan);
+  --color-accent-orange: var(--color-accent-orange);
+  --color-accent-green: var(--color-accent-green);
+  --color-accent-purple: var(--color-accent-purple);
+  --color-accent-pink: var(--color-accent-pink);
+  --color-accent-yellow: var(--color-accent-yellow);
 
   --color-ink: var(--text-primary);
   --color-ink-secondary: var(--text-secondary);
@@ -26,6 +37,8 @@
   --color-ink-brand: var(--text-brand);
   --color-ink-brand-strong: var(--text-brand-strong);
   --color-ink-on-brand: var(--text-on-brand);
+  --color-ink-on-menu: var(--text-on-menu);
+  --color-ink-on-menu-muted: var(--text-on-menu-muted);
 
   --color-line-subtle: var(--border-subtle);
   --color-line: var(--border-default);

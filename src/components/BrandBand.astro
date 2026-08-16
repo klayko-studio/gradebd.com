@@ -1,0 +1,64 @@
+---
+/**
+ * The light blue band that closes the home page — the client's own doodle
+ * artwork beside a line about the buying year. It mirrors the Champ geometry
+ * box: their blue, their illustration.
+ */
+interface Props {
+  eyebrow: string;
+  heading: string;
+  body: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+}
+const {
+  eyebrow,
+  heading,
+  body,
+  ctaLabel = 'Request a quote',
+  ctaHref = '/contact/',
+} = Astro.props;
+---
+
+<section class="overflow-hidden bg-menu">
+  <div class="rail grid items-center gap-8 py-0 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
+    <div class="flex flex-col gap-4 py-14 lg:py-16">
+      <p class="t-eyebrow text-[color:var(--text-on-menu-muted)]">{eyebrow}</p>
+      <h2 class="t-heading-xl max-w-[18ch] text-[color:var(--text-on-menu)]">{heading}</h2>
+      <p class="t-body-md max-w-[46ch] text-[color:var(--text-on-menu-muted)]">{body}</p>
+      <a
+        href={ctaHref}
+        class="group mt-2 flex w-fit items-center gap-3 t-button text-[color:var(--text-brand-strong)]"
+      >
+        {ctaLabel}
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          aria-hidden="true"
+          class="transition-transform duration-200 group-hover:translate-x-1"
+        >
+          <path
+            d="M5 12h13M12.5 6.5L18 12l-5.5 5.5"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"></path>
+        </svg>
+      </a>
+    </div>
+
+    <!-- Client-supplied artwork. Licence unverified — see readme before go-live. -->
+    <img
+      src="/images/brand/doodles.png"
+      alt=""
+      aria-hidden="true"
+      width="1600"
+      height="1067"
+      loading="lazy"
+      decoding="async"
+      class="mx-auto w-full max-w-[660px] self-end"
+    />
+  </div>
+</section>

@@ -10,10 +10,10 @@
       "body": "Pens, exercise books and office supplies for schools, retailers and corporate buyers — bought from the manufacturer, so you don't pay the middleman.",
       "image": {
         "id": null,
-        "src": "/images/hero/all-items.jpg",
+        "src": "/images/ranges/school-stationery.jpg",
         "alt": "Pencils, clips and washi tape arranged on a deep navy surface",
-        "width": 2000,
-        "height": 1200
+        "width": 900,
+        "height": 650
       },
       "range_slug": null,
       "label": "All items"
@@ -90,10 +90,22 @@
     }
   ],
   "stats": [
-    { "value": "Since 2019", "label": "supplying businesses in Bangladesh" },
-    { "value": "300+", "label": "work orders completed" },
-    { "value": "50+", "label": "companies served" },
-    { "value": "Dhaka", "label": "Dhanmondi head office" }
+    {
+      "value": "Since 2019",
+      "label": "supplying businesses in Bangladesh"
+    },
+    {
+      "value": "300+",
+      "label": "work orders completed"
+    },
+    {
+      "value": "50+",
+      "label": "companies served"
+    },
+    {
+      "value": "Dhaka",
+      "label": "Dhanmondi head office"
+    }
   ],
   "who_we_are": {
     "eyebrow": "Who we are",
@@ -140,5 +152,9 @@
   "clients_intro": {
     "eyebrow": "Our corporate clients",
     "heading": "Trusted by schools, retailers and corporate buyers."
+  },
+  "reviews_intro": {
+    "eyebrow": "Client feedback",
+    "heading": "What buyers say about ordering from Grade."
   }
 }

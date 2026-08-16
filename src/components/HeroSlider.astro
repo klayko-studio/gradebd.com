@@ -39,7 +39,7 @@ const { slides } = Astro.props;
   <div
     aria-hidden="true"
     class="absolute inset-0 -z-10"
-    style="background:linear-gradient(90deg,rgb(13 32 56 / 0.94) 0%,rgb(13 32 56 / 0.72) 45%,rgb(13 32 56 / 0.20) 100%)"
+    style="background:linear-gradient(90deg,rgb(10 82 115 / 0.93) 0%,rgb(10 82 115 / 0.62) 45%,rgb(10 82 115 / 0.22) 78%,rgb(10 82 115 / 0.04) 100%)"
   >
   </div>
 
@@ -52,7 +52,7 @@ const { slides } = Astro.props;
           role="group"
           aria-label={`${i + 1} of ${slides.length}: ${slide.label}`}
         >
-          <p class="flex items-center gap-3 t-eyebrow text-[color:var(--color-red-300)]">
+          <p class="flex items-center gap-3 t-eyebrow text-[color:var(--text-inverse)]">
             <span aria-hidden="true" class="h-[2px] w-6 shrink-0 bg-brand"></span>
             {slide.eyebrow}
           </p>
@@ -73,7 +73,7 @@ const { slides } = Astro.props;
 
   <!-- controls -->
   <div class="rail relative z-10 flex flex-wrap items-center gap-5 pb-8">
-    <p class="t-label-xs text-[color:var(--color-red-300)]" data-slide-counter>
+    <p class="t-label-xs text-[color:var(--text-inverse)]" data-slide-counter>
       01 / {String(slides.length).padStart(2, '0')} — {slides[0].label}
     </p>
 

@@ -101,7 +101,8 @@
           "height": 560
         }
       }
-    ]
+    ],
+    "accent": "var(--color-accent-cyan)"
   },
   {
     "slug": "exercise-book",
@@ -209,7 +210,8 @@
           "height": 560
         }
       }
-    ]
+    ],
+    "accent": "var(--color-accent-orange)"
   },
   {
     "slug": "school-stationery",
@@ -337,7 +339,8 @@
           "height": 560
         }
       }
-    ]
+    ],
+    "accent": "var(--color-accent-green)"
   },
   {
     "slug": "office-stationery",
@@ -465,7 +468,8 @@
           "height": 560
         }
       }
-    ]
+    ],
+    "accent": "var(--color-accent-purple)"
   },
   {
     "slug": "file-folder",
@@ -564,6 +568,7 @@
           "height": 560
         }
       }
-    ]
+    ],
+    "accent": "var(--color-accent-pink)"
   }
 ]

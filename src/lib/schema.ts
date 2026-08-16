@@ -83,6 +83,9 @@ export const homeSchema = z.object({
     .array(z.object({ title: z.string(), body: z.string() }))
     .min(1),
   clients_intro: z.object({ eyebrow: z.string(), heading: z.string() }),
+  reviews_intro: z
+    .object({ eyebrow: z.string(), heading: z.string() })
+    .default({ eyebrow: 'Client feedback', heading: 'What buyers say about ordering from Grade.' }),
 });
 export type Home = z.infer<typeof homeSchema>;
 
@@ -140,6 +143,12 @@ export const categorySchema = z.object({
   subcategories: z.array(z.object({ slug: z.string(), name: z.string() })),
   items: z.array(itemSchema).min(1),
   sort: z.number().int(),
+  /**
+   * One accent per range, taken from the Neo highlighter colours. It marks the
+   * card on the home page, the banner rule, and the active filter — so a range
+   * is recognisable before its name is read. Falls back to brand red.
+   */
+  accent: z.string().default('var(--bg-brand)'),
 });
 export type Category = z.infer<typeof categorySchema>;
 

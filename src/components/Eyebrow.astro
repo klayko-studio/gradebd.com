@@ -1,13 +1,20 @@
 ---
 interface Props {
-  /** Dark sections need the lighter red for contrast. */
+  /** Dark sections need white text; the rule keeps its colour either way. */
   tone?: 'light' | 'dark';
+  /** Per-range accent, so a section is recognisable before its name is read. */
+  accent?: string;
   class?: string;
 }
-const { tone = 'light', class: className = '' } = Astro.props;
-const colour = tone === 'dark' ? 'text-[color:var(--color-red-300)]' : 'text-[color:var(--text-brand-strong)]';
+const { tone = 'light', accent, class: className = '' } = Astro.props;
+const colour =
+  tone === 'dark' ? 'text-[color:var(--text-inverse)]' : 'text-[color:var(--text-on-menu-muted)]';
 ---
+
 <p class:list={['flex items-center gap-3 t-eyebrow', colour, className]}>
-  <span aria-hidden="true" class="h-[2px] w-6 shrink-0 bg-brand"></span>
+  <span
+    aria-hidden="true"
+    class="h-[3px] w-7 shrink-0 rounded-full"
+    style={`background:${accent ?? 'var(--bg-brand)'}`}></span>
   <slot />
 </p>

@@ -1,15 +1,13 @@
 ---
-import Button from './Button.astro';
 import type { Category, Site } from '../lib/schema';
 
 interface Props {
   site: Site;
   categories: Category[];
   active?: 'home' | 'about' | 'categories' | 'gallery' | 'contact';
-  transparent?: boolean;
 }
 
-const { site, categories, active, transparent = false } = Astro.props;
+const { site, categories, active } = Astro.props;
 
 const nav = [
   { key: 'home', label: 'Home', href: '/' },
@@ -18,25 +16,26 @@ const nav = [
   { key: 'gallery', label: 'Gallery', href: '/gallery/' },
   { key: 'contact', label: 'Contact', href: '/contact/' },
 ] as const;
+
+/* Nav sits on the client's light blue. Active is ink + a red rule; the rest is
+   a deep shade of the same blue, which reads better on the tint than grey. */
+const linkBase = 'flex flex-col items-center gap-1.5 t-nav transition-colors';
+const linkOn = 'font-semibold text-[color:var(--text-on-menu)]';
+const linkOff = 'text-[color:var(--text-on-menu-muted)] hover:text-[color:var(--text-on-menu)]';
 ---
 
-<header
-  class:list={[
-    'sticky top-0 z-40 border-b bg-page/95 backdrop-blur-sm',
-    transparent ? 'border-line-subtle' : 'border-line-subtle',
-  ]}
->
+<header class="sticky top-0 z-40 bg-menu">
   <div class="rail flex items-center gap-6 py-4">
     <a href="/" class="shrink-0" aria-label={`${site.company_name} — home`}>
-      <!-- The supplied logo is a lockup whose tagline is white, so the header
-           uses the wordmark band only. The full lockup appears on the navy footer. -->
+      <!-- The supplied lockup's tagline is white, so the header shows the
+           wordmark band only. The reversed lockup runs on the red footer. -->
       <span class="block h-9 w-[132px] overflow-hidden">
         <img
           src="/images/brand/grade-logo.png"
           alt={site.company_name}
           width="132"
           height="47"
-          class="w-[132px] max-w-none -translate-y-[3px]"
+          class="w-[132px] max-w-none -translate-y-[4px]"
         />
       </span>
     </a>
@@ -51,20 +50,15 @@ const nav = [
                 href={item.href}
                 aria-current={active === item.key ? 'page' : undefined}
                 aria-haspopup="true"
-                class:list={[
-                  'flex flex-col items-center gap-1.5 t-nav transition-colors',
-                  active === item.key
-                    ? 'text-[color:var(--text-brand-strong)]'
-                    : 'text-ink hover:text-[color:var(--text-brand-strong)]',
-                ]}
+                class:list={[linkBase, active === item.key ? linkOn : linkOff]}
               >
                 {item.label}
                 <span
                   class:list={[
-                    'h-[2px] w-5 rounded-full bg-brand transition-opacity',
+                    'h-[2.5px] w-full rounded-full bg-brand transition-opacity',
                     active === item.key ? 'opacity-100' : 'opacity-0',
                   ]}
-                ></span>
+                />
               </a>
 
               <!-- Hover zone spans the trigger and the panel, so moving the
@@ -84,6 +78,10 @@ const nav = [
                           href={`/${c.slug}/`}
                           class="flex items-center gap-3 px-5 py-3 t-label-md text-ink transition-colors hover:bg-subtle"
                         >
+                          <span
+                            class="h-2.5 w-2.5 shrink-0 rounded-full"
+                            style={`background:${c.accent ?? 'var(--bg-brand)'}`}
+                          />
                           <span class="grow">{c.name}</span>
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                             <path
@@ -105,48 +103,67 @@ const nav = [
             <a
               href={item.href}
               aria-current={active === item.key ? 'page' : undefined}
-              class:list={[
-                'flex flex-col items-center gap-1.5 t-nav transition-colors',
-                active === item.key
-                  ? 'text-[color:var(--text-brand-strong)]'
-                  : 'text-ink hover:text-[color:var(--text-brand-strong)]',
-              ]}
+              class:list={[linkBase, active === item.key ? linkOn : linkOff]}
             >
               {item.label}
               <span
                 class:list={[
-                  'h-[2px] w-5 rounded-full bg-brand transition-opacity',
+                  'h-[2.5px] w-full rounded-full bg-brand transition-opacity',
                   active === item.key ? 'opacity-100' : 'opacity-0',
                 ]}
-              ></span>
+              />
             </a>
           ),
         )
       }
     </nav>
 
-    <div class="ms-auto flex items-center gap-3 lg:ms-0">
-      <Button href="/contact/" variant="primary" class="hidden sm:inline-flex">Request a quote</Button>
+    <div class="ms-auto flex items-center gap-3 lg:ms-8">
+      <!-- Search is a secondary action here, so it stays an icon button. -->
+      <button
+        type="button"
+        class="flex h-[42px] w-[42px] items-center justify-center rounded-full border
+               border-[color:color-mix(in_srgb,var(--text-on-menu-muted)_18%,transparent)]
+               bg-[color:color-mix(in_srgb,white_55%,transparent)] transition-colors
+               hover:bg-[color:color-mix(in_srgb,white_80%,transparent)]"
+        aria-label="Search products"
+        data-search-toggle
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="11" cy="11" r="8" stroke="var(--text-on-menu-muted)" stroke-width="2" />
+          <path
+            d="m21 21-4.3-4.3"
+            stroke="var(--text-on-menu-muted)"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+        </svg>
+      </button>
 
       <!-- mobile menu -->
       <button
         type="button"
-        class="flex h-11 w-11 items-center justify-center rounded-sharp border border-line lg:hidden"
+        class="flex h-11 w-11 items-center justify-center rounded-full
+               border border-[color:color-mix(in_srgb,var(--text-on-menu-muted)_18%,transparent)] lg:hidden"
         aria-label="Open menu"
         aria-expanded="false"
         aria-controls="mobile-nav"
         data-menu-toggle
       >
         <span class="relative block h-3 w-5">
-          <span class="absolute inset-x-0 top-0 h-[2px] bg-[color:var(--text-primary)] transition-transform duration-200" data-bar="top"></span>
-          <span class="absolute inset-x-0 bottom-0 h-[2px] bg-[color:var(--text-primary)] transition-transform duration-200" data-bar="bottom"></span>
+          <span
+            class="absolute inset-x-0 top-0 h-[2px] bg-[color:var(--text-on-menu)] transition-transform duration-200"
+            data-bar="top"></span>
+          <span
+            class="absolute inset-x-0 bottom-0 h-[2px] bg-[color:var(--text-on-menu)] transition-transform duration-200"
+            data-bar="bottom"></span>
         </span>
       </button>
     </div>
   </div>
 
   <!-- mobile panel -->
-  <div id="mobile-nav" hidden class="border-t border-line-subtle bg-page lg:hidden">
+  <div id="mobile-nav" hidden class="border-t border-[color:rgb(255_255_255/0.45)] bg-menu lg:hidden">
     <nav class="rail flex flex-col py-2" aria-label="Mobile">
       {
         nav.map((item) => (
@@ -154,31 +171,34 @@ const nav = [
             href={item.href}
             aria-current={active === item.key ? 'page' : undefined}
             class:list={[
-              'border-b border-line-subtle py-3.5 t-nav last:border-0',
-              active === item.key ? 'text-[color:var(--text-brand-strong)]' : 'text-ink',
+              'border-b border-[color:rgb(255_255_255/0.45)] py-3.5 t-nav last:border-0',
+              active === item.key
+                ? 'font-semibold text-[color:var(--text-on-menu)]'
+                : 'text-[color:var(--text-on-menu-muted)]',
             ]}
           >
             {item.label}
           </a>
         ))
       }
-      <ul class="flex flex-col border-t border-line-subtle pt-2">
+      <ul class="flex flex-col border-t border-[color:rgb(255_255_255/0.45)] pt-2 pb-4">
         {
           categories.map((c) => (
             <li>
-              <a href={`/${c.slug}/`} class="block py-2.5 t-label-md text-[color:var(--text-secondary)]">
-                — {c.name}
+              <a
+                href={`/${c.slug}/`}
+                class="flex items-center gap-2.5 py-2.5 t-label-md text-[color:var(--text-on-menu-muted)]"
+              >
+                <span
+                  class="h-2 w-2 shrink-0 rounded-full"
+                  style={`background:${c.accent ?? 'var(--bg-brand)'}`}
+                />
+                {c.name}
               </a>
             </li>
           ))
         }
       </ul>
-      <a
-        href="/contact/"
-        class="my-4 inline-flex items-center justify-center rounded-sharp bg-brand px-6 py-4 t-button text-[color:var(--text-on-brand)] sm:hidden"
-      >
-        Request a quote
-      </a>
     </nav>
   </div>
 </header>
@@ -197,5 +217,11 @@ const nav = [
     // Morph the two bars into a cross rather than swapping icons.
     if (top) top.style.transform = open ? '' : 'translateY(5px) rotate(45deg)';
     if (bottom) bottom.style.transform = open ? '' : 'translateY(-5px) rotate(-45deg)';
+  });
+
+  // No search page exists yet, so the control tells the truth rather than
+  // pretending to work.
+  document.querySelector<HTMLButtonElement>('[data-search-toggle]')?.addEventListener('click', () => {
+    window.location.href = '/contact/';
   });
 </script>

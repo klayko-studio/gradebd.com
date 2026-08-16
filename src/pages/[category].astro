@@ -34,29 +34,36 @@ const hasFilters = category.subcategories.length > 0;
     title={category.name}
     sub={category.summary}
     image={category.image}
+    accent={category.accent}
   />
 
   {
     hasFilters && (
       <div class="border-b border-line-subtle">
         <div class="rail py-6">
-          <ul class="flex flex-wrap gap-2.5" aria-label={`Filter ${category.name}`}>
+          <ul class="flex flex-wrap gap-x-9 gap-y-4" aria-label={`Filter ${category.name}`}>
             <li>
               <span
                 aria-current="true"
-                class="inline-flex rounded-sharp bg-inverse px-4 py-2.5 t-label-md text-[color:var(--text-inverse)]"
+                class="flex flex-col items-center gap-2 t-nav font-semibold text-ink"
               >
                 All
+                <span
+                  aria-hidden="true"
+                  class="h-[3px] w-full rounded-full"
+                  style={`background:${category.accent}`}
+                />
               </span>
             </li>
             {category.subcategories.map((sub) => (
               <li>
                 <a
                   href={`#${sub.slug}`}
-                  class="inline-flex rounded-sharp border border-line px-4 py-2.5 t-label-md
-                         text-[color:var(--text-secondary)] transition-colors hover:border-line-strong hover:text-ink"
+                  class="flex flex-col items-center gap-2 t-nav text-[color:var(--text-secondary)]
+                         transition-colors hover:text-ink"
                 >
                   {sub.name}
+                  <span aria-hidden="true" class="h-[3px] w-full rounded-full bg-transparent" />
                 </a>
               </li>
             ))}
@@ -82,6 +89,7 @@ const hasFilters = category.subcategories.length > 0;
               name={item.name}
               meta={item.meta}
               image={item.image}
+              accent={category.accent}
               action="Enquire about this item"
               href={`/contact/?item=${encodeURIComponent(item.name)}`}
             />
