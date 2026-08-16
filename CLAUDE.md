@@ -106,8 +106,22 @@ it), the footer follows the **`05` four-column layout** in the red shade, and li
 spirit of their geometry box sit in the footer and in white space. A `Palette — owner vision` board at
 the right of the page documents every token for the client conversation.
 
-`docs/client/references/doddle.svg` is a 7 MB full-colour stock illustration with "Back to School"
-lettering baked in — used as a *style* reference only, not placed in the design.
+**Doodles come from [Lucide](https://lucide.dev) (ISC licence, commercial use fine)** — stationery and
+drawing-instrument icons, built with `figma.createNodeFromSvg` (note: the `…Async` variant does not
+exist). They sit at ~13% white in the footers, in accent colours beside "Who We Are", and at ~14% deep
+blue as texture in the menu bar.
+
+`docs/client/references/doddle.svg` is a 7 MB full-colour illustration with a watercolour wash and
+"Back to School" lettering. Stripping the `BACKGROUND` group and the three `<text>` nodes, then
+rasterising, yields the transparent artwork used in Home's "Brand band" (Figma imageHash
+`faa75c150945adc7900323b5af82cfdae4d33fed`). **Its licence is unverified — confirm the client owns it
+before go-live.** Note `figma.createImage(bytes)` from an `exportAsync` round-trip returns a hash that
+does not render; upload through the `upload_assets` MCP tool instead.
+
+Header (page `09`): the menu bar carries a six-segment accent stripe along its bottom edge, echoing the
+colour stripes on the Neo highlighter carton, plus a red underline on the active nav item and a search
+pill. Every inner page uses the hi-fi banner treatment — image, deep-blue scrim, eyebrow with the
+category's accent rule, title and sub.
 
 ### Colours agreed on the client call (page `08`)
 
