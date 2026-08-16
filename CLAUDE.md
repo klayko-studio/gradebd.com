@@ -118,10 +118,21 @@ rasterising, yields the transparent artwork used in Home's "Brand band" (Figma i
 before go-live.** Note `figma.createImage(bytes)` from an `exportAsync` round-trip returns a hash that
 does not render; upload through the `upload_assets` MCP tool instead.
 
-Header (page `09`): the menu bar carries a six-segment accent stripe along its bottom edge, echoing the
-colour stripes on the Neo highlighter carton, plus a red underline on the active nav item and a search
-pill. Every inner page uses the hi-fi banner treatment — image, deep-blue scrim, eyebrow with the
-category's accent rule, title and sub.
+Header (page `09`): logo, centred-right nav with a red underline on the active item, an icon-only search
+button, and a hairline bottom rule. An earlier version had a six-segment accent stripe and a faint icon
+texture; **the client asked for both to go** — don't reinstate them. Every inner page uses the hi-fi
+banner treatment: image, deep-blue scrim, eyebrow with the category's accent rule, title and sub.
+
+Page `09` is **fully wired as a prototype** — 165 links, every frame reaching all eight others, start
+frame Home, `DISSOLVE` 0.15s `EASE_OUT` throughout. Wired: header nav + logo, footer logo + the
+PRODUCTS and COMPANY columns, Home's category cards and *See all*, the hero CTA, and every product card
+(→ Contact, matching the built site's `?item=` behaviour). Deliberately unwired, because no destination
+frame exists: the Contact **Send** button, the header search, and the gallery images.
+
+Two Plugin API facts worth keeping: `scrollBehavior` is **not** in the typings, so a prototype-pinned
+header cannot be set from a script; and a NAVIGATE action's `transition` takes
+`{type:'DISSOLVE'|'SMART_ANIMATE'|'SCROLL_ANIMATE', easing:{type:'EASE_OUT'|…}, duration:<seconds>}`.
+Rebuilding a node **destroys its reactions** — rewire after any header or footer rebuild.
 
 ### Colours agreed on the client call (page `08`)
 
