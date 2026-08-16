@@ -1,0 +1,35 @@
+# Netlify build settings. Kept in the repo so the deploy does not depend on
+# someone remembering the right publish directory in the dashboard — the first
+# deploy 404'd because the Node adapter puts pages in dist/client, not dist.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# The site is static apart from /api/enquiry, which @astrojs/netlify emits as a
+# function. Long-cache the fingerprinted assets; never cache the HTML, so a
+# redeploy is visible immediately.
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "SAMEORIGIN"
