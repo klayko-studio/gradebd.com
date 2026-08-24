@@ -420,6 +420,11 @@ around it:
 
 Consequences worth knowing:
 
+- **Give a fixed-height logo `self-start` inside a flex column.** The footer's brand column is
+  `flex flex-col`, whose default `align-items: stretch` pulls a `w-auto` image out to the full column
+  width — with the height pinned, that stretches the mark to more than twice its aspect. It looks
+  plausible enough in a thumbnail to survive a review, so it is worth checking against the source file
+  rather than by eye.
 - **The header's clipping hack is gone.** It used to render the two-part lockup inside an
   `overflow-hidden` box with a `-translate-y-[4px]`, to crop off a white tagline that vanished on the
   light blue. Now it is just an `<img>`.

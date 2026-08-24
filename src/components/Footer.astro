@@ -26,14 +26,18 @@ const link = 'transition-opacity hover:opacity-70';
       <!-- The client's reversed lockup, which carries "Stationary" as artwork — this
            is comment #22 delivered properly, replacing the version we set in type
            while waiting for it. The tagline is not part of the mark, so it stays as
-           a line of type beneath. -->
-      <div class="flex flex-col gap-2">
+           a line of type beneath.
+
+           `items-start` matters: this is a flex column, and the default
+           `align-items: stretch` pulls a `w-auto` image out to the column width,
+           which stretches the mark. -->
+      <div class="flex flex-col items-start gap-2">
         <img
           src="/images/brand/grade-logo-white-stationary.png"
           alt={site.company_name}
           width="196"
           height="61"
-          class="block h-[52px] w-auto"
+          class="block h-[52px] w-auto self-start"
         />
         <span class="t-label-xs normal-case tracking-[0.08em] text-[color:rgb(255_255_255/0.85)]">
           {site.tagline}
