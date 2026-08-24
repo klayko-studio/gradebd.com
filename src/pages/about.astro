@@ -4,7 +4,7 @@ import PageBanner from '../components/PageBanner.astro';
 import Eyebrow from '../components/Eyebrow.astro';
 import SectionHead from '../components/SectionHead.astro';
 import QuoteBand from '../components/QuoteBand.astro';
-import { getAbout, getSite } from '../lib/cms';
+import { getAbout, getSite, editable } from '../lib/cms';
 
 const [about, site] = await Promise.all([getAbout(), getSite()]);
 ---
@@ -16,6 +16,12 @@ const [about, site] = await Promise.all([getAbout(), getSite()]);
     sub={about.banner.sub}
     lines={about.banner.lines}
     image={about.banner.image}
+    edit={editable({
+      collection: 'about',
+      fields: ['banner_eyebrow', 'banner_lines', 'banner_title', 'banner_sub'],
+      mode: 'drawer',
+    })}
+    editImage={editable({ collection: 'about', fields: 'banner_image', mode: 'drawer' })}
   />
 
   <!-- Vision then Mission, each on its own row. The wireframe and Figma both set
@@ -29,6 +35,14 @@ const [about, site] = await Promise.all([getAbout(), getSite()]);
             data-reveal
             id={i === 0 ? 'vision' : 'mission'}
             class="flex flex-col gap-4 border-t-2 border-line-brand pt-6"
+            {...editable({
+              collection: 'about',
+              fields:
+                i === 0
+                  ? ['vision_eyebrow', 'vision_heading', 'vision_body']
+                  : ['mission_eyebrow', 'mission_heading', 'mission_body'],
+              mode: 'drawer',
+            })}
           >
             <Eyebrow>{block.eyebrow}</Eyebrow>
             <h2 class="t-heading-lg max-w-[34ch]">{block.heading}</h2>
@@ -41,8 +55,19 @@ const [about, site] = await Promise.all([getAbout(), getSite()]);
 
   <section class="section bg-subtle">
     <div class="rail">
-      <SectionHead eyebrow={about.values_intro.eyebrow} heading={about.values_intro.heading} />
-      <div class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5" data-reveal-group>
+      <SectionHead
+        eyebrow={about.values_intro.eyebrow}
+        heading={about.values_intro.heading}
+        edit={editable({
+          collection: 'about',
+          fields: ['values_intro_eyebrow', 'values_intro_heading'],
+        })}
+      />
+      <div
+        class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+        data-reveal-group
+        {...editable({ collection: 'about', fields: 'values', mode: 'drawer' })}
+      >
         {
           about.values.map((value, i) => (
             <div data-reveal class="flex flex-col gap-3 border-t border-line pt-5">
@@ -59,7 +84,14 @@ const [about, site] = await Promise.all([getAbout(), getSite()]);
   </section>
 
   <section class="section">
-    <div class="rail flex flex-col gap-6">
+    <div
+      class="rail flex flex-col gap-6"
+      {...editable({
+        collection: 'about',
+        fields: ['story_eyebrow', 'story_heading', 'story_body'],
+        mode: 'drawer',
+      })}
+    >
       <Eyebrow data-reveal>{about.story.eyebrow}</Eyebrow>
       <h2 class="t-heading-xl max-w-[34ch]" data-reveal>{about.story.heading}</h2>
       <!-- One column, as drawn. These are four consecutive paragraphs of the client's

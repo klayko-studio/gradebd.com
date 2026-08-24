@@ -4,25 +4,24 @@ import PageBanner from '../components/PageBanner.astro';
 import ProductCard from '../components/ProductCard.astro';
 import ProductDialog from '../components/ProductDialog.astro';
 import QuoteBand from '../components/QuoteBand.astro';
-import { getCategories, getSite } from '../lib/cms';
+import { getCategories, getSite, editable } from '../lib/cms';
 import type { Category, Site } from '../lib/schema';
 
 /**
  * One route for all five ranges. Adding a sixth category in Directus creates a
  * new page with no code change — which is the whole point of the shared template.
+ *
+ * Rendered per request rather than from getStaticPaths: a category added in the
+ * CMS has to answer immediately, not after the next build.
  */
-export async function getStaticPaths() {
-  const categories = await getCategories();
-  return categories.map((category) => ({
-    params: { category: category.slug },
-    props: { category },
-  }));
-}
+const slug = Astro.params.category;
+const categories: Category[] = await getCategories();
+const category = categories.find((entry) => entry.slug === slug);
 
-interface Props {
-  category: Category;
-}
-const { category } = Astro.props;
+// An unknown slug is a real 404, not an exception. Rewriting keeps the URL the
+// visitor typed while rendering the site's own 404 page.
+if (!category) return Astro.rewrite('/404');
+
 const site: Site = await getSite();
 
 /**
@@ -45,6 +44,18 @@ const showSubs = category.subcategories.length > 0;
     lines={category.banner_lines}
     image={category.image}
     accent={category.accent}
+    edit={editable({
+      collection: 'categories',
+      item: category.directus_id ?? undefined,
+      fields: ['name', 'banner_lines', 'summary'],
+      mode: 'drawer',
+    })}
+    editImage={editable({
+      collection: 'categories',
+      item: category.directus_id ?? undefined,
+      fields: 'image',
+      mode: 'drawer',
+    })}
   />
 
   {
@@ -134,6 +145,12 @@ const showSubs = category.subcategories.length > 0;
                 accent={category.accent}
                 action="View product details"
                 dialogId={`dlg-${item.id}`}
+                edit={editable({
+                  collection: 'items',
+                  item: item.directus_id ?? undefined,
+                  fields: ['name', 'meta', 'image', 'features', 'pack_inner', 'pack_carton'],
+                  mode: 'drawer',
+                })}
               />
             </div>
           ))

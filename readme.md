@@ -22,6 +22,7 @@ without any backend running.
 | `npm run build:fast` | build without the type-check                  |
 | `npm run preview` | serve the built output                           |
 | `npm run check`   | type-check only                                  |
+| `npm run directus:bootstrap` | create the CMS model and seed it from `src/content` |
 
 ## Docker
 
@@ -65,19 +66,38 @@ DNS, redeploys, backups, troubleshooting — in **[docs/deploy-vps.md](docs/depl
 
 ## How content is wired
 
-`src/lib/cms.ts` is the only module that knows where content comes from. Unset `DIRECTUS_URL` and
-it reads `src/content/*.json`; set it and the same functions fetch from Directus. Both paths
-validate through the Zod schemas in `src/lib/schema.ts`, so components receive the same shape
-either way and never change when the source does.
+Everything on the site — copy, catalogue, images, logo, favicon, SEO — comes from **Directus**, and
+moderators edit it by clicking it on the rendered page. Full picture in
+**[docs/cms.md](docs/cms.md)**.
 
-For the Visual Editor, `editable(collection, field, id)` returns the `data-directus` attribute that
-maps a rendered region back to its field. It returns nothing while Directus is unconfigured.
+```sh
+docker compose up -d directus
+npm run directus:bootstrap     # creates the model, uploads the images, seeds the content
+```
+
+The bootstrap fills a fresh Directus with what the site already shows — 20 collections, 58 images,
+5 ranges, 44 products — so nothing is retyped. It prints the read-only token to put in `.env`.
+
+`src/lib/cms.ts` is still the only module that knows where content comes from. Unset `DIRECTUS_URL`
+and it reads `src/content/*.json`; set it and the same functions fetch from Directus. Both paths
+validate through the Zod schemas in `src/lib/schema.ts`, so components receive the same shape either
+way — and if Directus is unreachable at request time the reader logs it and falls back to the seed
+rather than serving an error.
+
+Three things follow from in-place editing:
+
+- **Pages render per request** (`output: 'server'`). A prerendered build would only show an edit
+  after a rebuild and redeploy. `DIRECTUS_CACHE_TTL` exists for a busy box; 0 is the default.
+- **Images are proxied through the site** at `/cms/<file-id>`, not served from the admin host. So
+  Directus needs no public read access and the token stays server-side. Transforms pass through.
+- **Config is read at run time**, `process.env` before `import.meta.env` — Vite would otherwise bake
+  the build box's settings into the image. `SITE_URL` is the exception and needs a rebuild.
 
 Inside Docker the two Directus URLs differ and both matter:
 
 - `DIRECTUS_INTERNAL_URL` (`http://directus:8055`) — what the server fetches with.
-- `DIRECTUS_PUBLIC_URL` (`http://localhost:8055`) — what asset URLs in the HTML must use, since a
-  browser cannot resolve a compose service name.
+- `DIRECTUS_PUBLIC_URL` (`https://admin.gradebd.com`) — the admin's own origin, used only by the
+  in-page editor. Not an asset host.
 
 ## Enquiries
 
@@ -117,8 +137,10 @@ src/
   content/      seed JSON — the stand-in for Directus
   layouts/      Base.astro (SEO, fonts, chrome, scroll reveals)
   lib/          cms.ts (data layer) · schema.ts (Zod contracts)
-  pages/        index · about · gallery · contact · [category] · 404 · api/enquiry
+  pages/        index · about · gallery · contact · [category] · 404 · sitemap.xml
+                api/enquiry · cms/[id] (CMS image proxy)
   styles/       tokens.css (Figma contract) · global.css
 scripts/        seed.mjs — regenerates the seed JSON
+                directus-bootstrap.mjs + directus/ — creates and fills the CMS
 docs/client/    client-supplied source material — read-only
 ```

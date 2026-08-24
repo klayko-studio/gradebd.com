@@ -4,12 +4,19 @@ import type { Home } from '../lib/schema';
 
 interface Props {
   slides: Home['slides'];
+  /**
+   * Editing targets the slide list as a whole rather than each slide's copy:
+   * only one slide is on screen at a time, so per-slide hit areas would sit on
+   * top of each other in the overlay.
+   */
+  edit?: Record<string, string>;
 }
-const { slides } = Astro.props;
+const { slides, edit = {} } = Astro.props;
 ---
 
 <section
   class="arch-bottom relative isolate overflow-hidden bg-inverse"
+  {...edit}
   data-slider
   aria-roledescription="carousel"
   aria-label="Product ranges"

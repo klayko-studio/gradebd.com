@@ -1,20 +1,23 @@
 import { defineConfig } from 'astro/config';
-import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 import node from '@astrojs/node';
 import netlify from '@astrojs/netlify';
 
 /**
- * Pages prerender; only /api/enquiry opts out with `export const prerender = false`.
- * That single dynamic route is why an adapter is needed at all, and the adapter
- * has to match where the build runs:
+ * Every page renders per request, because content comes from Directus and
+ * moderators edit it in place: with a prerendered build a save would only appear
+ * after a full rebuild and redeploy, which is not "editing what you can see".
  *
- *   Netlify  → static output at dist/, the endpoint as a Netlify Function.
+ * The cost is a request to Directus per page. `src/lib/cms.ts` shares in-flight
+ * requests and takes an optional TTL (`DIRECTUS_CACHE_TTL`) for a busy box; the
+ * default is no cache, so an edit is visible on the next reload.
+ *
+ * The adapter has to match where the build runs:
+ *
+ *   Netlify  → SSR functions, static assets at dist/.
  *   Docker   → dist/client + dist/server, served by `node dist/server/entry.mjs`.
  *
- * Netlify sets NETLIFY=true during its build. Getting this wrong is silent:
- * the Node adapter nests the pages under dist/client, Netlify publishes dist,
- * finds no index.html and serves its own 404 for every route.
+ * Netlify sets NETLIFY=true during its build.
  */
 const onNetlify = process.env.NETLIFY === 'true';
 
@@ -26,9 +29,11 @@ export default defineConfig({
     process.env.SITE_URL ||
     (onNetlify ? process.env.URL || process.env.DEPLOY_PRIME_URL : undefined) ||
     'https://www.gradebd.com',
-  output: 'static',
+  output: 'server',
   adapter: onNetlify ? netlify() : node({ mode: 'standalone' }),
-  integrations: [sitemap()],
+  // No @astrojs/sitemap: it only sees routes that exist at build time, and the
+  // category pages come from the CMS now. src/pages/sitemap.xml.ts reads the
+  // same source the pages do.
   vite: {
     plugins: [tailwindcss()],
   },

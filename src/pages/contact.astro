@@ -4,7 +4,7 @@ import PageBanner from '../components/PageBanner.astro';
 import Eyebrow from '../components/Eyebrow.astro';
 import SectionHead from '../components/SectionHead.astro';
 import Button from '../components/Button.astro';
-import { getContact, getSite } from '../lib/cms';
+import { getContact, getSite, editable } from '../lib/cms';
 
 const [contact, site] = await Promise.all([getContact(), getSite()]);
 
@@ -23,6 +23,12 @@ const field =
     sub={contact.banner.sub}
     lines={contact.banner.lines}
     image={contact.banner.image}
+    edit={editable({
+      collection: 'contact',
+      fields: ['banner_eyebrow', 'banner_lines', 'banner_title', 'banner_sub'],
+      mode: 'drawer',
+    })}
+    editImage={editable({ collection: 'contact', fields: 'banner_image', mode: 'drawer' })}
   />
 
   <section class="section">
@@ -30,7 +36,12 @@ const field =
       <!-- enquiry form -->
       <div class="flex flex-col gap-6">
         <Eyebrow>Query Zone</Eyebrow>
-        <h2 class="t-heading-xl">{contact.form_heading}</h2>
+        <h2
+          class="t-heading-xl"
+          {...editable({ collection: 'contact', fields: 'form_heading', mode: 'popover' })}
+        >
+          {contact.form_heading}
+        </h2>
 
         <form id="enquiry" class="flex flex-col gap-5" novalidate>
           <div class="grid gap-5 sm:grid-cols-2">
@@ -143,7 +154,10 @@ const field =
   <!-- Comment #38: the map was too small in the sidebar, so it now takes the full
        content width in its own section. -->
   <section class="section-tight pb-0">
-        <div class="rail flex flex-col gap-3">
+        <div
+          class="rail flex flex-col gap-3"
+          {...editable({ collection: 'contact', fields: 'map_embed_url', mode: 'drawer' })}
+        >
           <h2 class="t-label-xs text-[color:var(--text-brand-strong)]">Google Map location</h2>
           {
             contact.map_embed_url ? (
@@ -202,6 +216,7 @@ const field =
         class="mt-10 overflow-hidden rounded-sharp border border-line-subtle bg-page"
         data-reveal
         data-faq-list
+        {...editable({ collection: 'contact', fields: 'faqs', mode: 'drawer' })}
       >
         {
           contact.faqs.map((faq, i) => (

@@ -14,7 +14,7 @@ job is: bring the container up, drop one file into `sites-enabled`, reload.
 | --- | --- | --- |
 | nginx (host) | 80, 443 | the internet |
 | site (Astro/Node, Docker) | 4321 | `127.0.0.1` only |
-| Directus (Docker) | 8055 | `127.0.0.1` only — SSH tunnel |
+| Directus (Docker) | 8055 | `127.0.0.1` only — nginx on `admin.gradebd.com`, or an SSH tunnel |
 | Postgres (Docker) | 5432 | the compose network only, never published |
 
 ## Before you start
@@ -57,8 +57,9 @@ docker compose ps
 curl -I http://127.0.0.1:4321/          # 200 before nginx is involved at all
 ```
 
-The site alone, without Directus and Postgres, is `docker compose up -d --build site` — content falls
-back to the seed JSON while `DIRECTUS_INTERNAL_URL` is empty, which it is today.
+The site alone, without Directus and Postgres, is `docker compose up -d --build site`: with
+`DIRECTUS_INTERNAL_URL` empty it renders the seed JSON bundled into the image. Useful for a smoke
+test before the CMS exists, and it is the same path the site falls back to if Directus goes down.
 
 ## 3 · Install the nginx config
 
@@ -125,26 +126,58 @@ merge by hand rather than overwriting, then:
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
-## Directus
+## Directus, and the admin host
 
-The admin app is on `127.0.0.1:8055`, deliberately not public. Reach it over SSH:
+The site's content — copy, catalogue, images, logo, SEO — comes from Directus. `docs/cms.md` is the
+full picture; this is the deployment half.
+
+### Fill it with the site's current content
+
+Once, on the first deploy:
+
+```bash
+docker compose up -d directus
+npm run directus:bootstrap
+```
+
+That creates the collections, uploads the images and writes the existing content in, so nothing is
+retyped. It prints a `DIRECTUS_TOKEN` — put it in `.env` along with:
+
+```
+DIRECTUS_INTERNAL_URL=http://directus:8055
+DIRECTUS_PUBLIC_URL=https://admin.gradebd.com
+DIRECTUS_TOKEN=…
+```
+
+Then `docker compose up -d site`. These are read at run time, so a restart is enough — no rebuild.
+
+### The admin hostname
+
+In-place editing loads the live site inside the admin, and a browser will not put an http frame in an
+https page. So the Visual Editor needs the admin on its own hostname with a certificate:
+
+```bash
+sudo cp nginx/admin.gradebd.com.conf /etc/nginx/sites-available/admin.gradebd.com.conf
+sudo ln -s /etc/nginx/sites-available/admin.gradebd.com.conf /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl reload nginx
+sudo certbot --nginx -d admin.gradebd.com
+```
+
+Point an `A` record for `admin.gradebd.com` at the box first. Log in with `DIRECTUS_ADMIN_EMAIL` /
+`DIRECTUS_ADMIN_PASSWORD` and change the password immediately — this hostname is now public.
+
+**If in-place editing is not wanted, do not publish the admin at all.** Skip the config above, leave
+Directus on loopback, and reach it over a tunnel:
 
 ```bash
 ssh -L 8055:127.0.0.1:8055 user@vps     # then http://localhost:8055
 ```
 
-Log in with `DIRECTUS_ADMIN_EMAIL` / `DIRECTUS_ADMIN_PASSWORD` and change the password immediately.
+### Restricting it
 
-The site does not read from Directus yet — content comes from the seed JSON in `src/content` while
-`DIRECTUS_INTERNAL_URL` is empty. To switch it over, set the three `DIRECTUS_*` variables in `.env`
-as documented in `.env.example`, then rebuild the site.
-
-To expose the CMS publicly instead of tunnelling — needed for the Visual Editor, which loads the site
-in an iframe from the CMS origin — add a second nginx server block for `cms.gradebd.com` proxying to
-`127.0.0.1:8055`, include it in the certificate, and set `DIRECTUS_PUBLIC_URL` to match. Give it a
-larger `client_max_body_size` (moderators upload pack shots) and a `/websocket` location with the
-`Upgrade`/`Connection` headers for Directus realtime. It is an admin surface, so consider restricting
-it by IP or keeping the tunnel.
+The admin is a login page on the public internet. Two things worth doing: keep `admin.gradebd.com`
+out of DNS until it is needed, and once the office IP is known, uncomment the `allow`/`deny` block at
+the bottom of `nginx/admin.gradebd.com.conf`.
 
 ## Backups
 
@@ -183,7 +216,21 @@ and is the `default_server`. Remove it and reload.
 in-memory, so it resets when the container restarts.
 
 **Wrong canonical URL in the page source.** `SITE_URL` was not set when the image was built. Fix
-`.env` and `docker compose up -d --build site`.
+`.env` and `docker compose up -d --build site`. It is the one setting that genuinely needs a rebuild;
+everything else about the CMS is read at run time.
+
+**The site shows old content and the logs say "fell back to the seed content".** Directus was
+unreachable or rejected the read, and the site served the bundled copy rather than an error. The
+message names the collection. Check `docker compose logs directus`, and that `DIRECTUS_TOKEN` matches
+the token on the `Website` user.
+
+**The Visual Editor panel is blank.** Directus is not allowed to frame the site. `SITE_URL` must be
+set in `.env` — it becomes `CONTENT_SECURITY_POLICY_DIRECTIVES__FRAME_SRC` — and `frame-ancestors` in
+`nginx/gradebd.conf` must name the admin host. Neither produces a visible error, just an empty panel.
+
+**Images 404 after a content change.** The `/cms/<id>` proxy needs `DIRECTUS_TOKEN` to have read
+access to `directus_files`. Re-running `npm run directus:bootstrap -- --schema-only` restores the
+`Website` policy and refreshes the token.
 
 **Requesting `/404` directly throws `FailedToFindPageMapSSR`.** Known `output: 'static'` +
 SSR-adapter quirk. A genuinely unknown path returns the 404 page correctly, which is the case that

@@ -1,6 +1,30 @@
 {
   "company_name": "Grade Limited",
   "tagline": "Empowering Your Potential",
+  "logo": {
+    "id": null,
+    "src": "/images/brand/grade-logo.png",
+    "alt": "Grade Limited",
+    "width": 1024,
+    "height": 367
+  },
+  "logo_reversed": {
+    "id": null,
+    "src": "/images/brand/grade-logo-white.png",
+    "alt": "Grade Limited",
+    "width": 1024,
+    "height": 367
+  },
+  "logo_reversed_stationary": {
+    "id": null,
+    "src": "/images/brand/grade-logo-white-stationary.png",
+    "alt": "Grade Limited Stationary",
+    "width": 1024,
+    "height": 367
+  },
+  "favicon": null,
+  "og_image": null,
+  "seo": null,
   "founded_year": 2019,
   "address_lines": [
     "Akram Manjil, H-8/A/8,",

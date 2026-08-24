@@ -28,10 +28,15 @@ services:
       - '127.0.0.1:${SITE_PORT:-4321}:4321'
     environment:
       # Server-side reads go over the compose network; leave empty to use seed JSON.
+      # Read at RUN time, not baked into the image — one image, any environment.
       DIRECTUS_URL: ${DIRECTUS_INTERNAL_URL:-}
-      # Asset URLs written into the HTML must be resolvable from a browser.
+      # The admin's public origin. Only in-place editing uses it: images are
+      # proxied through the site at /cms/<id>, so this is not an asset host.
       DIRECTUS_PUBLIC_URL: ${DIRECTUS_PUBLIC_URL:-}
       DIRECTUS_TOKEN: ${DIRECTUS_TOKEN:-}
+      # Seconds to hold a Directus response. 0 keeps in-place editing honest —
+      # a moderator's save shows on the next reload.
+      DIRECTUS_CACHE_TTL: ${DIRECTUS_CACHE_TTL:-0}
     depends_on:
       directus:
         condition: service_started
@@ -67,11 +72,15 @@ services:
 
       PUBLIC_URL: ${DIRECTUS_PUBLIC_URL:-http://localhost:8055}
 
-      # The Visual Editor loads the site in an iframe, so the site's origin has
-      # to be allowed to frame Directus and to call it from the browser.
+      # The Visual Editor loads the *site* inside the admin app, so Directus'
+      # own CSP has to allow it. frame-src falls back to default-src ('self'),
+      # which silently leaves the editor showing a blank panel — this is the one
+      # setting that makes in-place editing work at all.
+      CONTENT_SECURITY_POLICY_DIRECTIVES__FRAME_SRC: ${SITE_URL:-http://localhost:4321}
+      # And the reverse direction, for embedding Directus in the site.
+      CONTENT_SECURITY_POLICY_DIRECTIVES__FRAME_ANCESTORS: ${SITE_URL:-http://localhost:4321}
       CORS_ENABLED: 'true'
       CORS_ORIGIN: ${SITE_URL:-http://localhost:4321}
-      CONTENT_SECURITY_POLICY_DIRECTIVES__FRAME_ANCESTORS: ${SITE_URL:-http://localhost:4321}
 
       # Enquiry notifications. Directus sends these from a Flow on the
       # `enquiries` collection; without SMTP configured it logs instead of sending.

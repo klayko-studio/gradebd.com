@@ -17,9 +17,21 @@ interface Props {
   imageHeight?: 'short' | 'tall';
   /** Range accent shown as a bar above the name. */
   accent?: string;
+  /** Directus Visual Editing attributes, from `editable()`. */
+  edit?: Record<string, string>;
 }
 
-const { name, meta, image, action, href, dialogId, imageHeight = 'tall', accent } = Astro.props;
+const {
+  name,
+  meta,
+  image,
+  action,
+  href,
+  dialogId,
+  imageHeight = 'tall',
+  accent,
+  edit = {},
+} = Astro.props;
 const ratio = imageHeight === 'short' ? 'aspect-[16/10]' : 'aspect-[4/3]';
 
 /**
@@ -36,6 +48,7 @@ const control = dialogId
      how their packaging reads. No image scaling on hover — deliberately. -->
 <Tag
   {...control}
+  {...edit}
   data-reveal
   aria-label={`${name} — ${action}`}
   class="group flex flex-col gap-1.5 text-left"

@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import PageBanner from '../components/PageBanner.astro';
 import QuoteBand from '../components/QuoteBand.astro';
-import { getGallery, getSite } from '../lib/cms';
+import { getGallery, getSite, editable } from '../lib/cms';
 
 const [gallery, site] = await Promise.all([getGallery(), getSite()]);
 ---
@@ -14,11 +14,20 @@ const [gallery, site] = await Promise.all([getGallery(), getSite()]);
     sub={gallery.banner.sub}
     lines={gallery.banner.lines}
     image={gallery.banner.image}
+    edit={editable({
+      collection: 'gallery',
+      fields: ['banner_eyebrow', 'banner_lines', 'banner_title', 'banner_sub'],
+      mode: 'drawer',
+    })}
+    editImage={editable({ collection: 'gallery', fields: 'banner_image', mode: 'drawer' })}
   />
 
   <section class="section">
     <!-- Two columns, as the wireframe specifies. -->
-    <div class="rail grid gap-6 md:grid-cols-2" data-reveal-group>
+    <div
+      class="rail grid gap-6 md:grid-cols-2"
+      {...editable({ collection: 'gallery', fields: 'images', mode: 'drawer' })}
+      data-reveal-group>
       {
         gallery.images.map((plate) => (
           <figure data-reveal class="group flex flex-col gap-3">

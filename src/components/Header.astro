@@ -1,4 +1,5 @@
 ---
+import { editable } from '../lib/cms';
 import type { Category, Site } from '../lib/schema';
 
 interface Props {
@@ -33,13 +34,20 @@ const linkOff = 'text-[color:var(--text-on-menu-muted)] hover:text-[color:var(--
       <!-- The client's single-colour marks arrived, so the header can simply use the
            red wordmark. This used to be the two-part lockup clipped to hide a white
            tagline that vanished on the light blue — that hack is gone. -->
-      <img
-        src="/images/brand/grade-logo.png"
-        alt={site.company_name}
-        width="140"
-        height="36"
-        class="block h-9 w-auto"
-      />
+      {
+        site.logo?.src ? (
+          <img
+            src={site.logo.src}
+            alt={site.logo.alt || site.company_name}
+            width="140"
+            height="36"
+            class="block h-9 w-auto"
+            {...editable({ collection: 'site', fields: 'logo', mode: 'drawer' })}
+          />
+        ) : (
+          <span class="t-heading-md text-[color:var(--text-on-menu)]">{site.company_name}</span>
+        )
+      }
     </a>
 
     <!-- desktop nav -->

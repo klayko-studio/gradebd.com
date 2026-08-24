@@ -5,10 +5,16 @@ interface Props {
   heading: string;
   tone?: 'light' | 'dark';
   class?: string;
+  /**
+   * Directus Visual Editing attributes, from `editable()`. The eyebrow and the
+   * heading are edited as one target: they are written together, and two
+   * overlapping hit areas on two lines of type is worse than one.
+   */
+  edit?: Record<string, string>;
 }
-const { eyebrow, heading, tone = 'light', class: className = '' } = Astro.props;
+const { eyebrow, heading, tone = 'light', class: className = '', edit = {} } = Astro.props;
 ---
-<div class:list={['flex flex-col gap-4', className]}>
+<div class:list={['flex flex-col gap-4', className]} {...edit}>
   <Eyebrow tone={tone} data-reveal>{eyebrow}</Eyebrow>
   <h2 class:list={['t-heading-xl max-w-[38ch]', tone === 'dark' && 'text-[color:var(--text-inverse)]']} data-reveal>
     {heading}

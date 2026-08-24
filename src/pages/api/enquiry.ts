@@ -4,8 +4,10 @@ import { enquirySchema } from '../../lib/schema';
 /** Pages are prerendered; this endpoint has to run per-request. */
 export const prerender = false;
 
-const DIRECTUS_URL = import.meta.env.DIRECTUS_URL as string | undefined;
-const DIRECTUS_TOKEN = import.meta.env.DIRECTUS_TOKEN as string | undefined;
+/** Runtime, not build-time — see the note in src/lib/cms.ts. */
+const DIRECTUS_URL = process.env.DIRECTUS_URL || (import.meta.env.DIRECTUS_URL as string | undefined);
+const DIRECTUS_TOKEN =
+  process.env.DIRECTUS_TOKEN || (import.meta.env.DIRECTUS_TOKEN as string | undefined);
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {

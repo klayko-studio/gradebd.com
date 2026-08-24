@@ -6,7 +6,7 @@ import Eyebrow from '../components/Eyebrow.astro';
 import ProductCard from '../components/ProductCard.astro';
 import BrandBand from '../components/BrandBand.astro';
 import Button from '../components/Button.astro';
-import { getHome, getCategories, getClients, getSite } from '../lib/cms';
+import { getHome, getCategories, getClients, getSite, editable } from '../lib/cms';
 
 const [home, categories, clients, site] = await Promise.all([
   getHome(),
@@ -48,11 +48,15 @@ const subBrands = Object.values(
 ---
 
 <Base seo={home.seo} active="home">
-  <HeroSlider slides={home.slides} />
+  <HeroSlider slides={home.slides} edit={editable({ collection: 'home', fields: 'slides', mode: 'drawer' })} />
 
   <!-- credibility strip -->
   <section class="border-b border-line-subtle">
-    <div class="rail grid grid-cols-2 gap-y-8 py-8 md:grid-cols-4" data-reveal-group>
+    <div
+      class="rail grid grid-cols-2 gap-y-8 py-8 md:grid-cols-4"
+      data-reveal-group
+      {...editable({ collection: 'home', fields: 'stats', mode: 'drawer' })}
+    >
       {
         home.stats.map((stat, i) => (
           <div
@@ -70,7 +74,14 @@ const subBrands = Object.values(
   <!-- who we are -->
   <section class="section">
     <div class="rail grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
-      <div class="flex flex-col gap-5">
+      <div
+        class="flex flex-col gap-5"
+        {...editable({
+          collection: 'home',
+          fields: ['who_we_are_eyebrow', 'who_we_are_heading', 'who_we_are_body', 'who_we_are_cta_label'],
+          mode: 'drawer',
+        })}
+      >
         <Eyebrow data-reveal>{home.who_we_are.eyebrow}</Eyebrow>
         <h2 class="t-heading-xl max-w-[24ch]" data-reveal>{home.who_we_are.heading}</h2>
         {home.who_we_are.body.map((para) => <p class="t-body-md max-w-[58ch]" data-reveal>{para}</p>)}
@@ -95,7 +106,14 @@ const subBrands = Object.values(
   <section class="section pt-0">
     <div class="rail">
       <div class="flex flex-wrap items-end justify-between gap-6">
-        <SectionHead eyebrow={home.categories_intro.eyebrow} heading={home.categories_intro.heading} />
+        <SectionHead
+          eyebrow={home.categories_intro.eyebrow}
+          heading={home.categories_intro.heading}
+          edit={editable({
+            collection: 'home',
+            fields: ['categories_intro_eyebrow', 'categories_intro_heading'],
+          })}
+        />
         <a
           href={`/${categories[0].slug}/`}
           data-reveal
@@ -195,6 +213,10 @@ const subBrands = Object.values(
         eyebrow={home.clients_intro.eyebrow}
         heading={home.clients_intro.heading}
         tone="dark"
+        edit={editable({
+          collection: 'home',
+          fields: ['clients_intro_eyebrow', 'clients_intro_heading'],
+        })}
       />
 
       <p class="mt-3 max-w-[70ch] t-body-sm text-[color:var(--text-inverse-muted)]">

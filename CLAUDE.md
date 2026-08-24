@@ -453,6 +453,51 @@ the instance tree entirely and cannot be found with `findOne`. To toggle somethi
 BOOLEAN component property to `visible` and drive it with `instance.setProperties()`. `wf/Header` uses
 this for its five `Active <page>` nav markers.
 
+## Directus is wired up — the site renders from the CMS
+
+Content, images, logo, favicon and SEO all come from Directus now, and moderators edit them in place
+on the rendered page. `docs/cms.md` is the guide; what is worth carrying forward:
+
+- **`npm run directus:bootstrap` builds the whole backend from nothing** — 20 collections, every
+  relation, 58 images uploaded from `public/images/`, and `src/content/*.json` written in as content
+  (5 ranges, 44 products, 15 clients). Nobody retypes the catalogue. It is idempotent; `--schema-only`
+  re-applies model changes, `--force` re-seeds. The model is declared once in
+  `scripts/directus/model.mjs` and mirrors `src/lib/schema.ts`.
+- **`output: 'server'`.** Prerendering cannot coexist with "edit what you can see": a save would need
+  a rebuild and a redeploy. `getStaticPaths` is therefore gone from `[category].astro`, and
+  `@astrojs/sitemap` was replaced by `src/pages/sitemap.xml.ts`, which reads the same source the
+  pages do — a sixth range added in the CMS appears in the sitemap without a build.
+- **Images are proxied at `/cms/<file-id>`,** not served from the Directus host. Directus then needs
+  no public read permission, the admin host need not be reachable from a visitor, and pictures share
+  the site's certificate and cache. Directus' transforms pass through unchanged.
+- **Configuration is read at run time — `process.env` before `import.meta.env`.** Vite inlines
+  `import.meta.env` when the bundle is built, so an image built once carries the build box's settings
+  forever. This was a real bug: the container rendered seed content with no warning because
+  `DIRECTUS_URL` had been baked in as undefined. `SITE_URL` is the genuine exception; Astro bakes it
+  into canonical tags.
+- **Three settings make in-place editing work, and two fail silently.** `DIRECTUS_PUBLIC_URL` tells
+  the site the admin's origin; `CONTENT_SECURITY_POLICY_DIRECTIVES__FRAME_SRC` lets Directus frame
+  the site (its `frame-src` otherwise falls back to `default-src 'self'` and the editor shows an
+  empty panel); `frame-ancestors` in `nginx/gradebd.conf` lets the site be framed. Only the first
+  produces anything visible when it is wrong.
+- **`editable()` emits `data-directus="collection:…;item:…;fields:…;mode:…"`** — semicolons, colons,
+  commas, confirmed against the library's own parser. Singletons need no `item`: the readers stash
+  each singleton's row id. Catalogue rows carry `directus_id` through the Zod schema for the same
+  reason. Repeated things (slides, FAQs, values, gallery) are edited as a list through a `drawer` on
+  the parent field, because only one slide is on screen at a time.
+- **The editing library is a dynamic import behind `window.self !== window.top`,** so Vite splits it
+  and an ordinary visitor never downloads it. Verified: the chunk loads only when framed.
+- **Every string array is a textarea, one value per line** — address lines, banner lines, story
+  paragraphs, product features. **Alt text lives on the file**, in Directus' `description`.
+- Directus API notes paid for once: nested file columns must each carry their prefix
+  (`image.id,image.width`, not `image.id,width`) or Directus answers **403**, not a validation error;
+  a machine user's email cannot use a `.local` TLD; and `visual_editor_urls` on `/settings` is what
+  registers the site with the Visual Editor module.
+
+Deployment adds one hostname: `nginx/admin.gradebd.com.conf` puts Directus on `admin.gradebd.com`
+with its own certificate, which the Visual Editor needs because a browser will not frame http inside
+https. If in-place editing is not wanted, do not publish the admin at all — an SSH tunnel is enough.
+
 ## Information architecture
 
 `docs/client/wireframe/` holds nine photographed paper wireframes (WhatsApp images, filenames are not

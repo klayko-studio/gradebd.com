@@ -1,4 +1,5 @@
 ---
+import { editable } from '../lib/cms';
 import Doodles from './Doodles.astro';
 import SocialLinks from './SocialLinks.astro';
 import { socialPaths } from '../lib/social-icons';
@@ -16,6 +17,14 @@ interface Props {
 const { site, categories, showSocials = true } = Astro.props;
 
 const link = 'transition-opacity hover:opacity-70';
+
+/**
+ * The footer sits on the red band, so it needs a reversed mark. Prefer the one
+ * carrying "Stationary" — the client's own artwork for comment #22 — and fall
+ * back through the plain reversed lockup before giving up and setting the
+ * company name in type.
+ */
+const footerLogo = site.logo_reversed_stationary ?? site.logo_reversed ?? null;
 ---
 
 <footer class="relative overflow-hidden bg-footer text-[color:var(--text-inverse)]">
@@ -32,14 +41,25 @@ const link = 'transition-opacity hover:opacity-70';
            `align-items: stretch` pulls a `w-auto` image out to the column width,
            which stretches the mark. -->
       <div class="flex flex-col items-start gap-2">
-        <img
-          src="/images/brand/grade-logo-white-stationary.png"
-          alt={site.company_name}
-          width="196"
-          height="61"
-          class="block h-[52px] w-auto self-start"
-        />
-        <span class="t-label-xs normal-case tracking-[0.08em] text-[color:rgb(255_255_255/0.85)]">
+        {
+          footerLogo?.src ? (
+            <img
+              src={footerLogo.src}
+              alt={footerLogo.alt || site.company_name}
+              width="196"
+              height="61"
+              class="block h-[52px] w-auto self-start"
+              {...editable({ collection: 'site', fields: 'logo_reversed_stationary', mode: 'drawer' })}
+            />
+          ) : (
+            /* No mark uploaded: the company name still has to appear. */
+            <span class="t-heading-md text-[color:var(--text-inverse)]">{site.company_name}</span>
+          )
+        }
+        <span
+          class="t-label-xs normal-case tracking-[0.08em] text-[color:rgb(255_255_255/0.85)]"
+          {...editable({ collection: 'site', fields: 'tagline', mode: 'popover' })}
+        >
           {site.tagline}
         </span>
       </div>
@@ -59,16 +79,38 @@ const link = 'transition-opacity hover:opacity-70';
     <div class="flex flex-col gap-4">
       <h2 class="t-label-xs">Get in touch</h2>
       <address class="flex flex-col gap-3 t-body-sm not-italic">
-        {site.address_lines.map((line) => <span>{line}</span>)}
-        <a href={site.phone_href} class={link}>{site.phone}</a>
-        <a href={`mailto:${site.email}`} class={link}>{site.email}</a>
+        <span
+          class="flex flex-col"
+          {...editable({ collection: 'site', fields: 'address', mode: 'popover' })}
+        >
+          {site.address_lines.map((line) => <span>{line}</span>)}
+        </span>
+        <a
+          href={site.phone_href}
+          class={link}
+          {...editable({ collection: 'site', fields: ['phone', 'phone_href'], mode: 'popover' })}
+        >
+          {site.phone}
+        </a>
+        <a
+          href={`mailto:${site.email}`}
+          class={link}
+          {...editable({ collection: 'site', fields: 'email', mode: 'popover' })}
+        >
+          {site.email}
+        </a>
         <a href={`https://wa.me/${site.phone.replace(/[^0-9]/g, '')}`} class={`flex items-center gap-2 ${link}`} rel="noopener noreferrer" target="_blank">
           <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true" class="shrink-0">
             <path d={socialPaths.whatsapp} fill="currentColor" />
           </svg>
           WhatsApp {site.phone}
         </a>
-        <span class="text-[color:rgb(255_255_255/0.8)]">{site.opening_hours}</span>
+        <span
+          class="text-[color:rgb(255_255_255/0.8)]"
+          {...editable({ collection: 'site', fields: 'opening_hours', mode: 'popover' })}
+        >
+          {site.opening_hours}
+        </span>
       </address>
     </div>
   </div>

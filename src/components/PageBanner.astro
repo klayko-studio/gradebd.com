@@ -16,8 +16,12 @@ interface Props {
   lines?: string[];
   /** Category banners carry that range's accent on the eyebrow rule. */
   accent?: string;
+  /** Directus Visual Editing attributes for the banner copy, from `editable()`. */
+  edit?: Record<string, string>;
+  /** Separate target for the picture, which is a different field. */
+  editImage?: Record<string, string>;
 }
-const { eyebrow, title, sub, image, lines = [], accent } = Astro.props;
+const { eyebrow, title, sub, image, lines = [], accent, edit = {}, editImage = {} } = Astro.props;
 const stack = lines.length > 0;
 ---
 
@@ -29,6 +33,7 @@ const stack = lines.length > 0;
     height={image.height}
     class="absolute inset-0 -z-10 h-full w-full object-cover"
     data-parallax
+    {...editImage}
   />
   <!-- Scrim keeps overlaid type legible whatever photograph a moderator uploads.
        It is a deep shade of the client's own blue — navy is out of this palette. -->
@@ -40,7 +45,7 @@ const stack = lines.length > 0;
   </div>
 
   <!-- Full-height banner, with the copy sitting low so it clears the arch. -->
-  <div class="h-viewport-minus-header rail flex flex-col justify-end gap-4 py-16 pb-32">
+  <div class="h-viewport-minus-header rail flex flex-col justify-end gap-4 py-16 pb-32" {...edit}>
     <Eyebrow tone="dark" accent={accent}>{eyebrow}</Eyebrow>
     {
       stack ? (

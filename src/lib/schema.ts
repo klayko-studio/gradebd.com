@@ -47,6 +47,19 @@ export type Banner = z.infer<typeof bannerSchema>;
 export const siteSchema = z.object({
   company_name: z.string(),
   tagline: z.string(),
+  /**
+   * Brand marks, from the CMS. Nullable because a moderator can empty the field
+   * and a missing logo must not take the site down — the components fall back to
+   * the company name as text.
+   */
+  logo: imageSchema.nullable().default(null),
+  logo_reversed: imageSchema.nullable().default(null),
+  logo_reversed_stationary: imageSchema.nullable().default(null),
+  favicon: imageSchema.nullable().default(null),
+  /** The picture shown when any page is shared, unless a page overrides it. */
+  og_image: imageSchema.nullable().default(null),
+  /** Site-wide SEO defaults. Per-page values win; this is the floor. */
+  seo: seoSchema.nullable().default(null),
   founded_year: z.number().int(),
   address_lines: z.array(z.string()).min(1),
   phone: z.string(),
@@ -138,6 +151,12 @@ export type Contact = z.infer<typeof contactSchema>;
 
 export const itemSchema = z.object({
   id: z.string(),
+  /**
+   * The Directus row id, carried through so the Visual Editor can map a rendered
+   * product back to the record behind it. `id` above is the client's SKU, which
+   * is what the URLs and dialogs use; the two are deliberately separate.
+   */
+  directus_id: z.union([z.number(), z.string()]).nullable().default(null),
   name: z.string(),
   meta: z.string(),
   /** Sub-category slug this item belongs to, or null for categories with no children. */
@@ -167,6 +186,8 @@ export type Item = z.infer<typeof itemSchema>;
 
 export const categorySchema = z.object({
   slug: z.string(),
+  /** The Directus row id — see the note on `itemSchema`. */
+  directus_id: z.union([z.number(), z.string()]).nullable().default(null),
   name: z.string(),
   /** Short line used on the category banner. */
   summary: z.string(),
