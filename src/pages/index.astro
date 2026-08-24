@@ -207,8 +207,8 @@ const subBrands = Object.values(
            the client asked for arrows. Native scroll-snap does the work, so it stays
            usable by touch and keyboard with the arrows as an enhancement. -->
       <div
-        class="client-track mt-10 flex snap-x snap-mandatory gap-5 overflow-x-auto pb-2
-               [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        class="client-track mt-10 flex snap-x snap-mandatory gap-5 overflow-x-auto px-10 pb-2
+               scroll-px-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         data-client-track
       >
         {
@@ -282,8 +282,10 @@ const subBrands = Object.values(
   /* The track is a scroller, so a logo at the edge is always half-cut. Fading the
      last stretch makes that read as "there is more" rather than as a mistake. */
   .client-track {
-    -webkit-mask-image: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent);
-    mask-image: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent);
+    /* The fade has to clear the track's own padding, or the first and last logos sit
+       underneath it. Padding is 40px; at this width that is comfortably inside 2%. */
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 2%, #000 98%, transparent 100%);
+    mask-image: linear-gradient(90deg, transparent 0, #000 2%, #000 98%, transparent 100%);
     scroll-behavior: smooth;
   }
 </style>

@@ -25,7 +25,10 @@ const linkOff = 'text-[color:var(--text-on-menu-muted)] hover:text-[color:var(--
 ---
 
 <header class="sticky top-0 z-40 bg-menu transition-shadow duration-300" data-header>
-  <div class="rail flex items-center gap-6 py-4">
+  <!-- The bar's height is pinned to the same token the hero subtracts, so the two
+       cannot disagree. They did: the bar was ~70px from padding while the mega-menu
+       was positioned at 86px, which left a visible gap the pointer had to cross. -->
+  <div class="rail flex h-[var(--header-h)] items-center gap-6">
     <a href="/" class="shrink-0" aria-label={`${site.company_name} — home`}>
       <!-- The client's single-colour marks arrived, so the header can simply use the
            red wordmark. This used to be the two-part lockup clipped to hide a white
@@ -66,7 +69,7 @@ const linkOff = 'text-[color:var(--text-on-menu-muted)] hover:text-[color:var(--
                    It is positioned against the header, not this trigger, so it can span
                    the viewport — hence the fixed left/right rather than a width. -->
               <div
-                class="invisible fixed left-0 right-0 top-[var(--header-h)] z-50 pt-0 opacity-0
+                class="invisible fixed left-0 right-0 top-[var(--header-h)] z-50 opacity-0
                        transition-[opacity,visibility] duration-150 group-hover:visible group-hover:opacity-100
                        group-focus-within:visible group-focus-within:opacity-100"
               >

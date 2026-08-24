@@ -39,7 +39,7 @@ const showSubs = category.subcategories.length > 0;
 
 <Base seo={category.seo} active="categories">
   <PageBanner
-    eyebrow="Product categories"
+    eyebrow={category.name}
     title={category.name}
     sub={category.summary}
     lines={category.banner_lines}
