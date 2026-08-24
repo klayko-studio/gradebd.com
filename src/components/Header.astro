@@ -27,17 +27,16 @@ const linkOff = 'text-[color:var(--text-on-menu-muted)] hover:text-[color:var(--
 <header class="sticky top-0 z-40 bg-menu transition-shadow duration-300" data-header>
   <div class="rail flex items-center gap-6 py-4">
     <a href="/" class="shrink-0" aria-label={`${site.company_name} — home`}>
-      <!-- The supplied lockup's tagline is white, so the header shows the
-           wordmark band only. The reversed lockup runs on the red footer. -->
-      <span class="block h-9 w-[132px] overflow-hidden">
-        <img
-          src="/images/brand/grade-logo.png"
-          alt={site.company_name}
-          width="132"
-          height="47"
-          class="w-[132px] max-w-none -translate-y-[4px]"
-        />
-      </span>
+      <!-- The client's single-colour marks arrived, so the header can simply use the
+           red wordmark. This used to be the two-part lockup clipped to hide a white
+           tagline that vanished on the light blue — that hack is gone. -->
+      <img
+        src="/images/brand/grade-logo.png"
+        alt={site.company_name}
+        width="140"
+        height="36"
+        class="block h-9 w-auto"
+      />
     </a>
 
     <!-- desktop nav -->

@@ -23,14 +23,20 @@ const link = 'transition-opacity hover:opacity-70';
 
   <div class="rail relative grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1.2fr]">
     <div class="flex flex-col gap-5">
-      <!-- Comment #22 changes the lockup wording to GRADE / Stationary /
-           "Empowering Your Potential". Every supplied asset still carries the old
-           tagline, so this is set in type until real vector art arrives. -->
-      <div class="flex flex-col gap-0.5">
-        <span class="t-display-sm leading-none tracking-[0.02em]">GRADE</span>
-        <span class="t-label-xs normal-case tracking-[0.22em]">Stationary</span>
+      <!-- The client's reversed lockup, which carries "Stationary" as artwork — this
+           is comment #22 delivered properly, replacing the version we set in type
+           while waiting for it. The tagline is not part of the mark, so it stays as
+           a line of type beneath. -->
+      <div class="flex flex-col gap-2">
+        <img
+          src="/images/brand/grade-logo-white-stationary.png"
+          alt={site.company_name}
+          width="196"
+          height="61"
+          class="block h-[52px] w-auto"
+        />
         <span class="t-label-xs normal-case tracking-[0.08em] text-[color:rgb(255_255_255/0.85)]">
-          Empowering Your Potential
+          {site.tagline}
         </span>
       </div>
       <p class="t-body-sm max-w-[34ch]">
