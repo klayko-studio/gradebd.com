@@ -272,29 +272,58 @@
   }
 
   /**
-   * The arch the client drew on the bottom edge of the hero. An elliptical
-   * radial-gradient mask centred on the bottom edge cuts a dome out of the plate —
-   * resolution-independent, responsive, and a real cut rather than a shape painted
-   * on top, so whatever sits behind shows through with no seam to line up.
+   * The arch the client drew on the bottom edge of the hero.
+   *
+   * A radial-gradient was the obvious way to do this and it looks wrong: an ellipse
+   * meets the flat baseline with *vertical* tangents, so the dome joins the edge at
+   * two hard corners and reads as an oval stuck onto the plate. The drawn shape has
+   * cubic flanks tangent to the horizontal — the edge stays flat and then swells.
+   *
+   * So the mask is assembled from four layers: the plate above the strip, the dome
+   * itself as an SVG at a fixed pixel size (so it never stretches with the viewport),
+   * and a flat rectangle either side of it. Because the SVG flanks leave the baseline
+   * horizontally, they meet those rectangles with no visible join. Layers composite
+   * additively, which is the default.
+   *
+   * It is a real cut, not a shape painted on top, so whatever sits behind shows
+   * through the dome with nothing to keep aligned.
+   *
+   * The layers overlap by a pixel on purpose. Each one antialiases its own edge, and
+   * adding two half-covered edges gives about three-quarters coverage, not full — so
+   * abutting them exactly leaves hairline seams along every join. Overlapping is safe
+   * because the SVG is fully opaque at its left and right edges.
    */
   .arch-bottom {
-    --arch-w: 265px; /* half-width: the dome is twice this */
-    --arch-h: 94px;
-    -webkit-mask-image: radial-gradient(
-      var(--arch-w) var(--arch-h) at 50% 100%,
-      transparent 99.2%,
-      #000 99.4%
-    );
-    mask-image: radial-gradient(
-      var(--arch-w) var(--arch-h) at 50% 100%,
-      transparent 99.2%,
-      #000 99.4%
-    );
+    --arch-w: 640px; /* full width of the dome */
+    --arch-h: 72px; /* depth */
+    --arch-side: calc(50% - var(--arch-w) / 2);
+    --arch-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 72' preserveAspectRatio='none'%3E%3Cpath d='M0 0H640V72C480 72 480 0 320 0C160 0 160 72 0 72Z' fill='%23000'/%3E%3C/svg%3E");
+
+    -webkit-mask:
+      linear-gradient(#000, #000) top left / 100% calc(100% - var(--arch-h) + 1px) no-repeat,
+      var(--arch-svg) bottom center / var(--arch-w) var(--arch-h) no-repeat,
+      linear-gradient(#000, #000) bottom left / calc(var(--arch-side) + 2px) calc(var(--arch-h) + 1px)
+        no-repeat,
+      linear-gradient(#000, #000) bottom right / calc(var(--arch-side) + 2px) calc(var(--arch-h) + 1px)
+        no-repeat;
+    mask:
+      linear-gradient(#000, #000) top left / 100% calc(100% - var(--arch-h) + 1px) no-repeat,
+      var(--arch-svg) bottom center / var(--arch-w) var(--arch-h) no-repeat,
+      linear-gradient(#000, #000) bottom left / calc(var(--arch-side) + 2px) calc(var(--arch-h) + 1px)
+        no-repeat,
+      linear-gradient(#000, #000) bottom right / calc(var(--arch-side) + 2px) calc(var(--arch-h) + 1px)
+        no-repeat;
   }
-  @media (max-width: 640px) {
+  @media (max-width: 900px) {
     .arch-bottom {
-      --arch-w: 130px;
+      --arch-w: 380px;
       --arch-h: 52px;
+    }
+  }
+  @media (max-width: 560px) {
+    .arch-bottom {
+      --arch-w: 240px;
+      --arch-h: 38px;
     }
   }
 

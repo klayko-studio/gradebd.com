@@ -272,11 +272,18 @@ The code and the design no longer diverge. What changed, and the reasoning worth
 - **Header + hero fill one viewport.** `--header-h: 86px` in `tokens.css` is the single source of the
   bar height; `.h-viewport-minus-header` is `calc(100svh - var(--header-h))`. `svh` not `vh`, so a
   mobile browser's collapsing toolbar does not push the fold.
-- **The arch is a CSS mask, not a painted shape.** `.arch-bottom` uses
-  `mask-image: radial-gradient(<w> <h> at 50% 100%, transparent, #000)` — an ellipse centred on the
-  bottom edge, so its top half cuts a dome out of the plate. Resolution-independent, responsive, and a
-  real cut, which means whatever sits behind shows through with no seam to keep aligned. A tight
-  ellipse reads as a circle: 265x94 (half-width x depth) is the ratio that matches the drawn dome.
+- **The arch is a CSS mask, not a painted shape** — a real cut, so whatever sits behind shows through
+  with no seam to keep aligned. **Do not build it from a `radial-gradient`.** An ellipse meets the flat
+  baseline with *vertical* tangents, so the dome joins the edge at two hard corners and reads as an
+  oval stuck onto the plate — it was built that way first and the client rejected it on sight. The
+  drawn shape has cubic flanks tangent to the horizontal: the edge stays flat, then swells.
+  `.arch-bottom` therefore composites four mask layers — the plate above the strip, the dome as an
+  inline SVG at a fixed pixel size (so it never stretches with the viewport), and a flat rectangle
+  either side. Current geometry is 640x72 (full width x depth), stepping down at 900px and 560px.
+  **The layers must overlap by a pixel.** Each antialiases its own edge and mask layers composite
+  additively, so two half-covered edges sum to about three-quarters coverage, not full — abutting them
+  exactly leaves hairline seams along every join. Overlapping is safe because the SVG is fully opaque
+  at its left and right edges.
 - **The splash is one fixed layer on `<main class="wash">`,** not a per-section background. Stacked
   white sections then read as a single continuous wash instead of the same picture repeated band by
   band, and a 4000px page cannot stretch it. It also needs to be far weaker than in Figma: 0.42 per
