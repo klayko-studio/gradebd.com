@@ -1,0 +1,77 @@
+# ── Directus · cms.gradebd.com ───────────────────────────────────────────────
+# Optional. Activate only when the CMS is meant to be reachable from the public
+# internet — until then, reach it over an SSH tunnel instead:
+#
+#   ssh -L 8055:127.0.0.1:8055 user@vps    → http://localhost:8055
+#
+# To activate:
+#   1. point cms.gradebd.com at the VPS
+#   2. include it in the certificate:
+#        certonly -d gradebd.com -d www.gradebd.com -d cms.gradebd.com
+#      (this block reads the gradebd.com lineage, so the SAN must be on it)
+#   3. mv nginx/conf.d/cms.conf.disabled nginx/conf.d/cms.conf
+#   4. set DIRECTUS_PUBLIC_URL=https://cms.gradebd.com in .env and recreate
+#      the directus service, so it writes correct asset URLs
+#   5. reload nginx
+#
+# Anything served here is an admin surface. Consider restricting it to the
+# office IP with `allow`/`deny` in the location, or keeping the tunnel.
+
+server {
+    listen      80;
+    listen [::]:80;
+    server_name cms.gradebd.com;
+
+    location ^~ /.well-known/acme-challenge/ {
+        root         /var/www/certbot;
+        default_type "text/plain";
+        access_log   off;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen      443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
+    server_name cms.gradebd.com;
+
+    ssl_certificate     /etc/letsencrypt/live/gradebd.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/gradebd.com/privkey.pem;
+    include /etc/nginx/snippets/tls.conf;
+
+    set $cms http://directus:8055;
+
+    # Moderators upload product photography through here; the global 1m cap is
+    # sized for the enquiry form and would reject a pack shot.
+    client_max_body_size 100m;
+
+    # Uploads and large asset transforms outlast a 60s read timeout.
+    proxy_connect_timeout 5s;
+    proxy_send_timeout    300s;
+    proxy_read_timeout    300s;
+
+    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains" always;
+    # No X-Frame-Options and no frame-ancestors CSP here: Directus sets its own
+    # via CONTENT_SECURITY_POLICY_DIRECTIVES__FRAME_ANCESTORS in compose, and a
+    # second, stricter header at the edge would win and break the Visual Editor.
+    add_header X-Content-Type-Options "nosniff" always;
+
+    # Directus realtime. The shared proxy snippet blanks Connection for
+    # keepalive, so both headers are re-set after it.
+    location /websocket {
+        include /etc/nginx/snippets/proxy.conf;
+        proxy_set_header Upgrade    $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+        proxy_read_timeout 3600s;
+        proxy_pass $cms$request_uri;
+    }
+
+    location / {
+        include /etc/nginx/snippets/proxy.conf;
+        proxy_pass $cms$request_uri;
+    }
+}

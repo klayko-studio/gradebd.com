@@ -3,6 +3,12 @@
 #   cp .env.example .env      # then edit the secrets
 #   docker compose up -d --build
 #
+# On a VPS, add the production overlay so nginx terminates TLS in front:
+#
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+#
+# See docs/deploy-vps.md.
+#
 #   site      → http://localhost:4321
 #   Directus  → http://localhost:8055
 #
@@ -18,8 +24,10 @@ services:
         SITE_URL: ${SITE_URL:-http://localhost:4321}
     image: gradebd-site:latest
     restart: unless-stopped
+    # Bound to loopback: in production nginx is the only public listener
+    # (docker-compose.prod.yml), and locally http://localhost:4321 still works.
     ports:
-      - '${SITE_PORT:-4321}:4321'
+      - '127.0.0.1:${SITE_PORT:-4321}:4321'
     environment:
       # Server-side reads go over the compose network; leave empty to use seed JSON.
       DIRECTUS_URL: ${DIRECTUS_INTERNAL_URL:-}
@@ -33,8 +41,11 @@ services:
   directus:
     image: directus/directus:11
     restart: unless-stopped
+    # Loopback only. The admin app is not exposed to the internet by default;
+    # reach it with `ssh -L 8055:127.0.0.1:8055 user@vps`, or publish it through
+    # nginx by enabling nginx/conf.d/cms.conf.disabled.
     ports:
-      - '${DIRECTUS_PORT:-8055}:8055'
+      - '127.0.0.1:${DIRECTUS_PORT:-8055}:8055'
     volumes:
       # Uploaded images and extensions must outlive the container.
       - directus-uploads:/directus/uploads

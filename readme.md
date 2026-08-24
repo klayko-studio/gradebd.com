@@ -42,6 +42,22 @@ The site container serves the prerendered pages plus the one dynamic route, `/ap
 `SITE_URL` is baked in at **build** time (canonical tags and the sitemap), so changing it needs a
 rebuild, not just a restart.
 
+Both published ports bind to `127.0.0.1`, so nothing is exposed beyond the box. In production nginx
+is the only public listener.
+
+## Deploying to a VPS
+
+`docker-compose.prod.yml` adds an nginx edge (TLS, gzip, rate limits, long-cache headers) and a
+certbot sidecar that renews automatically. The nginx configuration lives in `nginx/`.
+
+```sh
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+```
+
+That serves the site over HTTP and answers the ACME challenge; renaming one file in `nginx/conf.d/`
+switches it to HTTPS once a certificate exists. Full runbook — DNS, certificate issuance, redeploys,
+backups, troubleshooting — in **[docs/deploy-vps.md](docs/deploy-vps.md)**.
+
 ## How content is wired
 
 `src/lib/cms.ts` is the only module that knows where content comes from. Unset `DIRECTUS_URL` and

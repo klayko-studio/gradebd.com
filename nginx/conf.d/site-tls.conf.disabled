@@ -1,0 +1,123 @@
+# ── Grade Limited · HTTPS ────────────────────────────────────────────────────
+# Activate once certbot has written /etc/letsencrypt/live/gradebd.com/. Rename
+# this to site-tls.conf and rename site.conf to site.conf.disabled — running
+# both would collide on `listen 80 default_server`.
+#
+# Certificate paths assume the cert was requested with gradebd.com first:
+#   certonly -d gradebd.com -d www.gradebd.com
+# certbot names the lineage after the first -d, so if you led with www the
+# directory is www.gradebd.com and these four paths need editing.
+
+# ── unknown Host, port 80 → drop ─────────────────────────────────────────────
+server {
+    listen      80 default_server;
+    listen [::]:80 default_server;
+    server_name _;
+    return 444;
+}
+
+# ── unknown Host / bare IP, port 443 → refuse the handshake ──────────────────
+# ssl_reject_handshake means no certificate is needed for this block, so the
+# site's certificate is never served to someone probing the IP.
+server {
+    listen      443 ssl default_server;
+    listen [::]:443 ssl default_server;
+    http2 on;
+    server_name _;
+    ssl_reject_handshake on;
+}
+
+# ── port 80 → ACME, then redirect ────────────────────────────────────────────
+server {
+    listen      80;
+    listen [::]:80;
+    server_name gradebd.com www.gradebd.com;
+
+    # Renewal uses http-01, so this has to keep working after the redirect goes
+    # in. ^~ takes precedence over the catch-all location below.
+    location ^~ /.well-known/acme-challenge/ {
+        root         /var/www/certbot;
+        default_type "text/plain";
+        access_log   off;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+# ── apex → www ───────────────────────────────────────────────────────────────
+# The build bakes https://www.gradebd.com into <link rel=canonical> and the
+# sitemap (SITE_URL), so www is the canonical host and the apex redirects to it.
+# If you'd rather serve the apex, change SITE_URL and invert this block —
+# canonical tag and served host must agree.
+server {
+    listen      443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
+    server_name gradebd.com;
+
+    ssl_certificate     /etc/letsencrypt/live/gradebd.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/gradebd.com/privkey.pem;
+    include /etc/nginx/snippets/tls.conf;
+
+    return 301 https://www.gradebd.com$request_uri;
+}
+
+# ── the site ─────────────────────────────────────────────────────────────────
+server {
+    listen      443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
+    server_name www.gradebd.com;
+
+    ssl_certificate     /etc/letsencrypt/live/gradebd.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/gradebd.com/privkey.pem;
+    include /etc/nginx/snippets/tls.conf;
+
+    # Docker DNS, re-resolved per request — see site.conf.
+    set $site http://site:4321;
+
+    limit_conn perip 24;
+
+    proxy_connect_timeout 5s;
+    proxy_send_timeout    60s;
+    proxy_read_timeout    60s;
+
+    # Two years, with preload eligibility. Only add `preload` to the browser
+    # preload list once you are certain every subdomain can do HTTPS — it is
+    # very hard to undo.
+    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains" always;
+    include /etc/nginx/snippets/security-headers.conf;
+
+    location ^~ /.well-known/acme-challenge/ {
+        root         /var/www/certbot;
+        default_type "text/plain";
+        access_log   off;
+    }
+
+    location = /api/enquiry {
+        limit_req zone=enquiry burst=3 nodelay;
+        include /etc/nginx/snippets/proxy.conf;
+        proxy_pass $site$request_uri;
+    }
+
+    location ~* ^/(images|fonts)/ {
+        include /etc/nginx/snippets/proxy.conf;
+        proxy_pass $site$request_uri;
+
+        proxy_hide_header Cache-Control;
+        # No `always`: a 404 or 502 for a missing asset must not be cached for a
+        # month. Without it nginx applies the header to 2xx/3xx only.
+        add_header Cache-Control "public, max-age=2592000";
+        add_header Strict-Transport-Security "max-age=63072000; includeSubDomains" always;
+        include /etc/nginx/snippets/security-headers.conf;
+        access_log off;
+    }
+
+    location / {
+        limit_req zone=browse burst=80 nodelay;
+        include /etc/nginx/snippets/proxy.conf;
+        proxy_pass $site$request_uri;
+    }
+}

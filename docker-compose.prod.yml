@@ -1,0 +1,64 @@
+# Production overlay — adds the nginx edge and TLS renewal. Always used with
+# the base file, which keeps the site/Directus/Postgres definitions in one place:
+#
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+#
+# Only nginx publishes ports here. The base file binds the site and Directus to
+# 127.0.0.1, so on a VPS they are reachable through nginx or an SSH tunnel and
+# not by anyone who port-scans the box.
+
+services:
+  site:
+    build:
+      args:
+        # Required in production: baked into <link rel=canonical> and the
+        # sitemap at build time. Wrong value = wrong canonicals, and no restart
+        # fixes it — it needs a rebuild.
+        SITE_URL: ${SITE_URL:?set SITE_URL to the public https origin, e.g. https://www.gradebd.com}
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/snippets:/etc/nginx/snippets:ro
+      # Shared with certbot: the http-01 challenge files and the certificates.
+      - certbot-webroot:/var/www/certbot
+      - letsencrypt:/etc/letsencrypt
+    # Reload every 6 hours so a certificate renewed by the certbot sidecar is
+    # actually served. A reload is graceful — in-flight requests finish.
+    # `exec` matters: it makes nginx PID 1, so `docker compose stop` reaches it
+    # with SIGTERM instead of killing a shell that never forwards the signal.
+    command: >
+      sh -c "while :; do sleep 6h & wait $${!}; nginx -s reload; done &
+             exec nginx -g 'daemon off;'"
+    healthcheck:
+      # Config still parses *and* the master process is alive — a bad conf.d
+      # edit or a crashed master both show up as unhealthy.
+      test: ['CMD-SHELL', 'nginx -t >/dev/null 2>&1 && kill -0 $$(cat /var/run/nginx.pid)']
+      interval: 60s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      - site
+
+  certbot:
+    image: certbot/certbot:latest
+    restart: unless-stopped
+    volumes:
+      - certbot-webroot:/var/www/certbot
+      - letsencrypt:/etc/letsencrypt
+    # Renewal loop. certbot exits quietly when nothing is within 30 days of
+    # expiry, so running it twice a day is cheap and means a missed window
+    # doesn't turn into an outage. Issuance is a separate one-off command —
+    # see docs/deploy-vps.md.
+    entrypoint: >
+      sh -c "trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet; sleep 12h & wait $${!}; done"
+
+volumes:
+  certbot-webroot:
+  letsencrypt:

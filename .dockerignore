@@ -30,3 +30,6 @@ docker-compose*.yml
 # OS noise.
 .DS_Store
 Thumbs.db
+
+# nginx edge config — mounted into the nginx container, not the site image.
+nginx
