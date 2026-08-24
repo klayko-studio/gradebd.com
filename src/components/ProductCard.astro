@@ -5,22 +5,41 @@ interface Props {
   name: string;
   meta: string;
   image: Image;
-  /** Used as the accessible name — the card itself is the link. */
+  /** Used as the accessible name — the card itself is the control. */
   action: string;
-  href: string;
+  href?: string;
+  /**
+   * When set, the card opens that product's detail dialog instead of navigating —
+   * the client's "product details on a POP UP". Category cards keep using href.
+   */
+  dialogId?: string;
   /** Category cards sit shorter than item cards. */
   imageHeight?: 'short' | 'tall';
   /** Range accent shown as a bar above the name. */
   accent?: string;
 }
 
-const { name, meta, image, action, href, imageHeight = 'tall', accent } = Astro.props;
+const { name, meta, image, action, href, dialogId, imageHeight = 'tall', accent } = Astro.props;
 const ratio = imageHeight === 'short' ? 'aspect-[16/10]' : 'aspect-[4/3]';
+
+/**
+ * A card that opens a dialog is a button, not a link — it goes nowhere, and giving
+ * it an href would put a fake destination in the status bar and the tab order.
+ */
+const Tag = dialogId ? 'button' : 'a';
+const control = dialogId
+  ? { type: 'button' as const, 'data-dialog-open': dialogId }
+  : { href };
 ---
 
 <!-- The client's wireframes put the name ABOVE the photograph, which is also
      how their packaging reads. No image scaling on hover — deliberately. -->
-<a href={href} data-reveal aria-label={`${name} — ${action}`} class="group flex flex-col gap-1.5">
+<Tag
+  {...control}
+  data-reveal
+  aria-label={`${name} — ${action}`}
+  class="group flex flex-col gap-1.5 text-left"
+>
   {
     accent && (
       <span
@@ -68,4 +87,4 @@ const ratio = imageHeight === 'short' ? 'aspect-[16/10]' : 'aspect-[4/3]';
       </svg>
     </span>
   </div>
-</a>
+</Tag>

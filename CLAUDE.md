@@ -70,10 +70,11 @@ their own editable fields — avoid hardcoding copy, images, or lists that moder
 ## Design (Figma)
 
 File: `https://www.figma.com/design/wO94lV6gN0lfKHQT9zAkrJ/Website` (fileKey `wO94lV6gN0lfKHQT9zAkrJ`).
-Nine pages: `01 · Foundations` (brand guideline), `02 · Wireframes (low-fi)` (nine page frames),
+Ten pages: `01 · Foundations` (brand guideline), `02 · Wireframes (low-fi)` (nine page frames),
 `03 · Wireframe kit` (shared low-fi components), `04 · Hi-fi kit`, `05 · Hi-fi screens`,
 `06 · Client presentation`, `07 · Wireframe-exact (hi-fi)`, `08 · Colour revision (call)`,
-`09 · Brand palette (owner vision)` — **the current direction**.
+`09 · Brand palette (owner vision)`, `10 · Full-screen hero + comment fixes` —
+**`10` is the current direction**; every earlier page is kept as the record and left alone.
 
 ### `09 · Brand palette (owner vision)` — from the owner meeting
 
@@ -133,6 +134,172 @@ Two Plugin API facts worth keeping: `scrollBehavior` is **not** in the typings, 
 header cannot be set from a script; and a NAVIGATE action's `transition` takes
 `{type:'DISSOLVE'|'SMART_ANIMATE'|'SCROLL_ANIMATE', easing:{type:'EASE_OUT'|…}, duration:<seconds>}`.
 Rebuilding a node **destroys its reactions** — rewire after any header or footer rebuild.
+
+### `10 · Full-screen hero + comment fixes` — **the current direction**
+
+Built by cloning `09` (which is untouched, as are `01`–`08`) and applying the 24 Figma comment
+threads plus five priority instructions. Comment text is transcribed in
+`docs/feedback/figma-comments-page09.md`; the build plan is `docs/feedback/page10-build-spec.md`.
+
+- **Header + hero fill the viewport.** 86 menu bar + 814 hero = 900, so content starts below the
+  fold on all nine frames. Inner-page banners grew from 420 to the same 814.
+- **The hero bottom edge is cut by an arch.** The client drew it themselves as `Vector 5` inside the
+  `09` Home frame; it was cleaned to a symmetric dome — 340 wide, 100 deep, centred at x=720, cubic
+  flanks. Path: `M0,0 H1440 V814 H890 C805,814 805,714 720,714 C635,714 635,814 550,814 H0 Z`.
+  It is implemented as a **mask**, not a white overlay, so the ground behind shows through the dome —
+  which is what lets the `bg-splash` wash sit under it without a seam.
+- **`bg-splash`.** `docs/client/references/bg-splash.svg` is 4,115 traced paths / 2 MB — a raster in
+  vector clothing, unusable as SVG. Rasterised to `public/images/brand/bg-splash-2000.webp` (60 KB)
+  and `-1200.webp`; in Figma it is imageHash `79b2d75d02e4050a78c7e62aff53b7b1b2452111`, applied at
+  **42% over the existing white fill** behind all 21 white sections. Its green is a saturated lime
+  outside the owner palette — kept deliberately low so it reads as tint, not picture.
+- **Footer.** PRODUCTS and COMPANY columns removed with their grid space held open by fixed-width
+  placeholders, so nothing reflowed. Doodles went from 12 at 36–64px to **42 at 16–26px**. Social
+  icons are removed **from Home only**. Removing those two columns is why the prototype dropped from
+  165 links to 89 — the 81 removed links were theirs.
+- **Mega-menu** (from reference node `303:3`): five columns, every sub-category listed.
+- **Logo.** Comment #22 changes the lockup to GRADE / Stationary / *Empowering Your Potential*,
+  replacing *For Every People*. Every supplied asset carries the old tagline, so the footers now use
+  a **type proposal** pending real vector art. The client's spelling is "Stationary"; the trade word
+  is "Stationery" — unresolved.
+
+**New product data from the mega-menu reference** — File & Folder *does* have sub-categories:
+Clear Bag, Liner Bag, Document Carrier, Report Cover, Ring File, Clip File, L-Folder. The wireframes,
+`CLAUDE.md`'s IA section and the Astro build all still treat that range as items-only.
+
+**The comment panel virtualises its list.** A first read rendered only the newest 24 threads and the
+older ones looked deleted. The file actually holds **35**: #1–#9 and #11–#38, with #10, #18 and #21
+gone. #1–#9 are the user's own build notes and are where the five priority instructions came from.
+To read them all, scroll the panel with real wheel events and accumulate, or use
+`GET /v1/files/:key/comments` with a `file_comments` token — which also returns each thread's
+`client_meta` anchor. The Plugin API exposes no comment data at all.
+
+Also built from those threads: **#4 a product detail pop-up** (main image, four thumbnails, name,
+spec line, description, enquiry CTA) with all 30 product cards rewired to open it instead of jumping
+to Contact; and **#8 a WhatsApp row** under the email in every footer contact block.
+
+**Client logos are real now.** Nine of the fifteen companies' own marks were pulled from their
+websites into `public/images/clients/` (originals) and `…/processed/` (trimmed, normalised): Renata,
+Square, SK+F, SMC, Beximco, Aristopharma, Incepta, ACME, Ibn Sina. Square and Incepta publish
+white-only logos, so those two are inverted to a dark one-colour version. Six could not be fetched —
+Nuvista, Popular, Health Care, Opsonin, Beacon, JMI — because those sites render the logo in JS or
+refuse automated requests. Note Clearbit's logo API is dead; scrape the site's own markup instead.
+The trademark permission caveat still stands.
+
+Eight threads remain unactionable because a comment only means something against the frame it is
+pinned to: #11, #12, #19, #20, #26, #31, #35, #36. They are listed on the page's own
+`Review notes — page 10` board.
+
+**Iconography:** no text glyphs for icons. Slider controls use Lucide chevrons as vectors with round
+caps; the CTA knob uses arrow-right. Note `vectorPaths` rejects compressed SVG path syntax (implicit
+commands, `.967-.273` runs) — use `figma.createNodeFromSvg` for anything from an icon set. And
+`overlayPositionType` is **read-only** from a script, so a true Figma overlay cannot be configured;
+build the modal as a full frame and NAVIGATE to it.
+
+### The client's content documents — the source of truth for copy and products
+
+`docs/client/references/` gained three Word files: `Page Wise Text (18.8.26).docx`,
+`SKU Wise Details (13.8.2026).docx`, `Pen (23.8.26).docx`. Transcribed and analysed in
+`docs/feedback/content-plan.md`. **Phases 1–4 of that plan are built** in code and mirrored on Figma
+page `10`; phase 5 is the client-blocked gap list and is deliberately untouched.
+
+**Grade has four product sub-brands, and the SKU naming is built on them** — `Grade <sub-brand>
+<product> <variant>`. Champ (11 SKUs, school), Dox (11, filing), Neo (6, utility), Xtreme (6, office
+hardware), plus four individually-named pen lines: Classmate, Finepoint, Mentor, Glow. **38 products
+in total.** This is a real browse axis, not a label, and it confirms the owner's packaging-led
+direction: the Champ geometry box and Neo highlighter carton are sub-brands, not one-offs.
+
+Schema additions (`src/lib/schema.ts`): item gains `sub_brand`, `features[]`, `pack_inner`,
+`pack_carton`, `images[]`; category gains `banner_lines[]` and `sub_brands[]`; home slides gain
+`lines[]`; a shared `bannerSchema` now carries `lines[]` for About/Gallery/Contact.
+
+**Banner copy is two or three short lines, never a headline plus paragraph.** `PageBanner.astro` and
+`HeroSlider.astro` render `lines` with tight leading and no sub-paragraph, falling back to
+title/sub only where a moderator has not migrated. Every page's lines are tabulated in the plan.
+
+**Product detail is a native `<dialog>`** (`ProductDialog.astro`) — the client's "product details on a
+POP UP" from comment #4. Features are the description, pack sizes the spec line, thumbnails appear
+only when a second image exists. `ProductCard` renders as a `<button>` when given `dialogId` and an
+`<a>` otherwise, because a card that opens a dialog goes nowhere. Two things worth keeping: the CSS
+reset zeroes the `margin: auto` a native dialog centres itself with, so the panel pins to the
+top-left without an explicit `margin: auto`; and scoped styles must live in the component that
+renders the element, not the page that imports it.
+
+**Category pages filter on both axes at once** — Range (sub-brand, shown only when a category has
+more than one) and sub-category — with a live item count. Home carries a sub-brand band.
+
+The client's voice is aspirational and learner-focused ("Every Tool, Every Dream"), not the B2B
+trade-supply voice the earlier copy used. All invented trade claims are gone from the seed — no more
+"order by the carton, not the piece", no "cut the intermediaries", no manufacturer claims. Vision,
+Mission and the five Values (Empowerment, Innovation, Reliability, Continuous Improvement, Customer
+First) are the client's own words; where they supplied a title with no description, nothing was
+invented to fill it, so components guard against empty bodies.
+
+**Real product photography arrived** in `docs/client/products/` — 18 Grade-branded packaging
+mockups, mostly 1024–2880px squares with alpha. Because the product cards are 4:3 and `object-cover`
+would crop a pack, each one is composited onto a consistent `#f6f8f9` ground at 1200x900 with ~14%
+padding and written to `public/images/products/*.webp`: **63 MB of PNG down to 585 KB**. 18 of the 38
+SKUs now have their own pack shot; `Grade Neo Pencil 2B` has two views, so it is the first item whose
+detail dialog actually shows the thumbnail strip. The Champ geometry box is the School Stationery
+range image, and the Gallery is now twelve real packaging shots instead of stock.
+
+Still on stand-in imagery: all four pens, all eleven Dox filing lines, and five Neo school items.
+The Neo geometry box, the Neo highlighter and both Neo markers have **no SKU sheet**, so they appear
+only in the Gallery — which is itself evidence those ranges exist.
+
+**Figma gotcha: WebP uploads through `upload_assets` return a valid-looking `imageHash` that renders
+blank.** The upload reports success, the fill accepts the hash, and the frame paints nothing —
+the same failure mode as a `figma.createImage` round-trip. Re-encode as JPEG or PNG before uploading.
+
+**Another one worth keeping:** when walking a product grid, `findAll` matches the *row* frames as well
+as the cards (both are frames containing text), so a naive card loop writes each SKU into the wrong
+node and silently overwrites the previous one. Walk `items.children` (rows) then `row.children`
+(cards) instead, and filter cards by width.
+
+The five Values now carry descriptions written for them from the client's own material — their
+feature bullets and About text — because they supplied names only. They are ours, not the client's,
+so they are the one piece of body copy on the site that should be run past them.
+
+**Still unresolved and needing the client** (do not invent these): no Exercise Book SKUs at all, no
+Highlighter/Marker/Cutter Knife despite the mega-menu listing them, no product photography for any of
+the 38 SKUs, and "Aristow Pharmaceutical Ltd" almost certainly meaning Aristopharma. The documents
+consistently spell it **Stationery**, which contradicts comment #22's "Stationary" in the logo.
+
+### Page `10` is now ported to the Astro build
+
+The code and the design no longer diverge. What changed, and the reasoning worth keeping:
+
+- **Header + hero fill one viewport.** `--header-h: 86px` in `tokens.css` is the single source of the
+  bar height; `.h-viewport-minus-header` is `calc(100svh - var(--header-h))`. `svh` not `vh`, so a
+  mobile browser's collapsing toolbar does not push the fold.
+- **The arch is a CSS mask, not a painted shape.** `.arch-bottom` uses
+  `mask-image: radial-gradient(<w> <h> at 50% 100%, transparent, #000)` — an ellipse centred on the
+  bottom edge, so its top half cuts a dome out of the plate. Resolution-independent, responsive, and a
+  real cut, which means whatever sits behind shows through with no seam to keep aligned. A tight
+  ellipse reads as a circle: 265x94 (half-width x depth) is the ratio that matches the drawn dome.
+- **The splash is one fixed layer on `<main class="wash">`,** not a per-section background. Stacked
+  white sections then read as a single continuous wash instead of the same picture repeated band by
+  band, and a 4000px page cannot stretch it. It also needs to be far weaker than in Figma: 0.42 per
+  section is 0.2 as a full-page layer.
+- **Client logos are normalised with `filter: brightness(0) invert(1)`** — a one-colour white
+  silhouette. Fifteen logos from fifteen brand palettes cannot share a row any other way. The six
+  without artwork render as dashed outlines, so a missing logo still reads as pending.
+- **Footer:** the Products and Company columns are gone with two empty grid cells holding their space,
+  so nothing reflowed (`comment #7`). Socials are suppressed on Home only via a `showSocials` prop
+  from `Base.astro` (`#9`). WhatsApp row added (`#8`). The lockup is set in type (`#22`) and needs
+  `normal-case`, because the label token uppercases and the client writes "Stationary" in title case.
+- **Doodles** are generated from a seeded LCG — 42 marks at 16–26px (`#6`) — so the texture is
+  identical on every build rather than hand-placed.
+- **Contact:** map moved out of the sidebar into its own full-width 21:9 section (`#38`); the FAQ is
+  collapsed behind a button (`#37`) built as progressive enhancement — the button is `hidden` in the
+  markup and only unhidden by script, so without JavaScript the full list stays readable.
+- **Client Feedback is not rendered** (`#17`). The markup is in git history, not deleted.
+- Tagline is now **"Empowering Your Potential"** everywhere, and the address is `info@gradebd.com`
+  including the form's error copy.
+
+Note: requesting the literal `/404` URL against the node adapter throws `FailedToFindPageMapSSR`.
+This is the known `output: 'static'` + SSR-adapter quirk, not a fault in the page — a genuine unknown
+path returns the 404 page correctly, and on Netlify the static `404.html` is served directly.
 
 ### Colours agreed on the client call (page `08`)
 
@@ -230,7 +397,8 @@ meaningful — read them to identify the page). They cover, in order:
   - Exercise Book → Student Large, Standard Large (…)
   - School Stationery → Pencil, Eraser, Sharpener, Color Pencil, Scale, Pencil Box, Clipboard
   - Office Stationery → Stapler, Punch, Pin Remover, Staples, Highlighter, Marker, Cutter Knife
-  - File & Folder → (no sub-categories; items only)
+  - File & Folder → Clear Bag, Liner Bag, Document Carrier, Report Cover, Ring File, Clip File,
+    L-Folder (from the mega-menu reference on page `10`; the paper wireframes showed none)
 - **Gallery** — thematic image plus a 2-column image grid.
 - **Contact** — "Query Zone" form (Name, Email, Mobile No, Message → Send), Head Office block, Google
   Map embed, and an FAQ section.

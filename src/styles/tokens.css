@@ -9,6 +9,10 @@
    --------------------------------------------------------------------------- */
 
 :root {
+  /* Height of the sticky menu bar. The hero and every page banner subtract it so
+     header + hero add up to exactly one viewport. */
+  --header-h: 86px;
+
   /* --- primitives: brand red. 500 is PANTONE P 48-8 C, from the packaging --- */
   --color-red-50: #fdecee;
   --color-red-100: #fbd3d6;

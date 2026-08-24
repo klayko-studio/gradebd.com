@@ -5,15 +5,19 @@
   },
   "banner": {
     "eyebrow": "Contact",
-    "title": "Query Zone.",
-    "sub": "Tell us what you need and how many. We reply to bulk enquiries within one working day.",
+    "title": "Contact Us",
+    "sub": "We’re here to help!",
     "image": {
       "id": null,
       "src": "/images/contact/desk.jpg",
       "alt": "A hand writing notes in a notebook at a desk",
       "width": 800,
       "height": 560
-    }
+    },
+    "lines": [
+      "Contact Us",
+      "We’re here to help!"
+    ]
   },
   "form_heading": "Request a quote",
   "map_embed_url": null,

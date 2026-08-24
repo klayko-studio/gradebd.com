@@ -1,50 +1,107 @@
 [
   {
-    "name": "Northfield",
-    "qualifier": "Academy",
+    "name": "Renata Ltd",
+    "qualifier": "Corporate client",
     "mark": "ring",
-    "placeholder": true
+    "logo": "/images/clients/processed/renata.png",
+    "placeholder": false
   },
   {
-    "name": "Meridian",
-    "qualifier": "Group",
+    "name": "Square Pharmaceutical Ltd",
+    "qualifier": "Corporate client",
     "mark": "diamond",
-    "placeholder": true
+    "logo": "/images/clients/processed/square.png",
+    "placeholder": false
   },
   {
-    "name": "Riverside",
-    "qualifier": "School",
+    "name": "Sk-f Pharmaceutical Ltd",
+    "qualifier": "Corporate client",
     "mark": "bars",
-    "placeholder": true
+    "logo": "/images/clients/processed/skf.png",
+    "placeholder": false
   },
   {
-    "name": "Apex",
-    "qualifier": "Traders",
+    "name": "SMC Pharmaceutical Ltd",
+    "qualifier": "Corporate client",
     "mark": "triangle",
-    "placeholder": true
+    "logo": "/images/clients/processed/smc-dark.png",
+    "placeholder": false
   },
   {
-    "name": "Lakeside",
-    "qualifier": "College",
+    "name": "Nuvista Pharmaceutical Ltd",
+    "qualifier": "Corporate client",
     "mark": "dots",
+    "logo": null,
     "placeholder": true
   },
   {
-    "name": "Vertex",
-    "qualifier": "Office",
+    "name": "Popular Pharmaceutical Ltd",
+    "qualifier": "Corporate client",
     "mark": "square",
+    "logo": null,
     "placeholder": true
   },
   {
-    "name": "Summit",
-    "qualifier": "Retail",
+    "name": "Beximco Pharmaceutical Ltd",
+    "qualifier": "Corporate client",
     "mark": "chevron",
+    "logo": "/images/clients/processed/beximco.png",
+    "placeholder": false
+  },
+  {
+    "name": "Health Care Pharmaceutical Ltd",
+    "qualifier": "Corporate client",
+    "mark": "disc",
+    "logo": null,
     "placeholder": true
   },
   {
-    "name": "Crestview",
-    "qualifier": "School",
-    "mark": "disc",
+    "name": "Opsonin Pharmaceutical Ltd",
+    "qualifier": "Corporate client",
+    "mark": "ring",
+    "logo": null,
     "placeholder": true
+  },
+  {
+    "name": "Aristow Pharmaceutical Ltd",
+    "qualifier": "Corporate client",
+    "mark": "diamond",
+    "logo": "/images/clients/processed/aristopharma.png",
+    "placeholder": false
+  },
+  {
+    "name": "Incepta Pharmaceutical Ltd",
+    "qualifier": "Corporate client",
+    "mark": "bars",
+    "logo": "/images/clients/processed/incepta.png",
+    "placeholder": false
+  },
+  {
+    "name": "Beacon Pharmaceutical Ltd",
+    "qualifier": "Corporate client",
+    "mark": "triangle",
+    "logo": null,
+    "placeholder": true
+  },
+  {
+    "name": "Jmi Pharmaceutical Ltd",
+    "qualifier": "Corporate client",
+    "mark": "dots",
+    "logo": null,
+    "placeholder": true
+  },
+  {
+    "name": "Acme Pharmaceutical Ltd",
+    "qualifier": "Corporate client",
+    "mark": "square",
+    "logo": "/images/clients/processed/acme.png",
+    "placeholder": false
+  },
+  {
+    "name": "Ibn Sina Pharmaceutical Ltd",
+    "qualifier": "Corporate client",
+    "mark": "chevron",
+    "logo": "/images/clients/processed/ibnsina.png",
+    "placeholder": false
   }
 ]

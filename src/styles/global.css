@@ -262,6 +262,65 @@
    them — no-JS visitors get everything immediately rather than a blank page.
    --------------------------------------------------------------------------- */
 @layer utilities {
+  /**
+   * Header + hero fill one viewport, so page content begins below the fold. The
+   * header is sticky and its height is fixed, so it can be a token rather than
+   * something JavaScript has to measure.
+   */
+  .h-viewport-minus-header {
+    min-height: calc(100svh - var(--header-h));
+  }
+
+  /**
+   * The arch the client drew on the bottom edge of the hero. An elliptical
+   * radial-gradient mask centred on the bottom edge cuts a dome out of the plate —
+   * resolution-independent, responsive, and a real cut rather than a shape painted
+   * on top, so whatever sits behind shows through with no seam to line up.
+   */
+  .arch-bottom {
+    --arch-w: 265px; /* half-width: the dome is twice this */
+    --arch-h: 94px;
+    -webkit-mask-image: radial-gradient(
+      var(--arch-w) var(--arch-h) at 50% 100%,
+      transparent 99.2%,
+      #000 99.4%
+    );
+    mask-image: radial-gradient(
+      var(--arch-w) var(--arch-h) at 50% 100%,
+      transparent 99.2%,
+      #000 99.4%
+    );
+  }
+  @media (max-width: 640px) {
+    .arch-bottom {
+      --arch-w: 130px;
+      --arch-h: 52px;
+    }
+  }
+
+  /**
+   * The client's watercolour splash, behind every white area. Fixed and covering, so
+   * stacked sections read as one continuous wash instead of a picture repeated per
+   * band. Kept low: its green sits outside the owner palette, so it must read as a
+   * tint and never as an image.
+   */
+  .wash::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image: url('/images/brand/bg-splash-2000.webp');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.2;
+    pointer-events: none;
+  }
+  .wash {
+    position: relative;
+    isolation: isolate;
+  }
+
+
   .js [data-reveal] {
     opacity: 0;
     transform: translateY(16px);

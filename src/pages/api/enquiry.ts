@@ -68,7 +68,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       {
         ok: false,
         message:
-          'That is a few enquiries in a short time. Please email sales@gradebd.com and we will pick it up there.',
+          'That is a few enquiries in a short time. Please email info@gradebd.com and we will pick it up there.',
       },
       429,
     );
@@ -104,7 +104,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
         {
           ok: false,
           message:
-            'We could not record your enquiry just now. Please email sales@gradebd.com or call 01842-024378.',
+            'We could not record your enquiry just now. Please email info@gradebd.com or call 01842-024378.',
         },
         502,
       );

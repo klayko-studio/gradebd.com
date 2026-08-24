@@ -28,6 +28,20 @@ export const seoSchema = z.object({
 });
 export type Seo = z.infer<typeof seoSchema>;
 
+/**
+ * A page banner. The client writes these as two or three short lines rather than a
+ * headline plus paragraph, so `lines` is the real content; `title`/`sub` are kept
+ * so anything still reading them (SEO, older components) keeps working.
+ */
+export const bannerSchema = z.object({
+  eyebrow: z.string(),
+  title: z.string(),
+  sub: z.string(),
+  lines: z.array(z.string()).default([]),
+  image: imageSchema,
+});
+export type Banner = z.infer<typeof bannerSchema>;
+
 /* ---------------------------------------------------------------- singletons */
 
 export const siteSchema = z.object({
@@ -64,6 +78,8 @@ export const homeSchema = z.object({
         /** Where the slide's secondary link points, if any. */
         range_slug: z.string().nullable().default(null),
         label: z.string(),
+        /** The client's three-line treatment for this slide. Falls back to headline. */
+        lines: z.array(z.string()).default([]),
       }),
     )
     .min(1),
@@ -91,7 +107,7 @@ export type Home = z.infer<typeof homeSchema>;
 
 export const aboutSchema = z.object({
   seo: seoSchema,
-  banner: z.object({ eyebrow: z.string(), title: z.string(), sub: z.string(), image: imageSchema }),
+  banner: bannerSchema,
   vision: z.object({ eyebrow: z.string(), heading: z.string(), body: z.string() }),
   mission: z.object({ eyebrow: z.string(), heading: z.string(), body: z.string() }),
   values_intro: z.object({ eyebrow: z.string(), heading: z.string() }),
@@ -102,7 +118,7 @@ export type About = z.infer<typeof aboutSchema>;
 
 export const gallerySchema = z.object({
   seo: seoSchema,
-  banner: z.object({ eyebrow: z.string(), title: z.string(), sub: z.string(), image: imageSchema }),
+  banner: bannerSchema,
   images: z
     .array(z.object({ image: imageSchema, caption: z.string(), tag: z.string() }))
     .min(1),
@@ -111,7 +127,7 @@ export type Gallery = z.infer<typeof gallerySchema>;
 
 export const contactSchema = z.object({
   seo: seoSchema,
-  banner: z.object({ eyebrow: z.string(), title: z.string(), sub: z.string(), image: imageSchema }),
+  banner: bannerSchema,
   form_heading: z.string(),
   map_embed_url: z.string().nullable().default(null),
   faqs: z.array(z.object({ question: z.string(), answer: z.string() })).min(1),
@@ -126,7 +142,26 @@ export const itemSchema = z.object({
   meta: z.string(),
   /** Sub-category slug this item belongs to, or null for categories with no children. */
   subcategory: z.string().nullable().default(null),
+  /**
+   * Product sub-brand — Champ, Neo, Xtreme or Dox. The client's own SKU naming is
+   * built on these ("Grade Champ Pencil HB"), so it is a real browse axis, not a
+   * label: Champ reads school, Neo utility, Xtreme office hardware, Dox filing.
+   * Null for the pen lines, which are named individually (Classmate, Glow, …).
+   */
+  sub_brand: z.string().nullable().default(null),
+  /** Benefit bullets exactly as the client wrote them. Drives the detail dialog. */
+  features: z.array(z.string()).default([]),
+  /** Inner pack, where the client gives one ("12 Pcs Paper Box"). */
+  pack_inner: z.string().nullable().default(null),
+  /** Carton quantity ("1728 Pcs Ctn."). Every SKU has one. */
+  pack_carton: z.string().nullable().default(null),
   image: imageSchema,
+  /**
+   * Extra views for the detail dialog. The client asked for multiple images per
+   * product; none have arrived yet, so this is empty and the dialog shows the
+   * single card image. The thumbnail strip appears as soon as a second view exists.
+   */
+  images: z.array(imageSchema).default([]),
 });
 export type Item = z.infer<typeof itemSchema>;
 
@@ -139,6 +174,13 @@ export const categorySchema = z.object({
   meta: z.string(),
   seo: seoSchema,
   image: imageSchema,
+  /**
+   * The three short lines the client writes for a page banner, in order. Their copy
+   * deck uses this shape everywhere instead of a headline plus paragraph.
+   */
+  banner_lines: z.array(z.string()).default([]),
+  /** Sub-brands present in this range. Rendered as a filter only when there are 2+. */
+  sub_brands: z.array(z.object({ slug: z.string(), name: z.string() })).default([]),
   /** Empty for File & Folder — the template must not render a filter row. */
   subcategories: z.array(z.object({ slug: z.string(), name: z.string() })),
   items: z.array(itemSchema).min(1),
@@ -156,6 +198,12 @@ export const clientSchema = z.object({
   name: z.string(),
   qualifier: z.string(),
   mark: z.enum(['ring', 'diamond', 'bars', 'triangle', 'dots', 'square', 'chevron', 'disc']),
+  /**
+   * The company's own mark, where we have it. Rendered as a one-colour white
+   * silhouette on the deep band, which is the only way a wall of logos from
+   * fifteen different brand palettes reads as one row rather than a collision.
+   */
+  logo: z.string().nullable().default(null),
   /** Real client logos need permission; placeholders are flagged so they can't ship unnoticed. */
   placeholder: z.boolean().default(true),
 });

@@ -68,11 +68,15 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://www.gradebd
 
     <Header site={site} categories={categories} active={active} />
 
-    <main id="main">
+    <!-- The client's watercolour splash sits behind every white area of the page.
+         One fixed layer, so stacked white sections read as a single continuous wash
+         rather than the same picture repeated band by band; opaque sections such as
+         the clients band and the footer simply cover it. -->
+    <main id="main" class="wash">
       <slot />
     </main>
 
-    <Footer site={site} categories={categories} />
+    <Footer site={site} categories={categories} showSocials={active !== 'home'} />
 
     <script>
       import { gsap } from 'gsap';

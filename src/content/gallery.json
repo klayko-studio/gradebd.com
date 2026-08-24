@@ -5,82 +5,153 @@
   },
   "banner": {
     "eyebrow": "Gallery",
-    "title": "The range, in the room.",
-    "sub": "Product, packaging and dispatch photography from across the five ranges.",
+    "title": "Real Moments",
+    "sub": "Real Inspiration Real Potential",
     "image": {
       "id": null,
       "src": "/images/hero/all-items.jpg",
       "alt": "Stationery arranged on a deep navy surface",
       "width": 2000,
       "height": 1200
-    }
+    },
+    "lines": [
+      "Real Moments",
+      "Real Inspiration",
+      "Real Potential"
+    ]
   },
   "images": [
     {
       "image": {
         "id": null,
-        "src": "/images/gallery/colour-pencils.jpg",
-        "alt": "Colour pencils with shavings and a sharpener",
-        "width": 800,
-        "height": 560
+        "src": "/images/products/champ-geometry-box.webp",
+        "alt": "The Champ geometry box, light blue with line-art doodles",
+        "width": 1200,
+        "height": 900
       },
-      "caption": "Colour pencil range",
+      "caption": "Champ geometry box",
       "tag": "School Stationery"
     },
     {
       "image": {
         "id": null,
-        "src": "/images/gallery/lever-arch.jpg",
-        "alt": "A row of red lever arch files on a shelf",
-        "width": 1300,
-        "height": 650
+        "src": "/images/products/neo-geometry-box.webp",
+        "alt": "The Neo geometry box in navy with a line-drawn ship",
+        "width": 1200,
+        "height": 900
       },
-      "caption": "Lever arch files, A4",
-      "tag": "File & Folder"
+      "caption": "Neo geometry box",
+      "tag": "School Stationery"
     },
     {
       "image": {
         "id": null,
-        "src": "/images/gallery/warehouse.jpg",
-        "alt": "Warehouse racking stacked with palletised cartons",
-        "width": 1100,
-        "height": 920
+        "src": "/images/products/champ-color-pencil.webp",
+        "alt": "Champ colour pencils, twelve-pack with the retail carton",
+        "width": 1200,
+        "height": 900
       },
-      "caption": "Racked stock, Dhanmondi",
-      "tag": "Warehouse & dispatch"
+      "caption": "Champ colour pencils",
+      "tag": "School Stationery"
     },
     {
       "image": {
         "id": null,
-        "src": "/images/gallery/exercise-books.jpg",
-        "alt": "A stack of soft-cover exercise books",
-        "width": 800,
-        "height": 560
+        "src": "/images/products/champ-eraser-jar.webp",
+        "alt": "A jar of Champ dust-free erasers with singles in front",
+        "width": 1200,
+        "height": 900
       },
-      "caption": "Exercise books, soft cover",
-      "tag": "Exercise Book"
+      "caption": "Champ dust-free erasers",
+      "tag": "School Stationery"
     },
     {
       "image": {
         "id": null,
-        "src": "/images/gallery/markers.jpg",
-        "alt": "Rows of marker pens seen from above",
-        "width": 800,
-        "height": 560
+        "src": "/images/products/neo-highlighter.webp",
+        "alt": "The Neo highlighter counter display, filled with six colours",
+        "width": 1200,
+        "height": 900
       },
-      "caption": "Marker and highlighter display",
+      "caption": "Neo highlighters",
       "tag": "Office Stationery"
     },
     {
       "image": {
         "id": null,
-        "src": "/images/gallery/in-use.jpg",
-        "alt": "An open notebook and pen on a wooden desk",
-        "width": 800,
-        "height": 560
+        "src": "/images/products/neo-marker-whiteboard.webp",
+        "alt": "Neo 3000 whiteboard markers in the blue retail box",
+        "width": 1200,
+        "height": 900
       },
-      "caption": "Supplied to a client desk",
-      "tag": "In use"
+      "caption": "Neo whiteboard markers",
+      "tag": "Office Stationery"
+    },
+    {
+      "image": {
+        "id": null,
+        "src": "/images/products/neo-marker-permanent.webp",
+        "alt": "Neo permanent markers in the red retail box",
+        "width": 1200,
+        "height": 900
+      },
+      "caption": "Neo permanent markers",
+      "tag": "Office Stationery"
+    },
+    {
+      "image": {
+        "id": null,
+        "src": "/images/products/xtreme-stapler-mini.webp",
+        "alt": "The Xtreme mini stapler carton",
+        "width": 1200,
+        "height": 900
+      },
+      "caption": "Xtreme mini stapler",
+      "tag": "Office Stationery"
+    },
+    {
+      "image": {
+        "id": null,
+        "src": "/images/products/xtreme-punch.webp",
+        "alt": "The Xtreme two-hole punch carton",
+        "width": 1200,
+        "height": 900
+      },
+      "caption": "Xtreme punch",
+      "tag": "Office Stationery"
+    },
+    {
+      "image": {
+        "id": null,
+        "src": "/images/products/champ-clipboard.webp",
+        "alt": "A Champ clipboard in Grade blue",
+        "width": 1200,
+        "height": 900
+      },
+      "caption": "Champ clipboard",
+      "tag": "School Stationery"
+    },
+    {
+      "image": {
+        "id": null,
+        "src": "/images/products/champ-scale-30cm.webp",
+        "alt": "The Champ 30 cm scale in its wrap",
+        "width": 1200,
+        "height": 900
+      },
+      "caption": "Champ 30 cm scale",
+      "tag": "School Stationery"
+    },
+    {
+      "image": {
+        "id": null,
+        "src": "/images/products/neo-pencil-2b.webp",
+        "alt": "Grade Neo 2B pencils in the blue twelve-pack",
+        "width": 1200,
+        "height": 900
+      },
+      "caption": "Neo 2B pencils",
+      "tag": "School Stationery"
     }
   ]
 }

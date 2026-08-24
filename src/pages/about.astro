@@ -14,6 +14,7 @@ const [about, site] = await Promise.all([getAbout(), getSite()]);
     eyebrow={about.banner.eyebrow}
     title={about.banner.title}
     sub={about.banner.sub}
+    lines={about.banner.lines}
     image={about.banner.image}
   />
 
@@ -29,7 +30,7 @@ const [about, site] = await Promise.all([getAbout(), getSite()]);
           >
             <Eyebrow>{block.eyebrow}</Eyebrow>
             <h2 class="t-heading-lg max-w-[26ch]">{block.heading}</h2>
-            <p class="t-body-md">{block.body}</p>
+            {block.body && <p class="t-body-md">{block.body}</p>}
           </article>
         ))
       }
@@ -39,7 +40,7 @@ const [about, site] = await Promise.all([getAbout(), getSite()]);
   <section class="section bg-subtle">
     <div class="rail">
       <SectionHead eyebrow={about.values_intro.eyebrow} heading={about.values_intro.heading} />
-      <div class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4" data-reveal-group>
+      <div class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5" data-reveal-group>
         {
           about.values.map((value, i) => (
             <div data-reveal class="flex flex-col gap-3 border-t border-line pt-5">
@@ -47,7 +48,7 @@ const [about, site] = await Promise.all([getAbout(), getSite()]);
                 {String(i + 1).padStart(2, '0')}
               </p>
               <h3 class="t-heading-md">{value.title}</h3>
-              <p class="t-body-sm">{value.body}</p>
+              {value.body && <p class="t-body-sm">{value.body}</p>}
             </div>
           ))
         }

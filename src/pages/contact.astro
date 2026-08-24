@@ -21,6 +21,7 @@ const field =
     eyebrow={contact.banner.eyebrow}
     title={contact.banner.title}
     sub={contact.banner.sub}
+    lines={contact.banner.lines}
     image={contact.banner.image}
   />
 
@@ -135,7 +136,14 @@ const field =
           <p class="t-body-sm text-[color:var(--text-muted)]">{site.opening_hours}</p>
         </div>
 
-        <div class="flex flex-col gap-2">
+      </aside>
+    </div>
+  </section>
+
+  <!-- Comment #38: the map was too small in the sidebar, so it now takes the full
+       content width in its own section. -->
+  <section class="section-tight pb-0">
+        <div class="rail flex flex-col gap-3">
           <h2 class="t-label-xs text-[color:var(--text-brand-strong)]">Google Map location</h2>
           {
             contact.map_embed_url ? (
@@ -144,13 +152,13 @@ const field =
                 title="Grade Limited head office on Google Maps"
                 loading="lazy"
                 referrerpolicy="no-referrer-when-downgrade"
-                class="aspect-[4/3] w-full rounded-sharp border border-line"
+                class="aspect-[21/9] w-full rounded-sharp border border-line"
               />
             ) : (
               /* No key configured yet, so we render a labelled placeholder rather
                  than an empty iframe or a third-party request nobody consented to. */
               <div
-                class="flex aspect-[4/3] w-full flex-col items-center justify-center gap-1 rounded-sharp
+                class="flex aspect-[21/9] w-full flex-col items-center justify-center gap-1 rounded-sharp
                        border border-line bg-muted-surface px-6 text-center"
               >
                 <p class="t-label-md text-[color:var(--text-secondary)]">Map embed</p>
@@ -161,15 +169,40 @@ const field =
             )
           }
         </div>
-      </aside>
-    </div>
   </section>
 
   <!-- FAQ -->
   <section class="section bg-subtle">
     <div class="rail">
       <SectionHead eyebrow="Frequently asked questions" heading="Before you enquire." />
-      <div class="mt-10 overflow-hidden rounded-sharp border border-line-subtle bg-page" data-reveal>
+
+      <!-- Comment #37: nothing but the button shows initially; every question is
+           revealed on the click. The list is in the markup either way, so it is
+           there for search engines and for anyone without JavaScript — the button
+           only exists once the script has run. -->
+      <div class="mt-8" data-faq-toggle-wrap hidden>
+        <button
+          type="button"
+          class="group inline-flex items-center gap-3 rounded-full bg-brand px-6 py-3.5 t-button
+                 text-[color:var(--text-on-brand)] transition-transform hover:-translate-y-px"
+          data-faq-toggle
+          aria-expanded="false"
+          aria-controls="faq-list"
+        >
+          <span data-faq-toggle-label>Show the questions</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"
+            class="transition-transform duration-200 group-aria-expanded:rotate-180">
+            <path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+      </div>
+
+      <div
+        id="faq-list"
+        class="mt-10 overflow-hidden rounded-sharp border border-line-subtle bg-page"
+        data-reveal
+        data-faq-list
+      >
         {
           contact.faqs.map((faq, i) => (
             <details class="group border-b border-line-subtle last:border-0" open={i === 0}>
@@ -197,6 +230,27 @@ const field =
     </div>
   </section>
 </Base>
+
+<script>
+  // The FAQ starts collapsed behind a single button. Progressive enhancement: the
+  // button is hidden in the markup and only unhidden here, so a visitor without
+  // JavaScript keeps the full, readable list rather than a control that does nothing.
+  const wrap = document.querySelector<HTMLElement>('[data-faq-toggle-wrap]');
+  const list = document.querySelector<HTMLElement>('[data-faq-list]');
+  const button = document.querySelector<HTMLButtonElement>('[data-faq-toggle]');
+  const label = document.querySelector<HTMLElement>('[data-faq-toggle-label]');
+  if (wrap && list && button && label) {
+    wrap.hidden = false;
+    list.hidden = true;
+    button.addEventListener('click', () => {
+      const open = list.hidden;
+      list.hidden = !open;
+      button.setAttribute('aria-expanded', String(open));
+      label.textContent = open ? 'Hide the questions' : 'Show the questions';
+    });
+  }
+</script>
+
 
 <script>
   const form = document.querySelector<HTMLFormElement>('#enquiry');
@@ -308,7 +362,7 @@ const field =
       setStatus(data.message, 'ok');
     } catch {
       setStatus(
-        'We could not reach the server. Please email sales@gradebd.com or call 01842-024378.',
+        'We could not reach the server. Please email info@gradebd.com or call 01842-024378.',
         'error',
       );
     } finally {

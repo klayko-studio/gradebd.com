@@ -3,7 +3,7 @@
     "slug": "pen",
     "name": "Pen",
     "summary": "Ball pens supplied by the carton to schools, retailers and offices.",
-    "meta": "Ball Pen · 0.5–1.0 mm",
+    "meta": "Ball Pen",
     "seo": {
       "title": "Pen — Grade Limited, Dhaka",
       "description": "Ball pens supplied by the carton to schools, retailers and offices. Quoted by the carton for schools, retailers and corporate buyers across Bangladesh."
@@ -25,84 +25,100 @@
     "items": [
       {
         "id": "pen-01",
-        "name": "Ball Pen — 0.7 mm, retractable",
-        "meta": "Blue · Black · Red",
+        "name": "Grade Classmate Pen",
+        "meta": "2304 pcs",
         "subcategory": "ball-pen",
+        "sub_brand": null,
+        "features": [
+          "Precision 0.6 mm tip for consistent and smooth writing",
+          "Smooth-flow ink technology for effortless writing without skipping or smudging",
+          "High-quality imported ink for vivid, long-lasting impressions",
+          "Slim, ergonomic design for a comfortable grip during long writing sessions"
+        ],
+        "pack_inner": null,
+        "pack_carton": "2304 Pcs",
         "image": {
           "id": null,
           "src": "/images/items/pen-01.jpg",
-          "alt": "A retractable ball pen with a mint barrel",
+          "alt": "Grade Classmate Pen — stand-in photography pending the client’s product shots",
           "width": 800,
           "height": 560
         }
       },
       {
         "id": "pen-02",
-        "name": "Ball Pen — assorted barrels",
-        "meta": "Trade pack of 50",
+        "name": "Grade Finepoint Pen",
+        "meta": "2304 pcs",
         "subcategory": "ball-pen",
+        "sub_brand": null,
+        "features": [
+          "Precision 0.6 mm tip for consistent and smooth writing",
+          "Smooth-flow ink technology for effortless writing without skipping or smudging",
+          "High-quality imported ink for vivid, long-lasting impressions",
+          "Rubberized slim body with an ergonomic design for a comfortable grip during long writing sessions"
+        ],
+        "pack_inner": null,
+        "pack_carton": "2304 Pcs",
         "image": {
           "id": null,
           "src": "/images/items/pen-02.jpg",
-          "alt": "A row of assorted dark ball pens",
+          "alt": "Grade Finepoint Pen — stand-in photography pending the client’s product shots",
           "width": 800,
           "height": 560
         }
       },
       {
         "id": "pen-03",
-        "name": "Ball Pen — 0.7 mm, black barrel",
-        "meta": "Medium point",
+        "name": "Grade Mentor Pen",
+        "meta": "2304 pcs",
         "subcategory": "ball-pen",
+        "sub_brand": null,
+        "features": [
+          "Precision 0.6 mm tip for consistent and smooth writing",
+          "Smooth-flow ink technology for effortless writing without skipping or smudging",
+          "High-quality imported ink for vivid, long-lasting impressions",
+          "Slim, ergonomic design for a comfortable grip during long writing sessions"
+        ],
+        "pack_inner": null,
+        "pack_carton": "2304 Pcs",
         "image": {
           "id": null,
           "src": "/images/items/pen-03.jpg",
-          "alt": "A slim black ball pen on white",
+          "alt": "Grade Mentor Pen — stand-in photography pending the client’s product shots",
           "width": 800,
           "height": 560
         }
       },
       {
         "id": "pen-04",
-        "name": "Ball Pen — 0.5 mm, fine tip",
-        "meta": "Black ink",
+        "name": "Grade Glow Pen",
+        "meta": "2304 pcs",
         "subcategory": "ball-pen",
+        "sub_brand": null,
+        "features": [
+          "Precision 0.6 mm tip for consistent and smooth writing",
+          "Smooth-flow ink technology for effortless writing without skipping or smudging",
+          "High-quality imported ink for vivid, long-lasting impressions",
+          "Attractive body colors"
+        ],
+        "pack_inner": null,
+        "pack_carton": "2304 Pcs",
         "image": {
           "id": null,
           "src": "/images/items/pen-04.jpg",
-          "alt": "A fine-tipped black pen on a white surface",
-          "width": 800,
-          "height": 560
-        }
-      },
-      {
-        "id": "pen-05",
-        "name": "Ball Pen — pastel barrels",
-        "meta": "Box of 10",
-        "subcategory": "ball-pen",
-        "image": {
-          "id": null,
-          "src": "/images/items/pen-05.jpg",
-          "alt": "Pastel-coloured pens held in a hand",
-          "width": 800,
-          "height": 560
-        }
-      },
-      {
-        "id": "pen-06",
-        "name": "Ball Pen — grip barrel, assorted",
-        "meta": "Box of 10",
-        "subcategory": "ball-pen",
-        "image": {
-          "id": null,
-          "src": "/images/items/pen-06.jpg",
-          "alt": "Colourful grip ball pens on a teal surface",
+          "alt": "Grade Glow Pen — stand-in photography pending the client’s product shots",
           "width": 800,
           "height": 560
         }
       }
     ],
-    "accent": "var(--color-accent-cyan)"
+    "accent": "var(--color-accent-cyan)",
+    "banner_lines": [
+      "Clear Thoughts",
+      "Confident Writing",
+      "Endless Possibilities"
+    ],
+    "sub_brands": []
   },
   {
     "slug": "exercise-book",
@@ -211,13 +227,18 @@
         }
       }
     ],
-    "accent": "var(--color-accent-orange)"
+    "accent": "var(--color-accent-orange)",
+    "banner_lines": [
+      "Write Today",
+      "Achieve Tomorrow"
+    ],
+    "sub_brands": []
   },
   {
     "slug": "school-stationery",
     "name": "School Stationery",
     "summary": "Pencils, erasers, sharpeners, scales and boxes for the school year.",
-    "meta": "Pencil · Eraser · +5",
+    "meta": "Pencil, Color Pencil, Eraser, Sharpener",
     "seo": {
       "title": "School Stationery — Grade Limited, Dhaka",
       "description": "Pencils, erasers, sharpeners, scales and boxes for the school year. Quoted by the carton for schools, retailers and corporate buyers across Bangladesh."
@@ -225,14 +246,18 @@
     "image": {
       "id": null,
       "src": "/images/ranges/school-stationery.jpg",
-      "alt": "School Stationery range",
-      "width": 900,
-      "height": 650
+      "alt": "School stationery range",
+      "width": 800,
+      "height": 560
     },
     "subcategories": [
       {
         "slug": "pencil",
         "name": "Pencil"
+      },
+      {
+        "slug": "colour-pencil",
+        "name": "Color Pencil"
       },
       {
         "slug": "eraser",
@@ -241,10 +266,6 @@
       {
         "slug": "sharpener",
         "name": "Sharpener"
-      },
-      {
-        "slug": "colour-pencil",
-        "name": "Colour Pencil"
       },
       {
         "slug": "scale",
@@ -257,96 +278,439 @@
       {
         "slug": "clipboard",
         "name": "Clipboard"
+      },
+      {
+        "slug": "duster",
+        "name": "Duster"
       }
     ],
     "sort": 3,
     "items": [
       {
         "id": "school-stationery-01",
-        "name": "HB Pencil — box of 12",
-        "meta": "Graphite · with eraser",
+        "name": "Grade Neo Pencil 2B",
+        "meta": "Neo · 1728 pcs / carton",
         "subcategory": "pencil",
+        "sub_brand": "Neo",
+        "features": [
+          "Top quality graphite lead for extra smooth performance",
+          "Ideal for writing, drawing and sketching / Ideal for dark & neat writing which stays longer",
+          "Break-resistant lead",
+          "Superior quality wood for easy sharpening",
+          "Hexagonal shape offers a secure, natural, and fatigue-free grip"
+        ],
+        "pack_inner": "12 Pcs Paper Box",
+        "pack_carton": "1728 Pcs Ctn.",
         "image": {
           "id": null,
-          "src": "/images/items/school-stationery-01.jpg",
-          "alt": "Two pencils and an eraser on a pale blue surface",
-          "width": 800,
-          "height": 560
-        }
+          "src": "/images/products/neo-pencil-2b.webp",
+          "alt": "Grade Neo Pencil 2B in its Grade retail pack",
+          "width": 1200,
+          "height": 900
+        },
+        "images": [
+          {
+            "id": null,
+            "src": "/images/products/neo-pencil-2b-red.webp",
+            "alt": "Grade Neo Pencil 2B — alternative pack",
+            "width": 1200,
+            "height": 900
+          }
+        ]
       },
       {
         "id": "school-stationery-02",
-        "name": "Sharpener — metal, single hole",
-        "meta": "Box of 20",
-        "subcategory": "eraser",
+        "name": "Grade Champ Pencil HB",
+        "meta": "Champ · 1728 pcs / carton",
+        "subcategory": "pencil",
+        "sub_brand": "Champ",
+        "features": [
+          "Top quality graphite lead for extra smooth performance",
+          "Ideal for dark & neat writing which stays longer",
+          "Break-resistant lead",
+          "Superior quality wood for easy sharpening",
+          "Hexagonal shape offers a secure, natural, and fatigue-free grip"
+        ],
+        "pack_inner": "12 Pcs Paper Box",
+        "pack_carton": "1728 Pcs Ctn.",
         "image": {
           "id": null,
-          "src": "/images/items/school-stationery-02.jpg",
-          "alt": "A metal sharpener beside a blue pencil and shavings",
-          "width": 800,
-          "height": 560
-        }
+          "src": "/images/products/champ-pencil-hb.webp",
+          "alt": "Grade Champ Pencil HB in its Grade retail pack",
+          "width": 1200,
+          "height": 900
+        },
+        "images": []
       },
       {
         "id": "school-stationery-03",
-        "name": "Colour Pencil — 12 shades",
-        "meta": "Boxed set",
-        "subcategory": "sharpener",
+        "name": "Grade Champ Pencil 2B",
+        "meta": "Champ · 1728 pcs / carton",
+        "subcategory": "pencil",
+        "sub_brand": "Champ",
+        "features": [
+          "Top quality graphite lead for extra smooth performance",
+          "Ideal for writing, drawing and sketching / Ideal for dark & neat writing which stays longer",
+          "Break-resistant lead",
+          "Superior quality wood for easy sharpening",
+          "Hexagonal shape offers a secure, natural, and fatigue-free grip"
+        ],
+        "pack_inner": "12 Pcs Paper Box",
+        "pack_carton": "1728 Pcs Ctn.",
         "image": {
           "id": null,
-          "src": "/images/items/school-stationery-03.jpg",
-          "alt": "Colour pencils with shavings on a dark surface",
-          "width": 800,
-          "height": 560
-        }
+          "src": "/images/products/champ-pencil-2b.webp",
+          "alt": "Grade Champ Pencil 2B in its Grade retail pack",
+          "width": 1200,
+          "height": 900
+        },
+        "images": []
       },
       {
         "id": "school-stationery-04",
-        "name": "Scale — 30 cm",
-        "meta": "With colour pencil set",
+        "name": "Grade Champ Color Pencil - Small",
+        "meta": "Champ · 936 pcs / carton",
         "subcategory": "colour-pencil",
+        "sub_brand": "Champ",
+        "features": [
+          "Vibrant colour lead for bright & rich colour",
+          "Durable break resistant lead, extra bonded",
+          "Made of soften high-quality wood & easy to sharpen",
+          "Hexagonal shape for comfortable grip to hold"
+        ],
+        "pack_inner": "12+1 Pcs Paper Box",
+        "pack_carton": "936 Pcs Ctn.",
         "image": {
           "id": null,
-          "src": "/images/items/school-stationery-04.jpg",
-          "alt": "A ruler beside a row of colour pencils on wood",
-          "width": 800,
-          "height": 560
-        }
+          "src": "/images/products/champ-color-pencil.webp",
+          "alt": "Grade Champ Color Pencil - Small in its Grade retail pack",
+          "width": 1200,
+          "height": 900
+        },
+        "images": []
       },
       {
         "id": "school-stationery-05",
-        "name": "Pencil & sharpener set",
-        "meta": "School pack",
-        "subcategory": "scale",
+        "name": "Grade Champ Color Pencil - Big",
+        "meta": "Champ · 1872 pcs / carton",
+        "subcategory": "colour-pencil",
+        "sub_brand": "Champ",
+        "features": [
+          "Vibrant colour lead for bright & rich colour",
+          "Durable break resistant lead, extra bonded",
+          "Made of soften high-quality wood & easy to sharpen",
+          "Hexagonal shape for comfortable grip to hold"
+        ],
+        "pack_inner": "12+1 Pcs Paper Box",
+        "pack_carton": "1872 Pcs Ctn.",
         "image": {
           "id": null,
-          "src": "/images/items/school-stationery-05.jpg",
-          "alt": "A sharpener and shavings on an open notebook",
+          "src": "/images/products/champ-color-pencil.webp",
+          "alt": "Grade Champ Color Pencil - Big in its Grade retail pack",
+          "width": 1200,
+          "height": 900
+        },
+        "images": []
+      },
+      {
+        "id": "school-stationery-06",
+        "name": "Grade Champ Eraser – Small",
+        "meta": "Champ · 1200 pcs / carton",
+        "subcategory": "eraser",
+        "sub_brand": "Champ",
+        "features": [
+          "Superior erasing performance",
+          "Removes pencil marks effortlessly",
+          "Comes with protective sleeve to keep you and the eraser clean",
+          "Doesn't crack or harden with age; remains soft and ready to use",
+          "No smudges, no paper tears and no ghosting"
+        ],
+        "pack_inner": "30 Pcs Jar",
+        "pack_carton": "1200 Pcs Ctn.",
+        "image": {
+          "id": null,
+          "src": "/images/products/champ-eraser-jar.webp",
+          "alt": "Grade Champ Eraser – Small in its Grade retail pack",
+          "width": 1200,
+          "height": 900
+        },
+        "images": []
+      },
+      {
+        "id": "school-stationery-07",
+        "name": "Grade Champ Eraser – Big",
+        "meta": "Champ · 960 pcs / carton",
+        "subcategory": "eraser",
+        "sub_brand": "Champ",
+        "features": [
+          "Superior erasing performance",
+          "Removes pencil marks effortlessly",
+          "Comes with protective sleeve to keep you and the eraser clean",
+          "Doesn't crack or harden with age; remains soft and ready to use",
+          "No smudges, no paper tears and no ghosting"
+        ],
+        "pack_inner": "30 Pcs Jar",
+        "pack_carton": "960 Pcs Ctn.",
+        "image": {
+          "id": null,
+          "src": "/images/products/champ-eraser-jar.webp",
+          "alt": "Grade Champ Eraser – Big in its Grade retail pack",
+          "width": 1200,
+          "height": 900
+        },
+        "images": []
+      },
+      {
+        "id": "school-stationery-08",
+        "name": "Grade Neo Sharpener – Small",
+        "meta": "Neo · 1800 pcs / carton",
+        "subcategory": "sharpener",
+        "sub_brand": "Neo",
+        "features": [
+          "Constructed from durable plastic with sharp, high-quality precision steel blades",
+          "Can cut the pencil quickly without damaging the pencil",
+          "Designed for consistent sharpening results",
+          "Works on a variety of pencils - standard sized pencils, colored pencils, and crayons"
+        ],
+        "pack_inner": "60 Pcs Jar",
+        "pack_carton": "1800 Pcs Ctn.",
+        "image": {
+          "id": null,
+          "src": "/images/items/school-stationery-02.jpg",
+          "alt": "Grade Neo Sharpener – Small — stand-in photography pending the client’s product shots",
           "width": 800,
           "height": 560
         }
       },
       {
-        "id": "school-stationery-06",
-        "name": "Desk Sharpener — wooden",
-        "meta": "Single unit",
-        "subcategory": "pencil-box",
+        "id": "school-stationery-09",
+        "name": "Grade Champ Scale - 30 cm",
+        "meta": "Champ · 600 pcs / carton",
+        "subcategory": "scale",
+        "sub_brand": "Champ",
+        "features": [
+          "Smooth edge",
+          "Perfect, bold calibration for accurate marking",
+          "High transparency for clearer & precise measurements",
+          "High-quality durable material ensures long-lasting performance"
+        ],
+        "pack_inner": "12 Pcs Paper Box",
+        "pack_carton": "600 Pcs Ctn.",
         "image": {
           "id": null,
-          "src": "/images/items/school-stationery-06.jpg",
-          "alt": "A wooden desk sharpener",
+          "src": "/images/products/champ-scale-30cm.webp",
+          "alt": "Grade Champ Scale - 30 cm in its Grade retail pack",
+          "width": 1200,
+          "height": 900
+        },
+        "images": []
+      },
+      {
+        "id": "school-stationery-10",
+        "name": "Grade Champ Pencil Box – Big",
+        "meta": "Champ · 120 pcs / carton",
+        "subcategory": "pencil-box",
+        "sub_brand": "Champ",
+        "features": [
+          "Made of durable PP plastic for long-lasting performance",
+          "Vibrant Translucent Colors: Blue, Green, Pink & Pastel",
+          "Stylish and functional, it’s perfect for school",
+          "Comfortable lock system"
+        ],
+        "pack_inner": "12 Pcs Paper Box",
+        "pack_carton": "120 Pcs Ctn.",
+        "image": {
+          "id": null,
+          "src": "/images/products/champ-geometry-box.webp",
+          "alt": "Grade Champ Pencil Box – Big in its Grade retail pack",
+          "width": 1200,
+          "height": 900
+        },
+        "images": []
+      },
+      {
+        "id": "school-stationery-11",
+        "name": "Grade Champ Pencil Box – Medium",
+        "meta": "Champ · 96 pcs / carton",
+        "subcategory": "pencil-box",
+        "sub_brand": "Champ",
+        "features": [
+          "Made of durable PP plastic for long-lasting performance",
+          "Vibrant Translucent Colors: Blue, Green, Pink & Pastel",
+          "Stylish and functional, it’s perfect for school",
+          "Comfortable lock system"
+        ],
+        "pack_inner": "12 Pcs Paper Box",
+        "pack_carton": "96 Pcs Ctn.",
+        "image": {
+          "id": null,
+          "src": "/images/products/champ-geometry-box.webp",
+          "alt": "Grade Champ Pencil Box – Medium in its Grade retail pack",
+          "width": 1200,
+          "height": 900
+        },
+        "images": []
+      },
+      {
+        "id": "school-stationery-12",
+        "name": "Grade Champ Clipboard - FC",
+        "meta": "Champ · 72 pcs / carton",
+        "subcategory": "clipboard",
+        "sub_brand": "Champ",
+        "features": [
+          "Finished with smooth, rounded edge",
+          "Retractable hanging wall display clip",
+          "Strong rubberized corner clip grips",
+          "Feature a 3mm thick plastic, making them more resistant to bending and breaking. This ensures long-lasting reliability and durability, even with frequent use",
+          "Lightweight and easy to carry"
+        ],
+        "pack_inner": null,
+        "pack_carton": "72 Pcs Ctn.",
+        "image": {
+          "id": null,
+          "src": "/images/products/champ-clipboard.webp",
+          "alt": "Grade Champ Clipboard - FC in its Grade retail pack",
+          "width": 1200,
+          "height": 900
+        },
+        "images": []
+      },
+      {
+        "id": "school-stationery-13",
+        "name": "Grade Champ Clipboard - A4",
+        "meta": "Champ · 72 pcs / carton",
+        "subcategory": "clipboard",
+        "sub_brand": "Champ",
+        "features": [
+          "Finished with smooth, rounded edge",
+          "Retractable hanging wall display clip",
+          "Strong rubberized corner clip grips",
+          "Built for long-lasting reliability and durability, even with frequent use",
+          "Lightweight and easy to carry"
+        ],
+        "pack_inner": null,
+        "pack_carton": "72 Pcs Ctn.",
+        "image": {
+          "id": null,
+          "src": "/images/products/champ-clipboard.webp",
+          "alt": "Grade Champ Clipboard - A4 in its Grade retail pack",
+          "width": 1200,
+          "height": 900
+        },
+        "images": []
+      },
+      {
+        "id": "school-stationery-14",
+        "name": "Grade Neo Clipboard - Paper",
+        "meta": "Neo · 48 pcs / carton",
+        "subcategory": "clipboard",
+        "sub_brand": "Neo",
+        "features": [
+          "Finished with smooth, rounded edge",
+          "Retractable hanging wall display clip",
+          "Strong rubberized corner clip grips",
+          "Built for long-lasting reliability and durability, even with frequent use",
+          "Attractive body design"
+        ],
+        "pack_inner": null,
+        "pack_carton": "48 Pcs Ctn.",
+        "image": {
+          "id": null,
+          "src": "/images/items/school-stationery-02.jpg",
+          "alt": "Grade Neo Clipboard - Paper — stand-in photography pending the client’s product shots",
+          "width": 800,
+          "height": 560
+        }
+      },
+      {
+        "id": "school-stationery-15",
+        "name": "Grade Neo Clipboard - Rexine",
+        "meta": "Neo · 48 pcs / carton",
+        "subcategory": "clipboard",
+        "sub_brand": "Neo",
+        "features": [
+          "Finished with smooth, rounded edge",
+          "Retractable hanging wall display clip",
+          "Strong rubberized corner clip grips",
+          "Built for long-lasting reliability and durability, even with frequent use",
+          "Attractive body Colors"
+        ],
+        "pack_inner": null,
+        "pack_carton": "48 Pcs Ctn.",
+        "image": {
+          "id": null,
+          "src": "/images/items/school-stationery-03.jpg",
+          "alt": "Grade Neo Clipboard - Rexine — stand-in photography pending the client’s product shots",
+          "width": 800,
+          "height": 560
+        }
+      },
+      {
+        "id": "school-stationery-16",
+        "name": "Grade Neo Clipboard – Rexine 2 Part",
+        "meta": "Neo · 48 pcs / carton",
+        "subcategory": "clipboard",
+        "sub_brand": "Neo",
+        "features": [
+          "Finished with smooth, rounded edge",
+          "Retractable hanging wall display clip",
+          "Strong rubberized corner clip grips",
+          "Built for long-lasting reliability and durability, even with frequent use"
+        ],
+        "pack_inner": null,
+        "pack_carton": "48 Pcs Ctn.",
+        "image": {
+          "id": null,
+          "src": "/images/items/school-stationery-04.jpg",
+          "alt": "Grade Neo Clipboard – Rexine 2 Part — stand-in photography pending the client’s product shots",
+          "width": 800,
+          "height": 560
+        }
+      },
+      {
+        "id": "school-stationery-17",
+        "name": "Grade Neo Duster",
+        "meta": "Neo · 144 pcs / carton",
+        "subcategory": "duster",
+        "sub_brand": "Neo",
+        "features": [
+          "Whiteboard duster made of premium ABS and fine flannel",
+          "Flat back and rounded corners that fit neatly in the palm",
+          "Easy to grasp, comfortable to use",
+          "Thick foam mat"
+        ],
+        "pack_inner": null,
+        "pack_carton": "144 Pcs Ctn.",
+        "image": {
+          "id": null,
+          "src": "/images/items/school-stationery-05.jpg",
+          "alt": "Grade Neo Duster — stand-in photography pending the client’s product shots",
           "width": 800,
           "height": 560
         }
       }
     ],
-    "accent": "var(--color-accent-green)"
+    "accent": "var(--color-accent-green)",
+    "banner_lines": [
+      "Learn, Create",
+      "Explore, Achieve"
+    ],
+    "sub_brands": [
+      {
+        "slug": "neo",
+        "name": "Neo"
+      },
+      {
+        "slug": "champ",
+        "name": "Champ"
+      }
+    ]
   },
   {
     "slug": "office-stationery",
     "name": "Office Stationery",
     "summary": "Desk tools and consumables for offices and corporate procurement.",
-    "meta": "Stapler · Staples · +4",
+    "meta": "Stapler, Punch, Pin Remover, Staples",
     "seo": {
       "title": "Office Stationery — Grade Limited, Dhaka",
       "description": "Desk tools and consumables for offices and corporate procurement. Quoted by the carton for schools, retailers and corporate buyers across Bangladesh."
@@ -354,9 +718,9 @@
     "image": {
       "id": null,
       "src": "/images/ranges/office-stationery.jpg",
-      "alt": "Office Stationery range",
-      "width": 1300,
-      "height": 650
+      "alt": "Office stationery range",
+      "width": 800,
+      "height": 560
     },
     "subcategories": [
       {
@@ -374,108 +738,165 @@
       {
         "slug": "staples",
         "name": "Staples"
-      },
-      {
-        "slug": "highlighter",
-        "name": "Highlighter"
-      },
-      {
-        "slug": "marker",
-        "name": "Marker"
-      },
-      {
-        "slug": "cutter-knife",
-        "name": "Cutter Knife"
       }
     ],
     "sort": 4,
     "items": [
       {
         "id": "office-stationery-01",
-        "name": "Stapler — half strip",
-        "meta": "Steel body · 20 sheets",
+        "name": "Grade Xtreme Stapler - Mini",
+        "meta": "Xtreme · 240 pcs / carton",
         "subcategory": "stapler",
+        "sub_brand": "Xtreme",
+        "features": [
+          "The stapler set is made of ABS shell, stainless steel with fine workmanship.",
+          "Built-in staple remover for convenient staple removal.",
+          "Can bind up to 15 sheets of paper at most, making it a powerful tool for everyday use.",
+          "The compact stapler is perfectly sized to fit in the palm of your hand, allowing for easy one-handed operation while saving space."
+        ],
+        "pack_inner": null,
+        "pack_carton": "240 Pcs Ctn.",
         "image": {
           "id": null,
-          "src": "/images/items/office-stationery-01.jpg",
-          "alt": "A half-strip stapler on a white surface",
-          "width": 800,
-          "height": 560
-        }
+          "src": "/images/products/xtreme-stapler-mini.webp",
+          "alt": "Grade Xtreme Stapler - Mini in its Grade retail pack",
+          "width": 1200,
+          "height": 900
+        },
+        "images": []
       },
       {
         "id": "office-stationery-02",
-        "name": "Staples — 26/6",
-        "meta": "Box of 1000",
-        "subcategory": "punch",
+        "name": "Grade Xtreme Stapler - S01 Big",
+        "meta": "Xtreme · 120 pcs / carton",
+        "subcategory": "stapler",
+        "sub_brand": "Xtreme",
+        "features": [
+          "Durable Metal structure ensures high quality no-jam stapling and long term use",
+          "Heavy duty stapler effortlessly staples up to 20 sheets",
+          "Versatile Stapling Options - Switch between permanent and temporary stapling by reversing the anvil",
+          "Non-slip rubber base keeps stapler securely in place while using"
+        ],
+        "pack_inner": null,
+        "pack_carton": "120 Pcs Ctn.",
         "image": {
           "id": null,
-          "src": "/images/items/office-stationery-02.jpg",
-          "alt": "A strip of staples beside used staples",
-          "width": 1300,
-          "height": 650
-        }
+          "src": "/images/products/xtreme-stapler-big.webp",
+          "alt": "Grade Xtreme Stapler - S01 Big in its Grade retail pack",
+          "width": 1200,
+          "height": 900
+        },
+        "images": []
       },
       {
         "id": "office-stationery-03",
-        "name": "Highlighter — 4 pack",
-        "meta": "Chisel tip · assorted",
-        "subcategory": "pin-remover",
+        "name": "Grade Xtreme Stapler S02 Big",
+        "meta": "Xtreme · 96 pcs / carton",
+        "subcategory": "stapler",
+        "sub_brand": "Xtreme",
+        "features": [
+          "Built with all-metal construction to ensure durability. A specially engineered inner rail delivers jam-resistant, accurate stapling",
+          "This high-performing stapler fastens up to 20 sheets of paper",
+          "Versatile Stapling Options - Switch between permanent and temporary stapling by reversing the anvil",
+          "Non-slip rubber in base keeps stapler securely in place while using"
+        ],
+        "pack_inner": null,
+        "pack_carton": "96 Pcs Ctn.",
         "image": {
           "id": null,
-          "src": "/images/items/office-stationery-03.jpg",
-          "alt": "Four highlighters in pink, green, orange and yellow",
-          "width": 800,
-          "height": 560
-        }
+          "src": "/images/products/xtreme-stapler-big.webp",
+          "alt": "Grade Xtreme Stapler S02 Big in its Grade retail pack",
+          "width": 1200,
+          "height": 900
+        },
+        "images": []
       },
       {
         "id": "office-stationery-04",
-        "name": "Marker — assorted colours",
-        "meta": "Display box of 60",
-        "subcategory": "staples",
+        "name": "Grade Xtreme Punch",
+        "meta": "Xtreme · 120 pcs / carton",
+        "subcategory": "punch",
+        "sub_brand": "Xtreme",
+        "features": [
+          "Durable Construction: Crafted with solid metal and durable plastic, our 2 hole puncher is designed for long-lasting use",
+          "Easy Hole Pushing: Effortlessly punch through up to 08 sheets of paper, plastic cards, or thin metal sheets with this paper punch",
+          "Neat And Organized: Keep your workspace clean with the built-in confetti collector of this two hole puncher"
+        ],
+        "pack_inner": null,
+        "pack_carton": "120 Pcs Ctn.",
         "image": {
           "id": null,
-          "src": "/images/items/office-stationery-04.jpg",
-          "alt": "Rows of marker pens seen from above",
-          "width": 800,
-          "height": 560
-        }
+          "src": "/images/products/xtreme-punch.webp",
+          "alt": "Grade Xtreme Punch in its Grade retail pack",
+          "width": 1200,
+          "height": 900
+        },
+        "images": []
       },
       {
         "id": "office-stationery-05",
-        "name": "Cutter Knife — retractable",
-        "meta": "Snap-off blade",
-        "subcategory": "highlighter",
+        "name": "Grade Xtreme Pin Remover",
+        "meta": "Xtreme · 240 pcs / carton",
+        "subcategory": "pin-remover",
+        "sub_brand": "Xtreme",
+        "features": [
+          "Strong durable plastic body with smooth surface",
+          "Smooth, metal jaw efficiently removes staples without tearing paper",
+          "Wide grip allows secure hand placement for safe use",
+          "Lightweight construction ensures precise, effortless handling"
+        ],
+        "pack_inner": null,
+        "pack_carton": "240 Pcs Ctn.",
         "image": {
           "id": null,
-          "src": "/images/items/office-stationery-05.jpg",
-          "alt": "A retractable cutter knife on a dark surface",
-          "width": 800,
-          "height": 560
-        }
+          "src": "/images/products/xtreme-pin-remover.webp",
+          "alt": "Grade Xtreme Pin Remover in its Grade retail pack",
+          "width": 1200,
+          "height": 900
+        },
+        "images": []
       },
       {
         "id": "office-stationery-06",
-        "name": "Note Pad — A5",
-        "meta": "Pack of 5 · plain",
-        "subcategory": "marker",
+        "name": "Grade Xtreme Staples",
+        "meta": "Xtreme · 500 boxes / carton",
+        "subcategory": "staples",
+        "sub_brand": "Xtreme",
+        "features": [
+          "Designed specifically for stapling paper",
+          "Chisel-point tips for smooth, jam-free stapling of up to 20 sheets",
+          "The galvanized steel construction is designed for durable long-term holding"
+        ],
+        "pack_inner": null,
+        "pack_carton": "500 Boxes Ctn.",
         "image": {
           "id": null,
-          "src": "/images/items/office-stationery-06.jpg",
-          "alt": "A stack of white note pads",
-          "width": 800,
-          "height": 560
-        }
+          "src": "/images/products/xtreme-staples.webp",
+          "alt": "Grade Xtreme Staples in its Grade retail pack",
+          "width": 1200,
+          "height": 900
+        },
+        "images": []
       }
     ],
-    "accent": "var(--color-accent-purple)"
+    "accent": "var(--color-accent-purple)",
+    "banner_lines": [
+      "Organize Better",
+      "Work Smarter",
+      "Achieve More"
+    ],
+    "sub_brands": [
+      {
+        "slug": "xtreme",
+        "name": "Xtreme"
+      }
+    ]
   },
   {
     "slug": "file-folder",
     "name": "File & Folder",
     "summary": "Filing and document storage for offices and record keeping.",
-    "meta": "Box file · Ring binder · +4",
+    "meta": "Report Cover, Clear Bag, Liner Bag, L-Folder",
     "seo": {
       "title": "File & Folder — Grade Limited, Dhaka",
       "description": "Filing and document storage for offices and record keeping. Quoted by the carton for schools, retailers and corporate buyers across Bangladesh."
@@ -487,88 +908,297 @@
       "width": 1300,
       "height": 650
     },
-    "subcategories": [],
+    "subcategories": [
+      {
+        "slug": "report-cover",
+        "name": "Report Cover"
+      },
+      {
+        "slug": "clear-bag",
+        "name": "Clear Bag"
+      },
+      {
+        "slug": "liner-bag",
+        "name": "Liner Bag"
+      },
+      {
+        "slug": "l-folder",
+        "name": "L-Folder"
+      },
+      {
+        "slug": "ring-file",
+        "name": "Ring File"
+      },
+      {
+        "slug": "document-carrier",
+        "name": "Document Carrier"
+      },
+      {
+        "slug": "clip-file",
+        "name": "Clip File"
+      },
+      {
+        "slug": "court-file",
+        "name": "Court File"
+      }
+    ],
     "sort": 5,
     "items": [
       {
         "id": "file-folder-01",
-        "name": "Lever Arch File — A4, red",
-        "meta": "Board · 75 mm spine",
-        "subcategory": null,
+        "name": "Grade Dox Report Cover - A4",
+        "meta": "Dox · 360 pcs / carton",
+        "subcategory": "report-cover",
+        "sub_brand": "Dox",
+        "features": [
+          "Made from sturdy PP plastic",
+          "Transparent and Scratch Resistant Cover Design",
+          "Tough, water-resistant, and don’t tear or bend easily",
+          "Each file comes with a convenient interior side pocket"
+        ],
+        "pack_inner": null,
+        "pack_carton": "360 Pcs Ctn.",
         "image": {
           "id": null,
           "src": "/images/items/file-folder-01.jpg",
-          "alt": "A row of red lever arch files on a shelf",
-          "width": 1300,
-          "height": 650
+          "alt": "Grade Dox Report Cover - A4 — stand-in photography pending the client’s product shots",
+          "width": 800,
+          "height": 560
         }
       },
       {
         "id": "file-folder-02",
-        "name": "Lever Arch File — assorted",
-        "meta": "Board · 75 mm spine",
-        "subcategory": null,
+        "name": "Grade Dox Clear Bag - A4",
+        "meta": "Dox · 360 pcs / carton",
+        "subcategory": "clear-bag",
+        "sub_brand": "Dox",
+        "features": [
+          "Made of premium PP plastic, clear and smooth surface",
+          "Tear-resistant, moisture-proof, thick and sturdy",
+          "Effectively protect your important documents; can be reused at high frequency",
+          "Button is made of plastic, can be used repeatedly and not easy to damage"
+        ],
+        "pack_inner": null,
+        "pack_carton": "360 Pcs Ctn.",
         "image": {
           "id": null,
           "src": "/images/items/file-folder-02.jpg",
-          "alt": "Lever arch files in purple, teal and green",
+          "alt": "Grade Dox Clear Bag - A4 — stand-in photography pending the client’s product shots",
           "width": 800,
           "height": 560
         }
       },
       {
         "id": "file-folder-03",
-        "name": "Ring Binder — 2D, A4",
-        "meta": "Assorted colours",
-        "subcategory": null,
+        "name": "Grade Dox Clear Bag - FC",
+        "meta": "Dox · 360 pcs / carton",
+        "subcategory": "clear-bag",
+        "sub_brand": "Dox",
+        "features": [
+          "Made of premium PP plastic, clear and smooth surface",
+          "Tear-resistant, moisture-proof, thick and sturdy",
+          "Effectively protect your important documents; can be reused at high frequency",
+          "Button is made of plastic, can be used repeatedly and not easy to damage"
+        ],
+        "pack_inner": null,
+        "pack_carton": "360 Pcs Ctn.",
         "image": {
           "id": null,
           "src": "/images/items/file-folder-03.jpg",
-          "alt": "Shelves of ring binders in assorted colours",
+          "alt": "Grade Dox Clear Bag - FC — stand-in photography pending the client’s product shots",
           "width": 800,
           "height": 560
         }
       },
       {
         "id": "file-folder-04",
-        "name": "Box File — foolscap",
-        "meta": "Board · assorted",
-        "subcategory": null,
+        "name": "Grade Dox Liner Bag",
+        "meta": "Dox · 240 pcs / carton",
+        "subcategory": "liner-bag",
+        "sub_brand": "Dox",
+        "features": [
+          "Made of super thick polypropylene, tear and water resistant",
+          "Exquisite stitching and reinforced cloth edges for extra durability",
+          "Suitable for storing letter size and A4 size papers without folding",
+          "Durable plastic Snap Closure"
+        ],
+        "pack_inner": null,
+        "pack_carton": "240 Pcs Ctn.",
         "image": {
           "id": null,
           "src": "/images/items/file-folder-04.jpg",
-          "alt": "Shelving filled with colourful box files",
+          "alt": "Grade Dox Liner Bag — stand-in photography pending the client’s product shots",
           "width": 800,
           "height": 560
         }
       },
       {
         "id": "file-folder-05",
-        "name": "Document Wallet — A4",
-        "meta": "Pack of 10",
-        "subcategory": null,
+        "name": "Grade Dox Liner Bag - Plus",
+        "meta": "Dox · 120 pcs / carton",
+        "subcategory": "liner-bag",
+        "sub_brand": "Dox",
+        "features": [
+          "Made of super thick polypropylene, tear and water resistant",
+          "Exquisite stitching and reinforced cloth edges for extra durability",
+          "Suitable for storing letter size and A4 size papers without folding",
+          "Durable plastic Snap Closure",
+          "Expandable large capacity"
+        ],
+        "pack_inner": null,
+        "pack_carton": "120 Pcs Ctn.",
         "image": {
           "id": null,
           "src": "/images/items/file-folder-05.jpg",
-          "alt": "Stacks of tied document bundles",
+          "alt": "Grade Dox Liner Bag - Plus — stand-in photography pending the client’s product shots",
           "width": 800,
           "height": 560
         }
       },
       {
         "id": "file-folder-06",
-        "name": "Suspension File — A4",
-        "meta": "Pack of 10",
-        "subcategory": null,
+        "name": "Grade Dox L- Folder",
+        "meta": "Dox · 600 pcs / carton",
+        "subcategory": "l-folder",
+        "sub_brand": "Dox",
+        "features": [
+          "Made of high-quality plastic",
+          "Sturdy, waterproof, dustproof, wrinkle-resistant, and tear-resistant",
+          "High Transparency Surface",
+          "L-type Design, Top & Side Loading"
+        ],
+        "pack_inner": null,
+        "pack_carton": "600 Pcs Ctn.",
         "image": {
           "id": null,
           "src": "/images/items/file-folder-06.jpg",
-          "alt": "An open suspension file drawer",
+          "alt": "Grade Dox L- Folder — stand-in photography pending the client’s product shots",
+          "width": 800,
+          "height": 560
+        }
+      },
+      {
+        "id": "file-folder-07",
+        "name": "Grade Dox Ring File – A4",
+        "meta": "Dox · 48 pcs / carton",
+        "subcategory": "ring-file",
+        "sub_brand": "Dox",
+        "features": [
+          "Made of sturdy material and is moisture and dust resistant for long-term preservation",
+          "Durable Plastic Covers",
+          "Round ring design open and close easily for daily filing",
+          "Heavy-duty and durable"
+        ],
+        "pack_inner": null,
+        "pack_carton": "48 Pcs Ctn.",
+        "image": {
+          "id": null,
+          "src": "/images/items/file-folder-01.jpg",
+          "alt": "Grade Dox Ring File – A4 — stand-in photography pending the client’s product shots",
+          "width": 800,
+          "height": 560
+        }
+      },
+      {
+        "id": "file-folder-08",
+        "name": "Grade Dox Document Carrier",
+        "meta": "Dox · 60 pcs / carton",
+        "subcategory": "document-carrier",
+        "sub_brand": "Dox",
+        "features": [
+          "Made of Premium PP Material",
+          "Durable ergonomic adjustable handle",
+          "Durable Buckle Closure",
+          "Legal Size"
+        ],
+        "pack_inner": null,
+        "pack_carton": "60 Pcs Ctn.",
+        "image": {
+          "id": null,
+          "src": "/images/items/file-folder-02.jpg",
+          "alt": "Grade Dox Document Carrier — stand-in photography pending the client’s product shots",
+          "width": 800,
+          "height": 560
+        }
+      },
+      {
+        "id": "file-folder-09",
+        "name": "Grade Dox Document Carrier - Belt",
+        "meta": "Dox · 60 pcs / carton",
+        "subcategory": "document-carrier",
+        "sub_brand": "Dox",
+        "features": [
+          "Made of Premium PP Material",
+          "Durable ergonomic adjustable handle",
+          "Durable Buckle Closure",
+          "Detachable shoulder strap for comfortable carrying",
+          "Legal Size"
+        ],
+        "pack_inner": null,
+        "pack_carton": "60 Pcs Ctn.",
+        "image": {
+          "id": null,
+          "src": "/images/items/file-folder-03.jpg",
+          "alt": "Grade Dox Document Carrier - Belt — stand-in photography pending the client’s product shots",
+          "width": 800,
+          "height": 560
+        }
+      },
+      {
+        "id": "file-folder-10",
+        "name": "Grade Dox Clip File",
+        "meta": "Dox · 60 pcs. / carton",
+        "subcategory": "clip-file",
+        "sub_brand": "Dox",
+        "features": [
+          "High-Quality punch less binder is made of polypropylene",
+          "Impact resistance, waterproof, anti-friction, and easy to clean",
+          "The clip is made of high-quality stainless steel, which is not easy to rust"
+        ],
+        "pack_inner": null,
+        "pack_carton": "60 Pcs. Ctn.",
+        "image": {
+          "id": null,
+          "src": "/images/items/file-folder-04.jpg",
+          "alt": "Grade Dox Clip File — stand-in photography pending the client’s product shots",
+          "width": 800,
+          "height": 560
+        }
+      },
+      {
+        "id": "file-folder-11",
+        "name": "Grade Dox Court File",
+        "meta": "Dox · 120 pcs / carton",
+        "subcategory": "court-file",
+        "sub_brand": "Dox",
+        "features": [
+          "Made of super high quality thick polypropylene",
+          "Impact resistance, waterproof, anti-friction, and easy to clean",
+          "Extra-large flap for storing more valuable documents",
+          "Built tough for long-term use"
+        ],
+        "pack_inner": null,
+        "pack_carton": "120 Pcs Ctn.",
+        "image": {
+          "id": null,
+          "src": "/images/items/file-folder-05.jpg",
+          "alt": "Grade Dox Court File — stand-in photography pending the client’s product shots",
           "width": 800,
           "height": 560
         }
       }
     ],
-    "accent": "var(--color-accent-pink)"
+    "accent": "var(--color-accent-pink)",
+    "banner_lines": [
+      "Organize Today",
+      "Stay Organized",
+      "Succeed Every Day"
+    ],
+    "sub_brands": [
+      {
+        "slug": "dox",
+        "name": "Dox"
+      }
+    ]
   }
 ]

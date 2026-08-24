@@ -1,6 +1,6 @@
 {
   "company_name": "Grade Limited",
-  "tagline": "For Every People",
+  "tagline": "Empowering Your Potential",
   "founded_year": 2019,
   "address_lines": [
     "Akram Manjil, H-8/A/8,",
@@ -9,15 +9,35 @@
   ],
   "phone": "01842-024378",
   "phone_href": "tel:+8801842024378",
-  "email": "sales@gradebd.com",
+  "email": "info@gradebd.com",
   "opening_hours": "Sunday to Thursday, 9:00 – 18:00",
   "utility_message": "Trade & bulk enquiries welcome",
   "response_promise": "We reply to bulk enquiries within one working day.",
   "socials": [
-    { "platform": "facebook", "url": "https://www.facebook.com/", "confirmed": true },
-    { "platform": "linkedin", "url": "https://www.linkedin.com/", "confirmed": true },
-    { "platform": "instagram", "url": "#", "confirmed": false },
-    { "platform": "youtube", "url": "#", "confirmed": false },
-    { "platform": "x", "url": "#", "confirmed": false }
+    {
+      "platform": "facebook",
+      "url": "https://www.facebook.com/",
+      "confirmed": true
+    },
+    {
+      "platform": "linkedin",
+      "url": "https://www.linkedin.com/",
+      "confirmed": true
+    },
+    {
+      "platform": "instagram",
+      "url": "#",
+      "confirmed": false
+    },
+    {
+      "platform": "youtube",
+      "url": "#",
+      "confirmed": false
+    },
+    {
+      "platform": "x",
+      "url": "#",
+      "confirmed": false
+    }
   ]
 }

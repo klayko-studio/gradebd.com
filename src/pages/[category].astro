@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import PageBanner from '../components/PageBanner.astro';
 import ProductCard from '../components/ProductCard.astro';
+import ProductDialog from '../components/ProductDialog.astro';
 import QuoteBand from '../components/QuoteBand.astro';
 import { getCategories, getSite } from '../lib/cms';
 import type { Category, Site } from '../lib/schema';
@@ -24,8 +25,16 @@ interface Props {
 const { category } = Astro.props;
 const site: Site = await getSite();
 
-/** File & Folder has no sub-categories, so the filter row must not render. */
-const hasFilters = category.subcategories.length > 0;
+/**
+ * Two filter axes, and a range only shows the ones it actually has.
+ *
+ * Sub-brand is the client's own axis — every SKU is named "Grade <sub-brand> …", so
+ * School Stationery genuinely splits into Champ and Neo. It only earns a row when a
+ * range holds more than one; Office is all Xtreme and filing is all Dox, where a
+ * single-value filter would be noise.
+ */
+const showBrands = category.sub_brands.length > 1;
+const showSubs = category.subcategories.length > 0;
 ---
 
 <Base seo={category.seo} active="categories">
@@ -33,41 +42,71 @@ const hasFilters = category.subcategories.length > 0;
     eyebrow="Product categories"
     title={category.name}
     sub={category.summary}
+    lines={category.banner_lines}
     image={category.image}
     accent={category.accent}
   />
 
   {
-    hasFilters && (
-      <div class="border-b border-line-subtle">
-        <div class="rail py-6">
-          <ul class="flex flex-wrap gap-x-9 gap-y-4" aria-label={`Filter ${category.name}`}>
-            <li>
-              <span
-                aria-current="true"
-                class="flex flex-col items-center gap-2 t-nav font-semibold text-ink"
+    (showBrands || showSubs) && (
+      <div class="border-b border-line-subtle" data-filters>
+        <div class="rail flex flex-col gap-5 py-6">
+          {showBrands && (
+            <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
+              <span class="t-label-xs mr-1 text-[color:var(--text-muted)]">Range</span>
+              <button
+                type="button"
+                class="filter-pill is-active"
+                data-filter="brand"
+                data-value="all"
+                style={`--pill-accent:${category.accent}`}
               >
                 All
-                <span
-                  aria-hidden="true"
-                  class="h-[3px] w-full rounded-full"
-                  style={`background:${category.accent}`}
-                />
-              </span>
-            </li>
-            {category.subcategories.map((sub) => (
-              <li>
-                <a
-                  href={`#${sub.slug}`}
-                  class="flex flex-col items-center gap-2 t-nav text-[color:var(--text-secondary)]
-                         transition-colors hover:text-ink"
+              </button>
+              {category.sub_brands.map((brand) => (
+                <button
+                  type="button"
+                  class="filter-pill"
+                  data-filter="brand"
+                  data-value={brand.slug}
+                  style={`--pill-accent:${category.accent}`}
                 >
-                  {sub.name}
-                  <span aria-hidden="true" class="h-[3px] w-full rounded-full bg-transparent" />
-                </a>
+                  {brand.name}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {showSubs && (
+            <ul class="flex flex-wrap gap-x-8 gap-y-3" aria-label={`Filter ${category.name}`}>
+              <li>
+                <button
+                  type="button"
+                  class="filter-tab is-active"
+                  data-filter="sub"
+                  data-value="all"
+                  style={`--tab-accent:${category.accent}`}
+                >
+                  All
+                  <span aria-hidden="true" class="filter-tab-rule" />
+                </button>
               </li>
-            ))}
-          </ul>
+              {category.subcategories.map((sub) => (
+                <li>
+                  <button
+                    type="button"
+                    class="filter-tab"
+                    data-filter="sub"
+                    data-value={sub.slug}
+                    style={`--tab-accent:${category.accent}`}
+                  >
+                    {sub.name}
+                    <span aria-hidden="true" class="filter-tab-rule" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
     )
@@ -76,28 +115,44 @@ const hasFilters = category.subcategories.length > 0;
   <section class="section">
     <div class="rail">
       <div class="flex flex-wrap items-center justify-between gap-4 border-b border-line-subtle pb-5">
-        <h2 class="t-heading-sm">{category.items.length} items</h2>
+        <h2 class="t-heading-sm">
+          <span data-item-count>{category.items.length}</span> items
+        </h2>
         <p class="t-label-sm text-[color:var(--text-muted)]">
           Prices on enquiry · quoted by the carton
         </p>
       </div>
 
-      <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-reveal-group>
+      <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-reveal-group data-item-grid>
         {
           category.items.map((item) => (
-            <ProductCard
-              name={item.name}
-              meta={item.meta}
-              image={item.image}
-              accent={category.accent}
-              action="Enquire about this item"
-              href={`/contact/?item=${encodeURIComponent(item.name)}`}
-            />
+            <div data-item data-brand={item.sub_brand?.toLowerCase() ?? ''} data-sub={item.subcategory ?? ''}>
+              <ProductCard
+                name={item.name}
+                meta={item.meta}
+                image={item.image}
+                accent={category.accent}
+                action="View product details"
+                dialogId={`dlg-${item.id}`}
+              />
+            </div>
           ))
         }
       </div>
+
+      <p class="mt-10 t-label-sm text-[color:var(--text-muted)]" data-empty hidden>
+        Nothing in this range matches both filters. <button type="button" class="underline" data-filter-reset
+          >Clear the filters</button
+        >
+      </p>
     </div>
   </section>
+
+  {
+    category.items.map((item) => (
+      <ProductDialog item={item} accent={category.accent} categoryName={category.name} />
+    ))
+  }
 
   <QuoteBand
     site={site}
@@ -105,3 +160,141 @@ const hasFilters = category.subcategories.length > 0;
     body={`Send the specification and quantity. ${site.response_promise}`}
   />
 </Base>
+
+<style>
+  .filter-pill {
+    border-radius: 999px;
+    border: 1px solid var(--border-soft);
+    padding: 0.4rem 0.9rem;
+    font: var(--t-label-sm-font, inherit);
+    font-size: 0.8125rem;
+    letter-spacing: 0.01em;
+    color: var(--text-secondary);
+    transition:
+      background-color 160ms var(--ease-standard),
+      border-color 160ms var(--ease-standard),
+      color 160ms var(--ease-standard);
+  }
+  .filter-pill:hover {
+    border-color: var(--pill-accent);
+    color: var(--text-primary);
+  }
+  .filter-pill.is-active {
+    background: var(--pill-accent);
+    border-color: var(--pill-accent);
+    color: #fff;
+  }
+
+  .filter-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    transition: color 160ms var(--ease-standard);
+  }
+  .filter-tab:hover {
+    color: var(--text-primary);
+  }
+  .filter-tab.is-active {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+  .filter-tab-rule {
+    height: 3px;
+    width: 100%;
+    border-radius: 999px;
+    background: transparent;
+  }
+  .filter-tab.is-active .filter-tab-rule {
+    background: var(--tab-accent);
+  }
+</style>
+
+<script>
+  // ---- product detail dialogs
+  document.querySelectorAll<HTMLElement>('[data-dialog-open]').forEach((trigger) => {
+    trigger.addEventListener('click', () => {
+      const id = trigger.dataset.dialogOpen;
+      const dialog = id ? document.getElementById(id) : null;
+      if (dialog instanceof HTMLDialogElement) dialog.showModal();
+    });
+  });
+
+  document.querySelectorAll<HTMLDialogElement>('dialog.product-dialog').forEach((dialog) => {
+    dialog.querySelector('[data-dialog-close]')?.addEventListener('click', () => dialog.close());
+
+    // Clicking the backdrop closes. The dialog element covers the whole viewport,
+    // so compare against the inner panel's box rather than the event target.
+    dialog.addEventListener('click', (event) => {
+      const panel = dialog.firstElementChild;
+      if (!(panel instanceof HTMLElement)) return;
+      const box = panel.getBoundingClientRect();
+      const outside =
+        event.clientX < box.left ||
+        event.clientX > box.right ||
+        event.clientY < box.top ||
+        event.clientY > box.bottom;
+      if (outside) dialog.close();
+    });
+
+    const main = dialog.querySelector<HTMLImageElement>('[data-dialog-main]');
+    const accent = dialog.dataset.dialogAccent ?? 'currentColor';
+    const thumbs = dialog.querySelectorAll<HTMLButtonElement>('[data-dialog-thumb]');
+    thumbs.forEach((thumb) => {
+      thumb.addEventListener('click', () => {
+        if (!main) return;
+        main.src = thumb.dataset.dialogThumb ?? main.src;
+        main.alt = thumb.dataset.dialogThumbAlt ?? main.alt;
+        thumbs.forEach((other) => {
+          other.style.borderColor = other === thumb ? accent : 'transparent';
+        });
+      });
+    });
+  });
+
+  // ---- filtering, on both axes at once
+  const grid = document.querySelector<HTMLElement>('[data-item-grid]');
+  if (grid) {
+    const state: Record<string, string> = { brand: 'all', sub: 'all' };
+    const items = Array.from(grid.querySelectorAll<HTMLElement>('[data-item]'));
+    const count = document.querySelector<HTMLElement>('[data-item-count]');
+    const empty = document.querySelector<HTMLElement>('[data-empty]');
+
+    const apply = () => {
+      let shown = 0;
+      items.forEach((item) => {
+        const okBrand = state.brand === 'all' || item.dataset.brand === state.brand;
+        const okSub = state.sub === 'all' || item.dataset.sub === state.sub;
+        const visible = okBrand && okSub;
+        item.hidden = !visible;
+        if (visible) shown += 1;
+      });
+      if (count) count.textContent = String(shown);
+      if (empty) empty.hidden = shown !== 0;
+    };
+
+    document.querySelectorAll<HTMLElement>('[data-filter]').forEach((control) => {
+      control.addEventListener('click', () => {
+        const axis = control.dataset.filter;
+        const value = control.dataset.value;
+        if (!axis || !value) return;
+        state[axis] = value;
+        document
+          .querySelectorAll<HTMLElement>(`[data-filter="${axis}"]`)
+          .forEach((sibling) => sibling.classList.toggle('is-active', sibling === control));
+        apply();
+      });
+    });
+
+    document.querySelector<HTMLElement>('[data-filter-reset]')?.addEventListener('click', () => {
+      state.brand = 'all';
+      state.sub = 'all';
+      document.querySelectorAll<HTMLElement>('[data-filter]').forEach((control) => {
+        control.classList.toggle('is-active', control.dataset.value === 'all');
+      });
+      apply();
+    });
+  }
+</script>

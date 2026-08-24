@@ -61,42 +61,52 @@ const linkOff = 'text-[color:var(--text-on-menu-muted)] hover:text-[color:var(--
                 />
               </a>
 
-              <!-- Hover zone spans the trigger and the panel, so moving the
-                   pointer down into the menu does not dismiss it. -->
+              <!-- Full-width mega-menu, from the client's own reference: one column per
+                   range with every sub-category listed. The hover zone spans the
+                   trigger and the panel so moving the pointer down does not dismiss it.
+                   It is positioned against the header, not this trigger, so it can span
+                   the viewport — hence the fixed left/right rather than a width. -->
               <div
-                class="invisible absolute left-1/2 top-full z-50 w-[290px] -translate-x-1/2 pt-4 opacity-0
+                class="invisible fixed left-0 right-0 top-[var(--header-h)] z-50 pt-0 opacity-0
                        transition-[opacity,visibility] duration-150 group-hover:visible group-hover:opacity-100
                        group-focus-within:visible group-focus-within:opacity-100"
               >
-                <ul
-                  class="overflow-hidden rounded-sharp border border-line-subtle bg-page py-2 shadow-[var(--shadow-raised)]"
-                >
-                  {
-                    categories.map((c) => (
-                      <li>
-                        <a
-                          href={`/${c.slug}/`}
-                          class="flex items-center gap-3 px-5 py-3 t-label-md text-ink transition-colors hover:bg-subtle"
-                        >
+                <div class="border-t border-line-subtle bg-page shadow-[var(--shadow-raised)]">
+                  <div class="rail grid gap-7 py-11 lg:grid-cols-5">
+                    {
+                      categories.map((c) => (
+                        <div class="flex flex-col gap-3.5">
                           <span
-                            class="h-2.5 w-2.5 shrink-0 rounded-full"
+                            aria-hidden="true"
+                            class="h-[3px] w-7 rounded-full"
                             style={`background:${c.accent ?? 'var(--bg-brand)'}`}
                           />
-                          <span class="grow">{c.name}</span>
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path
-                              d="M5 12h13M12.5 6.5L18 12l-5.5 5.5"
-                              stroke="var(--bg-brand)"
-                              stroke-width="1.6"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                            />
-                          </svg>
-                        </a>
-                      </li>
-                    ))
-                  }
-                </ul>
+                          <a
+                            href={`/${c.slug}/`}
+                            class="t-heading-xs text-ink transition-colors hover:text-[color:var(--text-brand-strong)]"
+                          >
+                            {c.name}
+                          </a>
+                          {c.subcategories.length > 0 && (
+                            <ul class="flex flex-col gap-2">
+                              {c.subcategories.map((sub) => (
+                                <li>
+                                  <a
+                                    href={`/${c.slug}/#${sub.slug}`}
+                                    class="t-body-sm text-[color:var(--text-muted)] transition-colors
+                                           hover:text-[color:var(--text-brand-strong)]"
+                                  >
+                                    {sub.name}
+                                  </a>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      ))
+                    }
+                  </div>
+                </div>
               </div>
             </div>
           ) : (

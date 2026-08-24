@@ -4,18 +4,46 @@ import HeroSlider from '../components/HeroSlider.astro';
 import SectionHead from '../components/SectionHead.astro';
 import Eyebrow from '../components/Eyebrow.astro';
 import ProductCard from '../components/ProductCard.astro';
-import ClientMark from '../components/ClientMark.astro';
-import Stars from '../components/Stars.astro';
 import BrandBand from '../components/BrandBand.astro';
 import Button from '../components/Button.astro';
-import { getHome, getCategories, getClients, getReviews } from '../lib/cms';
+import { getHome, getCategories, getClients } from '../lib/cms';
 
-const [home, categories, clients, reviews] = await Promise.all([
+const [home, categories, clients] = await Promise.all([
   getHome(),
   getCategories(),
   getClients(),
-  getReviews(),
 ]);
+
+/**
+ * Sub-brands, counted straight off the catalogue so the band cannot drift from the
+ * data. The blurb says which desk each line is for — that is the distinction the
+ * client's naming makes, and it is not obvious from the name alone.
+ */
+const BLURBS: Record<string, string> = {
+  Champ: 'School kit — pencils, colour, erasers, boxes and boards.',
+  Neo: 'Everyday utility — pencils, sharpeners, clipboards, dusters.',
+  Xtreme: 'Office hardware — staplers, punches, staples.',
+  Dox: 'Filing — covers, bags, folders, files and carriers.',
+};
+const subBrands = Object.values(
+  categories.reduce<Record<string, { name: string; count: number; accent: string; categorySlug: string; blurb: string }>>(
+    (acc, category) => {
+      for (const item of category.items) {
+        if (!item.sub_brand) continue;
+        acc[item.sub_brand] ??= {
+          name: item.sub_brand,
+          count: 0,
+          accent: category.accent,
+          categorySlug: category.slug,
+          blurb: BLURBS[item.sub_brand] ?? '',
+        };
+        acc[item.sub_brand].count += 1;
+      }
+      return acc;
+    },
+    {},
+  ),
+).sort((a, b) => b.count - a.count);
 ---
 
 <Base seo={home.seo} active="home">
@@ -102,11 +130,48 @@ const [home, categories, clients, reviews] = await Promise.all([
     </div>
   </section>
 
+  <!-- The client's own sub-brands. Every SKU is named "Grade <sub-brand> …", so this
+       is how the range is actually organised — and it gives the packaging-led brand
+       direction somewhere to live beyond colour. -->
+  {
+    subBrands.length > 0 && (
+      <section class="section pt-0">
+        <div class="rail">
+          <SectionHead
+            eyebrow="Our sub-brands"
+            heading="Four lines, each built for a different desk."
+          />
+          <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4" data-reveal-group>
+            {subBrands.map((brand) => (
+              <a
+                href={`/${brand.categorySlug}/`}
+                class="group flex flex-col gap-3 rounded-sharp border border-line-subtle bg-surface p-6
+                       transition-[border-color,box-shadow] duration-200 ease-[var(--ease-standard)]
+                       hover:border-line-brand hover:shadow-[var(--shadow-ambient)]"
+              >
+                <span
+                  aria-hidden="true"
+                  class="h-[4px] w-8 rounded-full transition-[width] duration-300 ease-[var(--ease-standard)] group-hover:w-14"
+                  style={`background:${brand.accent}`}
+                />
+                <h3 class="t-heading-md">{brand.name}</h3>
+                <p class="t-body-sm text-[color:var(--text-secondary)]">{brand.blurb}</p>
+                <p class="mt-1 t-label-sm text-[color:var(--text-muted)]">
+                  {brand.count} {brand.count === 1 ? 'product' : 'products'}
+                </p>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   <!-- why grade -->
   <section class="section bg-subtle">
     <div class="rail">
       <SectionHead eyebrow={home.pillars_intro.eyebrow} heading={home.pillars_intro.heading} />
-      <div class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4" data-reveal-group>
+      <div class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5" data-reveal-group>
         {
           home.pillars.map((pillar, i) => (
             <div data-reveal class="flex flex-col gap-3 border-t-2 border-line-brand pt-5">
@@ -114,7 +179,7 @@ const [home, categories, clients, reviews] = await Promise.all([
                 {String(i + 1).padStart(2, '0')}
               </p>
               <h3 class="t-heading-md">{pillar.title}</h3>
-              <p class="t-body-sm">{pillar.body}</p>
+              {pillar.body && <p class="t-body-sm">{pillar.body}</p>}
             </div>
           ))
         }
@@ -122,7 +187,7 @@ const [home, categories, clients, reviews] = await Promise.all([
     </div>
   </section>
 
-  <!-- clients + reviews -->
+  <!-- corporate clients -->
   <section class="section bg-inverse text-[color:var(--text-inverse)]" id="clients">
     <div class="rail">
       <SectionHead
@@ -131,63 +196,98 @@ const [home, categories, clients, reviews] = await Promise.all([
         tone="dark"
       />
 
+      <p class="mt-3 max-w-[70ch] t-body-sm text-[color:var(--text-inverse-muted)]">
+        Every mark here is its owner’s registered trademark. Six are still placeholders while we
+        wait on the artwork, and Grade needs written permission from all fifteen before this
+        goes live.
+      </p>
+
+      <!-- A slider rather than a wall: fifteen companies will not sit on one row, and
+           the client asked for arrows. Native scroll-snap does the work, so it stays
+           usable by touch and keyboard with the arrows as an enhancement. -->
       <div
-        class="mt-10 grid gap-x-8 gap-y-7 sm:grid-cols-2 lg:grid-cols-4"
-        data-reveal-group
+        class="mt-10 flex snap-x snap-mandatory gap-5 overflow-x-auto pb-2
+               [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        data-client-track
       >
         {
           clients.map((client) => (
             <div
-              data-reveal
-              class="flex items-center gap-3"
-              title={client.placeholder ? 'Placeholder — real logo pending client permission' : undefined}
+              class="flex w-[calc((100%-4*1.25rem)/5)] min-w-[180px] shrink-0 snap-start flex-col
+                     items-center gap-3 text-center"
             >
-              <ClientMark mark={client.mark} tone="dark" />
-              <span class="flex flex-col leading-tight">
-                <span class="t-heading-sm text-[color:var(--text-inverse)]">{client.name}</span>
-                <span class="t-label-xs text-[color:var(--text-inverse-muted)]">{client.qualifier}</span>
-              </span>
+              {client.logo ? (
+                <img
+                  src={client.logo}
+                  alt={client.name}
+                  width="300"
+                  height="110"
+                  loading="lazy"
+                  class="h-16 w-full object-contain [filter:brightness(0)_invert(1)] opacity-90"
+                />
+              ) : (
+                <span
+                  class="flex h-16 w-full items-center justify-center rounded-sharp border border-dashed
+                         border-[color:rgb(255_255_255/0.34)]"
+                  title="Placeholder — logo pending"
+                />
+              )}
+              <span class="t-label-xs text-[color:var(--text-inverse-muted)]">{client.name}</span>
             </div>
           ))
         }
       </div>
 
-    </div>
-  </section>
-
-  <!-- what buyers say -->
-  <section class="section">
-    <div class="rail">
-      <SectionHead
-        eyebrow={home.reviews_intro.eyebrow}
-        heading={home.reviews_intro.heading}
-      />
-
-      <div class="mt-10 grid gap-6 md:grid-cols-3" data-reveal-group>
-        {
-          reviews.map((review) => (
-            <figure
-              data-reveal
-              class="flex h-full flex-col gap-4 rounded-sharp border border-line-subtle bg-page px-7 py-7"
-            >
-              <Stars rating={review.rating} />
-              <blockquote class="grow t-body-md text-[color:var(--text-primary)]">
-                “{review.quote}”
-              </blockquote>
-              <figcaption class="flex flex-col gap-0.5 border-t border-line-subtle pt-4">
-                <span class="t-label-md text-[color:var(--text-primary)]">{review.role}</span>
-                <span class="t-body-sm text-[color:var(--text-muted)]">{review.organisation}</span>
-              </figcaption>
-            </figure>
-          ))
-        }
+      <div class="mt-6 flex items-center justify-end gap-2.5">
+        <button
+          type="button"
+          class="grid size-11 place-items-center rounded-full border border-[color:rgb(255_255_255/0.4)]
+                 text-[color:var(--text-inverse)] transition-colors hover:bg-[color:rgb(255_255_255/0.14)]"
+          data-client-prev
+          aria-label="Previous clients"
+        >
+          <svg width="8" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M15 18 9 12l6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          class="grid size-11 place-items-center rounded-full border border-[color:rgb(255_255_255/0.4)]
+                 text-[color:var(--text-inverse)] transition-colors hover:bg-[color:rgb(255_255_255/0.14)]"
+          data-client-next
+          aria-label="More clients"
+        >
+          <svg width="8" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
       </div>
     </div>
   </section>
 
+  <!-- Client Feedback is hidden on the client's instruction (comment #17: "Hide this
+       whole Client Feedback section for now. Might need it later."). The data and the
+       markup are intact in git history; nothing here is deleted, just not rendered. -->
+
   <BrandBand
-    eyebrow="For every people"
+    eyebrow="Empowering your potential"
     heading="Stocked for the whole school year."
     body="From the first pencil box in January to the last file of the audit season — quoted by the carton, delivered on the date agreed."
   />
 </Base>
+
+<script>
+  // Client slider: scroll by a viewport-width of the track, so the arrows move a
+  // whole "page" of logos rather than an arbitrary pixel count.
+  const track = document.querySelector<HTMLElement>('[data-client-track]');
+  if (track) {
+    const page = () => Math.max(track.clientWidth * 0.8, 240);
+    document
+      .querySelector('[data-client-prev]')
+      ?.addEventListener('click', () => track.scrollBy({ left: -page(), behavior: 'smooth' }));
+    document
+      .querySelector('[data-client-next]')
+      ?.addEventListener('click', () => track.scrollBy({ left: page(), behavior: 'smooth' }));
+  }
+</script>
+
