@@ -58,7 +58,7 @@ const subBrands = Object.values(
             data-reveal
             class:list={['flex flex-col gap-1 md:px-8', i > 0 && 'md:border-l md:border-line-subtle', i === 0 && 'md:pl-0']}
           >
-            <p class="t-heading-sm">{stat.value}</p>
+            <p class="t-heading-sm tabular-nums" data-count={stat.value}>{stat.value}</p>
             <p class="t-body-sm text-[color:var(--text-muted)]">{stat.label}</p>
           </div>
         ))
@@ -206,7 +206,7 @@ const subBrands = Object.values(
            the client asked for arrows. Native scroll-snap does the work, so it stays
            usable by touch and keyboard with the arrows as an enhancement. -->
       <div
-        class="mt-10 flex snap-x snap-mandatory gap-5 overflow-x-auto pb-2
+        class="client-track mt-10 flex snap-x snap-mandatory gap-5 overflow-x-auto pb-2
                [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         data-client-track
       >
@@ -275,6 +275,17 @@ const subBrands = Object.values(
     body="From the first pencil box in January to the last file of the audit season — quoted by the carton, delivered on the date agreed."
   />
 </Base>
+
+<style>
+  /* The track is a scroller, so a logo at the edge is always half-cut. Fading the
+     last stretch makes that read as "there is more" rather than as a mistake. */
+  .client-track {
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent);
+    scroll-behavior: smooth;
+  }
+</style>
+
 
 <script>
   // Client slider: scroll by a viewport-width of the track, so the arrows move a

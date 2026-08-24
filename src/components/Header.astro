@@ -24,7 +24,7 @@ const linkOn = 'font-semibold text-[color:var(--text-on-menu)]';
 const linkOff = 'text-[color:var(--text-on-menu-muted)] hover:text-[color:var(--text-on-menu)]';
 ---
 
-<header class="sticky top-0 z-40 bg-menu">
+<header class="sticky top-0 z-40 bg-menu transition-shadow duration-300" data-header>
   <div class="rail flex items-center gap-6 py-4">
     <a href="/" class="shrink-0" aria-label={`${site.company_name} — home`}>
       <!-- The supplied lockup's tagline is white, so the header shows the
@@ -235,3 +235,11 @@ const linkOff = 'text-[color:var(--text-on-menu-muted)] hover:text-[color:var(--
     window.location.href = '/contact/';
   });
 </script>
+
+<style>
+  /* Set once the page has scrolled, so the bar reads as sitting above the content.
+     Height is deliberately untouched — the hero sizes itself off --header-h. */
+  [data-header].is-scrolled {
+    box-shadow: 0 10px 30px -12px rgb(10 82 115 / 0.4);
+  }
+</style>

@@ -63,7 +63,13 @@ const { slides } = Astro.props;
             // Dream / Endless Potential". Tight leading keeps it reading as one unit.
             <h1 class="t-display-2xl text-[color:var(--text-inverse)] leading-[0.98] tracking-[-0.01em]">
               {slide.lines.map((line) => (
-                <span class="block">{line}</span>
+                // Each line sits in its own clipping box so the motion layer can slide
+                // it up from behind its own edge rather than fading it in place.
+                <span class="block overflow-hidden pb-[0.06em]">
+                  <span class="block" data-anim-line>
+                    {line}
+                  </span>
+                </span>
               ))}
             </h1>
           ) : (
@@ -141,6 +147,8 @@ const { slides } = Astro.props;
 
   const root = document.querySelector<HTMLElement>('[data-slider]');
   if (root) {
+    // Captured so the nested functions below keep the non-null narrowing.
+    const slider = root;
     const media = [...root.querySelectorAll<HTMLElement>('[data-slide-media]')];
     const copies = [...root.querySelectorAll<HTMLElement>('[data-slide-copy]')];
     const dots = [...root.querySelectorAll<HTMLButtonElement>('[data-slide-dot]')];
@@ -190,6 +198,9 @@ const { slides } = Astro.props;
         counter.textContent =
           `${String(next + 1).padStart(2, '0')} / ${String(media.length).padStart(2, '0')} — ${labels[next]}`;
       }
+
+      // Let the motion layer re-run the line reveal for the slide now on screen.
+      slider.dispatchEvent(new CustomEvent('slide:change', { detail: { index: next } }));
 
       window.setTimeout(() => {
         busy = false;

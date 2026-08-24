@@ -56,7 +56,11 @@ const placed: [number, number, number, keyof typeof D, number][] = cells.map(([c
 ]);
 ---
 
-<div class={`pointer-events-none absolute inset-0 overflow-hidden ${className}`} aria-hidden="true">
+<div
+  class={`pointer-events-none absolute inset-0 overflow-hidden ${className}`}
+  aria-hidden="true"
+  data-doodles
+>
   {
     placed.map(([left, top, size, key, rotate]) => (
       <svg

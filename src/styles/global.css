@@ -341,6 +341,9 @@
     background-image: url('/images/brand/bg-splash-2000.webp');
     background-size: cover;
     background-position: center;
+    /* The artwork's green is a saturated lime that is not in the owner palette.
+       Desaturating slightly keeps the watercolour texture without the colour cast. */
+    filter: saturate(0.72);
     opacity: 0.2;
     pointer-events: none;
   }

@@ -79,40 +79,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://www.gradebd
     <Footer site={site} categories={categories} showSocials={active !== 'home'} />
 
     <script>
-      import { gsap } from 'gsap';
-      import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const targets = document.querySelectorAll<HTMLElement>('[data-reveal]');
-
-      if (reduced) {
-        // Respect the preference: show everything, animate nothing.
-        targets.forEach((el) => el.classList.add('is-revealed'));
-      } else {
-        gsap.registerPlugin(ScrollTrigger);
-
-        // Group siblings that share a parent so a row of cards staggers together
-        // rather than each card firing its own trigger.
-        const groups = new Map<Element, HTMLElement[]>();
-        targets.forEach((el) => {
-          const key = el.closest('[data-reveal-group]') ?? el.parentElement ?? document.body;
-          const list = groups.get(key) ?? [];
-          list.push(el);
-          groups.set(key, list);
-        });
-
-        groups.forEach((els) => {
-          gsap.to(els, {
-            opacity: 1,
-            y: 0,
-            duration: 0.7,
-            ease: 'power3.out',
-            stagger: 0.07,
-            scrollTrigger: { trigger: els[0], start: 'top 88%', once: true },
-            onStart: () => els.forEach((el) => el.classList.add('is-revealed')),
-          });
-        });
-      }
+      import '../scripts/motion';
     </script>
   </body>
 </html>

@@ -21,13 +21,14 @@ const { eyebrow, title, sub, image, lines = [], accent } = Astro.props;
 const stack = lines.length > 0;
 ---
 
-<section class="arch-bottom relative isolate overflow-hidden bg-inverse">
+<section class="arch-bottom relative isolate overflow-hidden bg-inverse" data-anim-banner>
   <img
     src={image.src}
     alt={image.alt}
     width={image.width}
     height={image.height}
     class="absolute inset-0 -z-10 h-full w-full object-cover"
+    data-parallax
   />
   <!-- Scrim keeps overlaid type legible whatever photograph a moderator uploads.
        It is a deep shade of the client's own blue — navy is out of this palette. -->
@@ -47,7 +48,11 @@ const stack = lines.length > 0;
         // rhythm of the lines is the message, so anything else dilutes it.
         <h1 class="t-display-lg text-[color:var(--text-inverse)] leading-[0.98] tracking-[-0.01em]">
           {lines.map((line) => (
-            <span class="block">{line}</span>
+            <span class="block overflow-hidden pb-[0.06em]">
+              <span class="block" data-anim-line>
+                {line}
+              </span>
+            </span>
           ))}
         </h1>
       ) : (

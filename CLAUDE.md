@@ -308,6 +308,38 @@ Note: requesting the literal `/404` URL against the node adapter throws `FailedT
 This is the known `output: 'static'` + SSR-adapter quirk, not a fault in the page — a genuine unknown
 path returns the 404 page correctly, and on Netlify the static `404.html` is served directly.
 
+### Motion (`src/scripts/motion.ts`)
+
+All client-side motion lives in one module, imported once by `Base.astro`. GSAP + ScrollTrigger.
+Two rules: motion is for orientation, not decoration, so entrances travel a short distance and
+settle; and **everything is skipped under `prefers-reduced-motion`**, with `settle()` leaving the page
+in its finished state rather than part-way through a tween that never runs.
+
+What it does: masked line-by-line reveal on the hero and every page banner (each line sits in its own
+`overflow-hidden` box, so it slides up from behind its own edge — the signature entrance); a stagger
+for the eyebrow, body and buttons; a 2.4s push-in on the lead photograph; scrubbed parallax on banner
+imagery; grouped scroll reveals via `[data-reveal-group]`; counting the credibility figures up; and a
+scroll-scrubbed drift on the client's doodle marks across three planes.
+
+Gotchas paid for once:
+
+- **Never tween `scale` on the first hero `<img>`.** It carries an inline `transform: scaleX(-1)`
+  mirror, and GSAP reads that as a 180-degree rotation with a negative scale — tweening scale on top
+  flips the photograph on *both* axes. Scale the `[data-slide-media]` container instead.
+- **Counters must mirror the source's own number formatting.** `toLocaleString` turns "Since 2019"
+  into "Since 2,013" while counting. Group only when the written figure already groups.
+- The slider dispatches `slide:change` so the motion layer can re-run the line reveal per slide
+  rather than the generic children stagger.
+- TypeScript will not carry a `querySelector` null-narrowing into a nested function declaration —
+  capture the element in a local first.
+- rAF pauses in a backgrounded tab, so a screenshot taken while the window is occluded catches tweens
+  frozen part-way. That is the harness, not a bug; GSAP resumes on focus.
+
+Polish in the same pass: gallery plates lift and scale on hover (comment #32); the client track is
+edge-masked so a half-cut logo reads as "there is more"; the header takes a shadow past 24px of
+scroll but never changes height, because the hero measures itself against `--header-h`; and the
+splash layer is desaturated to 0.72, since its lime green is outside the owner palette.
+
 ### Colours agreed on the client call (page `08`)
 
 Menu bar **light blue**, footer **red**, from client-supplied Pantone swatches. Values sampled from
