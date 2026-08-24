@@ -47,16 +47,21 @@ is the only public listener.
 
 ## Deploying to a VPS
 
-`docker-compose.prod.yml` adds an nginx edge (TLS, gzip, rate limits, long-cache headers) and a
-certbot sidecar that renews automatically. The nginx configuration lives in `nginx/`.
+Docker runs the site on `127.0.0.1:4321`; **nginx on the host** terminates TLS and proxies to it.
+nginx is not containerised — `nginx/gradebd.conf` is a plain site config to install on the box.
 
 ```sh
-docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+docker compose up -d --build
+
+sudo cp nginx/gradebd.conf /etc/nginx/sites-available/gradebd.conf
+sudo ln -s /etc/nginx/sites-available/gradebd.conf /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl reload nginx
+
+sudo certbot --nginx -d gradebd.com -d www.gradebd.com
 ```
 
-That serves the site over HTTP and answers the ACME challenge; renaming one file in `nginx/conf.d/`
-switches it to HTTPS once a certificate exists. Full runbook — DNS, certificate issuance, redeploys,
-backups, troubleshooting — in **[docs/deploy-vps.md](docs/deploy-vps.md)**.
+certbot rewrites the installed copy in place, adding the 443 block and the redirect. Full runbook —
+DNS, redeploys, backups, troubleshooting — in **[docs/deploy-vps.md](docs/deploy-vps.md)**.
 
 ## How content is wired
 

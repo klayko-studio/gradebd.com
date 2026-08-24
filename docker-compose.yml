@@ -3,11 +3,9 @@
 #   cp .env.example .env      # then edit the secrets
 #   docker compose up -d --build
 #
-# On a VPS, add the production overlay so nginx terminates TLS in front:
-#
-#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
-#
-# See docs/deploy-vps.md.
+# On a VPS the same command applies. nginx is NOT containerised: it runs on the
+# host and proxies to 127.0.0.1:4321 — install nginx/gradebd.conf into
+# /etc/nginx/sites-enabled/. See docs/deploy-vps.md.
 #
 #   site      → http://localhost:4321
 #   Directus  → http://localhost:8055
@@ -24,8 +22,8 @@ services:
         SITE_URL: ${SITE_URL:-http://localhost:4321}
     image: gradebd-site:latest
     restart: unless-stopped
-    # Bound to loopback: in production nginx is the only public listener
-    # (docker-compose.prod.yml), and locally http://localhost:4321 still works.
+    # Bound to loopback: on the VPS the host's nginx is the only public listener
+    # and reaches the site here, and locally http://localhost:4321 still works.
     ports:
       - '127.0.0.1:${SITE_PORT:-4321}:4321'
     environment:
@@ -42,8 +40,8 @@ services:
     image: directus/directus:11
     restart: unless-stopped
     # Loopback only. The admin app is not exposed to the internet by default;
-    # reach it with `ssh -L 8055:127.0.0.1:8055 user@vps`, or publish it through
-    # nginx by enabling nginx/conf.d/cms.conf.disabled.
+    # reach it with `ssh -L 8055:127.0.0.1:8055 user@vps`, or add a server block
+    # for it to the host's nginx — see docs/deploy-vps.md.
     ports:
       - '127.0.0.1:${DIRECTUS_PORT:-8055}:8055'
     volumes:

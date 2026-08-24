@@ -1,41 +1,29 @@
 # Deploying to a VPS
 
-The site ships as three files' worth of infrastructure: `Dockerfile` (Astro built and served by the
-Node adapter), `docker-compose.yml` (site + Directus + Postgres), and `docker-compose.prod.yml`
-(nginx in front, terminating TLS). The nginx configuration lives in `nginx/`.
+Two moving parts, and they are deliberately separate:
 
-```
-nginx/
-  nginx.conf                    main config — logging, gzip, rate-limit zones, Docker resolver
-  snippets/
-    proxy.conf                  proxy headers, included by every proxying location
-    security-headers.conf       nosniff, referrer policy, permissions policy
-    tls.conf                    protocols, ciphers, session cache
-  conf.d/
-    site.conf                   ACTIVE  · HTTP only, plus the ACME challenge path
-    site-tls.conf.disabled      the HTTPS pair — rename to .conf once you hold a certificate
-    cms.conf.disabled           optional public Directus at cms.gradebd.com
-```
+- **Docker** runs the site (`Dockerfile` + `docker-compose.yml`), listening on `127.0.0.1:4321`.
+- **nginx on the host** terminates TLS and proxies to it. Config: `nginx/gradebd.conf`.
 
-Only files ending in `.conf` are loaded, so the `.disabled` suffix is the on/off switch.
+Nothing about nginx runs in a container. If the VPS already has nginx and certbot set up, the whole
+job is: bring the container up, drop one file into `sites-enabled`, reload.
 
 ## What listens where
 
 | | port | reachable from |
 | --- | --- | --- |
-| nginx | 80, 443 | the internet |
-| site (Astro/Node) | 4321 | `127.0.0.1` only — nginx reaches it over the compose network |
-| Directus | 8055 | `127.0.0.1` only — SSH tunnel, or enable `cms.conf` |
-| Postgres | 5432 | the compose network only, never published |
+| nginx (host) | 80, 443 | the internet |
+| site (Astro/Node, Docker) | 4321 | `127.0.0.1` only |
+| Directus (Docker) | 8055 | `127.0.0.1` only — SSH tunnel |
+| Postgres (Docker) | 5432 | the compose network only, never published |
 
 ## Before you start
 
-- A VPS with **Docker Engine and the Compose plugin**, and **2 GB RAM or more**. The image builds
-  with `astro check && astro build`, which will OOM on a 1 GB box — either add swap, or build the
-  image elsewhere and pull it.
-- Ports 80 and 443 open. With ufw: `sudo ufw allow 80,443/tcp`.
+- **Docker Engine + the Compose plugin**, and **2 GB RAM or more**. The image builds with
+  `astro check && astro build`, which will OOM on a 1 GB box — add swap, or build elsewhere and pull.
+- Ports 80 and 443 open: `sudo ufw allow 'Nginx Full'`.
 - **`gradebd.com` is currently serving injected spam from the old WordPress install.** Audit the
-  domain and its DNS records before pointing anything at this box, and do not migrate that install.
+  domain and its DNS before pointing anything at this box, and do not migrate that install.
 
 ## 1 · Configure
 
@@ -51,8 +39,8 @@ SITE_URL=https://www.gradebd.com
 ```
 
 `SITE_URL` is **baked into the image at build time** — it becomes `<link rel="canonical">` and the
-sitemap. Changing it needs a rebuild, not a restart. `docker-compose.prod.yml` refuses to start
-without it for exactly that reason.
+sitemap. Changing it needs a rebuild, not a restart. Leave it at the default and the deployed site
+will advertise `http://localhost:4321` as its canonical host.
 
 Generate the two Directus secrets, and set real passwords:
 
@@ -61,95 +49,80 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"   # DIR
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"   # DIRECTUS_SECRET
 ```
 
-## 2 · Bring it up on HTTP
+## 2 · Bring the container up
 
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+docker compose up -d --build
+docker compose ps
+curl -I http://127.0.0.1:4321/          # 200 before nginx is involved at all
 ```
 
-That is the full command every time, so it is worth an alias:
+The site alone, without Directus and Postgres, is `docker compose up -d --build site` — content falls
+back to the seed JSON while `DIRECTUS_INTERNAL_URL` is empty, which it is today.
+
+## 3 · Install the nginx config
 
 ```bash
-alias dc='docker compose -f docker-compose.yml -f docker-compose.prod.yml'
-dc ps
-dc logs -f nginx site
+sudo cp nginx/gradebd.conf /etc/nginx/sites-available/gradebd.conf
+sudo ln -s /etc/nginx/sites-available/gradebd.conf /etc/nginx/sites-enabled/
+sudo rm -f /etc/nginx/sites-enabled/default     # or it wins the bare-IP requests
+sudo nginx -t && sudo systemctl reload nginx
 ```
 
-`site.conf` is `default_server`, so the site answers on the bare IP — you can check it before DNS
-has propagated: `curl -I http://<vps-ip>/`.
-
-## 3 · Point DNS, then get a certificate
-
-Two `A` records (and `AAAA` if the VPS has IPv6):
+Point DNS at the box before the next step — certbot's http-01 challenge fails if Let's Encrypt cannot
+reach it by name:
 
 ```
 gradebd.com        A  <vps-ip>
 www.gradebd.com    A  <vps-ip>
 ```
 
-Wait for them to resolve from the outside (`dig +short www.gradebd.com`) — certbot's http-01
-challenge fails if Let's Encrypt cannot reach this box by name.
+`dig +short www.gradebd.com` from somewhere else confirms it.
 
-Dry-run first. The staging endpoint has no rate limit; the real one locks you out for a week after
-five failures:
+## 4 · TLS
 
 ```bash
-dc run --rm --entrypoint certbot certbot certonly \
-  --webroot -w /var/www/certbot \
-  -d gradebd.com -d www.gradebd.com \
-  --email sales@gradebd.com --agree-tos --no-eff-email \
-  --dry-run
+sudo certbot --nginx -d gradebd.com -d www.gradebd.com
 ```
 
-Then for real, dropping `--dry-run`:
+certbot **rewrites `/etc/nginx/sites-available/gradebd.conf` in place** — it adds the 443 server, the
+certificate paths and an 80 → 443 redirect. From then on, that installed copy is ahead of the one in
+this repo: edit it directly, or re-run certbot after replacing it.
+
+Renewal is the system certbot timer, already on a stock Ubuntu install:
 
 ```bash
-dc run --rm --entrypoint certbot certbot certonly \
-  --webroot -w /var/www/certbot \
-  -d gradebd.com -d www.gradebd.com \
-  --email sales@gradebd.com --agree-tos --no-eff-email
+systemctl list-timers | grep certbot
+sudo certbot renew --dry-run
 ```
 
-Order matters: certbot names the certificate directory after the **first** `-d`, and
-`site-tls.conf.disabled` reads `/etc/letsencrypt/live/gradebd.com/`. Lead with `www` and those four
-paths need editing.
-
-## 4 · Switch to HTTPS
-
-```bash
-mv nginx/conf.d/site.conf              nginx/conf.d/site.conf.disabled
-mv nginx/conf.d/site-tls.conf.disabled nginx/conf.d/site-tls.conf
-
-dc exec nginx nginx -t          # always test before reloading
-dc exec nginx nginx -s reload   # graceful: in-flight requests finish
-```
+Once HTTPS is confirmed, uncomment the `Strict-Transport-Security` line in the config and reload.
+The header comment in `nginx/gradebd.conf` also carries an optional apex → www redirect (www is the
+canonical host, because that is what `SITE_URL` bakes in) and the two lines that switch on edge rate
+limiting for the enquiry form.
 
 Check it:
 
 ```bash
 curl -I http://www.gradebd.com/          # 301 to https
-curl -I https://gradebd.com/             # 301 to https://www.gradebd.com
-curl -I https://www.gradebd.com/         # 200, with Strict-Transport-Security
+curl -I https://www.gradebd.com/         # 200
 ```
-
-Renewal is automatic — the `certbot` sidecar tries twice a day and exits quietly unless something is
-within 30 days of expiry, and nginx reloads every six hours so a renewed certificate is actually
-served. To watch it: `dc logs certbot`.
 
 ## Redeploying
 
 ```bash
 git pull
-dc up -d --build site
+docker compose up -d --build site
 ```
 
-Only the site container is rebuilt; nginx keeps serving throughout, and there is no downtime beyond
-the container swap. Changed `SITE_URL`? Same command — it is a build arg, so `--build` picks it up.
+nginx is untouched and keeps serving; downtime is the container swap. Changed `SITE_URL`? Same
+command — it is a build arg, so `--build` picks it up.
 
-Changed something in `nginx/`? No rebuild, the config is bind-mounted:
+Changed `nginx/gradebd.conf` in the repo? Remember certbot's edits live only in the installed copy —
+merge by hand rather than overwriting, then:
 
 ```bash
-dc exec nginx nginx -t && dc exec nginx nginx -s reload
+sudo nginx -t && sudo systemctl reload nginx
 ```
 
 ## Directus
@@ -167,23 +140,27 @@ The site does not read from Directus yet — content comes from the seed JSON in
 as documented in `.env.example`, then rebuild the site.
 
 To expose the CMS publicly instead of tunnelling — needed for the Visual Editor, which loads the site
-in an iframe from the CMS origin — follow the header comment in `nginx/conf.d/cms.conf.disabled`. It
-has to be on the certificate as a third `-d`, so re-run `certonly` with all three names.
+in an iframe from the CMS origin — add a second nginx server block for `cms.gradebd.com` proxying to
+`127.0.0.1:8055`, include it in the certificate, and set `DIRECTUS_PUBLIC_URL` to match. Give it a
+larger `client_max_body_size` (moderators upload pack shots) and a `/websocket` location with the
+`Upgrade`/`Connection` headers for Directus realtime. It is an admin surface, so consider restricting
+it by IP or keeping the tunnel.
 
 ## Backups
 
-Three Docker volumes hold everything that cannot be rebuilt from git:
+Two Docker volumes hold everything that cannot be rebuilt from git:
 
 | volume | contents |
 | --- | --- |
 | `gradebd_postgres-data` | Directus content and submitted enquiries |
 | `gradebd_directus-uploads` | images uploaded by moderators |
-| `gradebd_letsencrypt` | certificates and the ACME account key |
+
+Certificates live on the host in `/etc/letsencrypt`, outside Docker.
 
 A database dump is more useful than a volume copy:
 
 ```bash
-dc exec postgres pg_dump -U gradebd gradebd | gzip > gradebd-$(date +%F).sql.gz
+docker compose exec postgres pg_dump -U gradebd gradebd | gzip > gradebd-$(date +%F).sql.gz
 ```
 
 Uploads:
@@ -195,20 +172,18 @@ docker run --rm -v gradebd_directus-uploads:/data -v "$PWD":/out alpine \
 
 ## Troubleshooting
 
-**502 Bad Gateway.** The site container is down or still starting: `dc ps`, `dc logs site`. nginx
-resolves `site` through Docker's DNS on every request, so it recovers on its own once the container
-is back — no nginx restart needed.
+**502 Bad Gateway.** The container is down or still starting: `docker compose ps`,
+`docker compose logs site`, `curl -I http://127.0.0.1:4321/`. nginx proxies to a fixed loopback port,
+so once the container is back it recovers without an nginx reload.
 
-**429 on the contact form.** Working as intended. The edge allows 6 submissions per minute per IP
-(burst 3), and the app allows 5 per 10 minutes on top of that. Adjust `zone=enquiry` in
-`nginx/nginx.conf`.
+**The site answers on the IP but not the domain.** `/etc/nginx/sites-enabled/default` is still there
+and is the `default_server`. Remove it and reload.
 
-**nginx will not start after a config edit.** `dc logs nginx` names the file and line. A missing
-certificate is the usual cause — `site-tls.conf` cannot load before `certonly` has run.
+**429 on the contact form.** The app allows 5 submissions per 10 minutes per IP. That limiter is
+in-memory, so it resets when the container restarts.
 
-**certbot fails with "Invalid response".** Let's Encrypt could not fetch the challenge file. Check
-that DNS resolves to this box, that port 80 is open at the provider's firewall as well as in ufw, and
-that `site.conf` (or the port-80 block of `site-tls.conf`) is the config nginx actually loaded.
+**Wrong canonical URL in the page source.** `SITE_URL` was not set when the image was built. Fix
+`.env` and `docker compose up -d --build site`.
 
 **Requesting `/404` directly throws `FailedToFindPageMapSSR`.** Known `output: 'static'` +
 SSR-adapter quirk. A genuinely unknown path returns the 404 page correctly, which is the case that

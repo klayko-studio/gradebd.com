@@ -31,5 +31,5 @@ docker-compose*.yml
 .DS_Store
 Thumbs.db
 
-# nginx edge config — mounted into the nginx container, not the site image.
+# nginx site config — installed on the host, never part of the image.
 nginx
