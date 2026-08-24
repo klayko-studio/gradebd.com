@@ -1,23 +1,24 @@
 ---
+import SocialLinks from './SocialLinks.astro';
+import type { Site } from '../lib/schema';
+
 /**
  * The light blue band that closes the home page — the client's own doodle
  * artwork beside a line about the buying year. It mirrors the Champ geometry
  * box: their blue, their illustration.
+ *
+ * This is where Home's social links live. The client asked for them here instead
+ * of a second "Request a quote", which the hero already carries; Home is also the
+ * one page whose footer deliberately has no social row (comment #9), so without
+ * this the site's only page with no social links anywhere would be the front one.
  */
 interface Props {
   eyebrow: string;
   heading: string;
   body: string;
-  ctaLabel?: string;
-  ctaHref?: string;
+  socials: Site['socials'];
 }
-const {
-  eyebrow,
-  heading,
-  body,
-  ctaLabel = 'Request a quote',
-  ctaHref = '/contact/',
-} = Astro.props;
+const { eyebrow, heading, body, socials } = Astro.props;
 ---
 
 <section class="overflow-hidden bg-menu">
@@ -26,27 +27,9 @@ const {
       <p class="t-eyebrow text-[color:var(--text-on-menu-muted)]">{eyebrow}</p>
       <h2 class="t-heading-xl max-w-[18ch] text-[color:var(--text-on-menu)]">{heading}</h2>
       <p class="t-body-md max-w-[46ch] text-[color:var(--text-on-menu-muted)]">{body}</p>
-      <a
-        href={ctaHref}
-        class="group mt-2 flex w-fit items-center gap-3 t-button text-[color:var(--text-brand-strong)]"
-      >
-        {ctaLabel}
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          aria-hidden="true"
-          class="transition-transform duration-200 group-hover:translate-x-1"
-        >
-          <path
-            d="M5 12h13M12.5 6.5L18 12l-5.5 5.5"
-            stroke="currentColor"
-            stroke-width="1.8"
-            stroke-linecap="round"
-            stroke-linejoin="round"></path>
-        </svg>
-      </a>
+      <!-- Same buttons as the footer on every other page, drawn for a light ground:
+           white on this blue would vanish, so they take the section's own deep blue. -->
+      <SocialLinks socials={socials} tone="on-light" class="mt-3" />
     </div>
 
     <!-- Client-supplied artwork. Licence unverified — see readme before go-live. -->

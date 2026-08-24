@@ -6,12 +6,13 @@ import Eyebrow from '../components/Eyebrow.astro';
 import ProductCard from '../components/ProductCard.astro';
 import BrandBand from '../components/BrandBand.astro';
 import Button from '../components/Button.astro';
-import { getHome, getCategories, getClients } from '../lib/cms';
+import { getHome, getCategories, getClients, getSite } from '../lib/cms';
 
-const [home, categories, clients] = await Promise.all([
+const [home, categories, clients, site] = await Promise.all([
   getHome(),
   getCategories(),
   getClients(),
+  getSite(),
 ]);
 
 /**
@@ -273,6 +274,7 @@ const subBrands = Object.values(
     eyebrow="Empowering your potential"
     heading="Stocked for the whole school year."
     body="From the first pencil box in January to the last file of the audit season — quoted by the carton, delivered on the date agreed."
+    socials={site.socials}
   />
 </Base>
 

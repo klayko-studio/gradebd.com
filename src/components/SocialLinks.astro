@@ -1,0 +1,59 @@
+---
+import { socialPaths, socialLabels } from '../lib/social-icons';
+import type { Site } from '../lib/schema';
+
+/**
+ * The row of social buttons. One component so the footer and the Home brand band
+ * cannot drift apart — the client asked for the band to match the footer of the
+ * other pages.
+ */
+interface Props {
+  socials: Site['socials'];
+  /**
+   * Which ground the row sits on. The footer is the brand red, so the buttons are
+   * drawn in white; the Home band is the light blue, where white would disappear —
+   * there the marks take the same deep blue the rest of that section's type uses.
+   */
+  tone?: 'on-dark' | 'on-light';
+  class?: string;
+}
+const { socials, tone = 'on-dark', class: className = '' } = Astro.props;
+
+/**
+ * Only confirmed accounts are linked. Facebook and LinkedIn are the two that exist;
+ * the rest are omitted rather than shipped as dead links to a placeholder.
+ */
+const shown = socials.filter((s) => s.confirmed);
+
+const button =
+  tone === 'on-light'
+    ? `border-[color:rgb(13_32_56/0.28)] bg-[color:rgb(255_255_255/0.5)]
+       text-[color:var(--text-on-menu)] hover:bg-[color:rgb(255_255_255/0.9)]`
+    : `border-[color:rgb(255_255_255/0.38)] bg-[color:rgb(255_255_255/0.14)]
+       text-[color:var(--text-inverse)] hover:bg-[color:rgb(255_255_255/0.26)]`;
+---
+
+{
+  shown.length > 0 && (
+    <ul class:list={['flex items-center gap-2.5', className]}>
+      {shown.map((s) => (
+        <li>
+          <a
+            href={s.url}
+            aria-label={socialLabels[s.platform] ?? s.platform}
+            rel="noopener noreferrer"
+            target="_blank"
+            class:list={[
+              'flex h-10 w-10 items-center justify-center rounded-full border transition-colors',
+              button,
+            ]}
+          >
+            <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true">
+              <path d={socialPaths[s.platform]} fill="currentColor" />
+            </svg>
+          </a>
+        </li>
+      ))}
+    </ul>
+  )
+}
