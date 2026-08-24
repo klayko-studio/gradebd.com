@@ -207,8 +207,8 @@ const subBrands = Object.values(
            the client asked for arrows. Native scroll-snap does the work, so it stays
            usable by touch and keyboard with the arrows as an enhancement. -->
       <div
-        class="client-track mt-10 flex snap-x snap-mandatory gap-5 overflow-x-auto px-10 pb-2
-               scroll-px-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        class="client-track mt-10 flex snap-x snap-mandatory gap-5 overflow-x-auto pb-2
+               [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         data-client-track
       >
         {
@@ -282,10 +282,33 @@ const subBrands = Object.values(
   /* The track is a scroller, so a logo at the edge is always half-cut. Fading the
      last stretch makes that read as "there is more" rather than as a mistake. */
   .client-track {
-    /* The fade has to clear the track's own padding, or the first and last logos sit
-       underneath it. Padding is 40px; at this width that is comfortably inside 2%. */
-    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 2%, #000 98%, transparent 100%);
-    mask-image: linear-gradient(90deg, transparent 0, #000 2%, #000 98%, transparent 100%);
+    /* Two values, and the only rule between them is that the space is comfortably
+       bigger than the fade — otherwise the first and last logos sit under it, which
+       is what the client saw. They were 40px of padding against a 2% fade: at 1296px
+       that is 26px, leaving 14px of clearance that read as a logo being dimmed.
+       Both scale on the same vw with doubled bounds, so the space is exactly twice
+       the fade at every width — 40/20 on a phone, 64/32 on a wide desktop — and 64px
+       of inset never lands on a 375px screen. */
+    --edge-fade: clamp(1.25rem, 2vw, 2rem);
+    --edge-space: clamp(2.5rem, 4vw, 4rem);
+
+    padding-inline: var(--edge-space);
+    scroll-padding-inline: var(--edge-space);
+
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent 0,
+      #000 var(--edge-fade),
+      #000 calc(100% - var(--edge-fade)),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      90deg,
+      transparent 0,
+      #000 var(--edge-fade),
+      #000 calc(100% - var(--edge-fade)),
+      transparent 100%
+    );
     scroll-behavior: smooth;
   }
 </style>

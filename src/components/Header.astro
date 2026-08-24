@@ -43,16 +43,20 @@ const linkOff = 'text-[color:var(--text-on-menu-muted)] hover:text-[color:var(--
     </a>
 
     <!-- desktop nav -->
-    <nav class="ms-auto hidden items-center gap-8 lg:flex" aria-label="Main">
+    <nav class="ms-auto hidden h-full items-center gap-8 lg:flex" aria-label="Main">
       {
         nav.map((item) =>
           item.key === 'categories' ? (
-            <div class="group relative">
+            <!-- Full bar height, not just the label's. The panel opens at the bar's
+                 bottom edge, so a content-height trigger left ~27px of dead space the
+                 pointer crossed on the way down — the menu closed under it. Trigger
+                 and panel now meet with nothing between them. -->
+            <div class="group relative flex h-full items-center">
               <a
                 href={item.href}
                 aria-current={active === item.key ? 'page' : undefined}
                 aria-haspopup="true"
-                class:list={[linkBase, active === item.key ? linkOn : linkOff]}
+                class:list={[linkBase, 'h-full justify-center', active === item.key ? linkOn : linkOff]}
               >
                 {item.label}
                 <span
