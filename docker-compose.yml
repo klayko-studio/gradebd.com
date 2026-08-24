@@ -76,7 +76,10 @@ services:
       # own CSP has to allow it. frame-src falls back to default-src ('self'),
       # which silently leaves the editor showing a blank panel — this is the one
       # setting that makes in-place editing work at all.
-      CONTENT_SECURITY_POLICY_DIRECTIVES__FRAME_SRC: ${SITE_URL:-http://localhost:4321}
+      # Defaults to SITE_URL. Override with a space-separated CSP source list when
+      # more than one origin has to be editable — a staging site alongside
+      # production, or a dev server beside the built container.
+      CONTENT_SECURITY_POLICY_DIRECTIVES__FRAME_SRC: ${DIRECTUS_FRAME_SRC:-${SITE_URL:-http://localhost:4321}}
       # And the reverse direction, for embedding Directus in the site.
       CONTENT_SECURITY_POLICY_DIRECTIVES__FRAME_ANCESTORS: ${SITE_URL:-http://localhost:4321}
       CORS_ENABLED: 'true'
