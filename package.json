@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Grade Limited — stationery catalogue and enquiry site",
+  "description": "Grade Limited \u2014 stationery catalogue and enquiry site",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
@@ -11,12 +11,14 @@
     "build:fast": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "astro": "astro"
+    "astro": "astro",
+    "directus:bootstrap": "node scripts/directus-bootstrap.mjs",
+    "directus:schema": "node scripts/directus-bootstrap.mjs --schema-only"
   },
   "dependencies": {
     "@astrojs/netlify": "^6.6.5",
     "@astrojs/node": "^9.5.5",
-    "@astrojs/sitemap": "^3.6.0",
+    "@directus/visual-editing": "^2.1.0",
     "astro": "^5.16.0",
     "gsap": "^3.13.0",
     "zod": "^3.25.76"
