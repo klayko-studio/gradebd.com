@@ -98,9 +98,27 @@ DIRECTUS_TOKEN=<the token it printed>
 Re-running is safe: the schema step is ensure-don't-create and content is skipped once categories
 exist. `--schema-only` re-applies model changes without touching content; `--force` re-seeds on top.
 
-> **No Node on the box?** Run it from your laptop through a tunnel:
-> `ssh -L 8055:127.0.0.1:8055 user@vps`, then
-> `npm run directus:bootstrap -- --url http://localhost:8055 --site https://www.gradebd.com`
+`npm run directus:bootstrap -- --help` lists every flag.
+
+> **No Node 20.11+ on the box?** Run it from your laptop through a tunnel:
+>
+> ```bash
+> ssh -L 8055:127.0.0.1:8055 user@vps
+> npm run directus:bootstrap -- --url http://127.0.0.1:8055 --site https://www.gradebd.com
+> ```
+>
+> It reads the admin credentials from your *local* `.env`; if the server's differ,
+> pass `--email` and `--password`.
+
+Two things that used to make this step fail, both fixed but worth knowing:
+
+- It connects to `127.0.0.1`, **not** to `DIRECTUS_PUBLIC_URL`. That value names
+  the admin hostname, which at this point has no DNS, no nginx and no
+  certificate — pointing the bootstrap at it just times out.
+- `localhost` resolves to IPv6 `::1` first on most systems, while Docker
+  publishes the port on IPv4 `127.0.0.1` only, so `http://localhost:8055` can
+  refuse the connection while `http://127.0.0.1:8055` answers instantly. It now
+  tries both and says which one worked.
 
 ## 4 · Build and start the site
 

@@ -114,20 +114,53 @@ export function createClient({ url, email, password, token }) {
   };
 }
 
-/** Wait for a freshly started Directus to answer /server/health. */
-export async function waitForDirectus(url, { attempts = 60, delayMs = 2000 } = {}) {
+async function healthy(base) {
+  try {
+    const res = await fetch(`${base}/server/health`);
+    // 503 means Directus is up but a dependency (usually the mail transport) is
+    // unhealthy. The API still works, so that is good enough to continue.
+    return res.ok || res.status === 503;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Wait for Directus to answer, and return the URL that actually worked.
+ *
+ * The loopback shuffle is not paranoia. `localhost` resolves to `::1` before
+ * `127.0.0.1` on Windows and most modern Linux, while Docker publishes a port
+ * bound to `127.0.0.1` on IPv4 only — so `http://localhost:8055` refuses the
+ * connection while `http://127.0.0.1:8055` answers instantly. It looks exactly
+ * like "Directus isn't running", which is the most misleading thing it could
+ * look like. Trying both costs one request and removes the whole class of it.
+ */
+export async function waitForDirectus(url, { attempts = 20, delayMs = 2000 } = {}) {
   const base = url.replace(/\/$/, '');
+  const alternate = base.includes('//localhost')
+    ? base.replace('//localhost', '//127.0.0.1')
+    : base.includes('//127.0.0.1')
+      ? base.replace('//127.0.0.1', '//localhost')
+      : null;
+
   for (let i = 1; i <= attempts; i += 1) {
-    try {
-      const res = await fetch(`${base}/server/health`);
-      if (res.ok) return;
-      // 503 with a body means Directus is up but a dependency (usually the mail
-      // transport) is unhealthy. The API still works, so that is good enough.
-      if (res.status === 503) return;
-    } catch {
-      /* not listening yet */
+    if (await healthy(base)) return base;
+    if (alternate && (await healthy(alternate))) {
+      console.log(`   (${base} did not answer; ${alternate} did — using that)`);
+      return alternate;
     }
     await new Promise((resolve) => setTimeout(resolve, delayMs));
   }
-  throw new Error(`Directus at ${base} did not become ready.`);
+  throw new Error(
+    [
+      `Could not reach Directus at ${base}.`,
+      '',
+      'Check, in this order:',
+      '  docker compose ps               — is the directus container running?',
+      '  docker compose logs directus    — did it fail to start?',
+      `  curl -I ${base}/server/health`,
+      '',
+      'If Directus is somewhere else, say so:  --url http://127.0.0.1:8055',
+    ].join('\n'),
+  );
 }
