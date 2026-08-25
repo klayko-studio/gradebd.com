@@ -52,9 +52,20 @@ import reviewsSeed from '../content/reviews.json';
  * `import.meta.env` stays as the fallback because `astro dev` loads .env into it
  * and not into `process.env`.
  */
-const DIRECTUS_URL = process.env.DIRECTUS_URL || (import.meta.env.DIRECTUS_URL as string | undefined);
-const DIRECTUS_TOKEN =
-  process.env.DIRECTUS_TOKEN || (import.meta.env.DIRECTUS_TOKEN as string | undefined);
+/**
+ * An empty runtime value means *off*, not "fall back to whatever was baked in".
+ *
+ * docker-compose passes `DIRECTUS_URL: ${DIRECTUS_INTERNAL_URL:-}`, so leaving
+ * that blank hands the container an empty string rather than nothing at all. A
+ * plain `||` would step over it and quietly use the build-time value — the site
+ * would talk to whatever host the image happened to be built against, which is
+ * the sort of thing that is only discovered much later and from a long way away.
+ */
+const env = (runtime: string | undefined, buildTime: unknown): string | undefined =>
+  runtime !== undefined ? runtime || undefined : (buildTime as string | undefined) || undefined;
+
+const DIRECTUS_URL = env(process.env.DIRECTUS_URL, import.meta.env.DIRECTUS_URL);
+const DIRECTUS_TOKEN = env(process.env.DIRECTUS_TOKEN, import.meta.env.DIRECTUS_TOKEN);
 
 /**
  * Where a *browser* reaches Directus — the admin origin. Only the Visual Editor
@@ -62,7 +73,7 @@ const DIRECTUS_TOKEN =
  * script talks to. Asset URLs deliberately do not use it (see `assetUrl`).
  */
 export const DIRECTUS_PUBLIC_URL =
-  process.env.DIRECTUS_PUBLIC_URL || (import.meta.env.DIRECTUS_PUBLIC_URL as string | undefined) || '';
+  env(process.env.DIRECTUS_PUBLIC_URL, import.meta.env.DIRECTUS_PUBLIC_URL) ?? '';
 
 export const usingDirectus = Boolean(DIRECTUS_URL);
 
@@ -77,6 +88,41 @@ export const visualEditingEnabled = usingDirectus && Boolean(DIRECTUS_PUBLIC_URL
  */
 const CACHE_TTL_MS =
   Number(process.env.DIRECTUS_CACHE_TTL ?? import.meta.env.DIRECTUS_CACHE_TTL ?? 0) * 1000;
+
+/**
+ * Say which source is in use, once, at start-up.
+ *
+ * Without this the seed path is completely silent, and a site rendering its
+ * bundled copy is indistinguishable from one reading the CMS — same words, same
+ * pictures, same everything. It looks deployed and finished, and the first sign
+ * that the CMS was never connected is a moderator's edit not appearing. One line
+ * in `docker compose logs site` answers it instead.
+ */
+if (usingDirectus && !DIRECTUS_TOKEN) {
+  // Its own case because it is the one that looks like success. The site comes
+  // up, every page renders, every picture is there — and none of it is from the
+  // CMS, because each read is a 401 and falls back. Almost always: the bootstrap
+  // was never run, or its token was never pasted into .env.
+  console.warn(
+    `[cms] DIRECTUS_URL is set (${DIRECTUS_URL}) but DIRECTUS_TOKEN is empty, so every ` +
+      'read will be refused and the pages will fall back to the seed content bundled ' +
+      'into this image. Run `npm run directus:bootstrap`, put the token it prints into ' +
+      '.env, and restart.',
+  );
+} else if (usingDirectus) {
+  console.info(
+    `[cms] reading from Directus at ${DIRECTUS_URL}` +
+      (visualEditingEnabled
+        ? ` · in-place editing via ${DIRECTUS_PUBLIC_URL}`
+        : ' · in-place editing OFF (DIRECTUS_PUBLIC_URL is not set)'),
+  );
+} else {
+  console.warn(
+    '[cms] DIRECTUS_URL is not set, so nothing is being read from the CMS — ' +
+      'the pages you see are the seed content bundled into this image. ' +
+      'Set DIRECTUS_URL (or DIRECTUS_INTERNAL_URL in compose) and DIRECTUS_TOKEN, then restart.',
+  );
+}
 
 /* ------------------------------------------------------------------- assets */
 

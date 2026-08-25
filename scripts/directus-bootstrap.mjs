@@ -30,18 +30,30 @@ import { seedContent } from './directus/content.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 
-/** Minimal .env reader — enough for KEY=value, quoted or not. */
+/**
+ * Minimal .env reader — enough for KEY=value, quoted or not.
+ *
+ * Later lines win, which is what dotenv and docker compose both do. It matters
+ * more than it sounds: a `.env` that has picked up a duplicate key — an edit
+ * gone wrong, a comment that lost its `#` — silently resolves to the wrong one
+ * otherwise, and "first wins" picks exactly the line a human would read past.
+ * A real value set in the environment still beats the file.
+ */
 async function loadEnv() {
+  const fromFile = new Map();
   try {
     const text = await readFile(path.join(ROOT, '.env'), 'utf8');
     for (const line of text.split(/\r?\n/)) {
+      if (/^\s*#/.test(line)) continue;
       const match = /^\s*([A-Z0-9_]+)\s*=\s*(.*)$/i.exec(line);
       if (!match) continue;
-      const value = match[2].trim().replace(/^["'](.*)["']$/, '$1');
-      if (process.env[match[1]] === undefined) process.env[match[1]] = value;
+      fromFile.set(match[1], match[2].trim().replace(/^["'](.*)["']$/, '$1'));
     }
   } catch {
     /* no .env — rely on the real environment and the flags */
+  }
+  for (const [key, value] of fromFile) {
+    if (process.env[key] === undefined) process.env[key] = value;
   }
 }
 

@@ -169,6 +169,22 @@ async function ensureFilesJunction(client, parent, alias, junction) {
 export async function ensureWebsiteAccess(client, staticToken) {
   console.log('\nWebsite access');
 
+  // The token goes straight into Directus and then into .env, and a bad one
+  // fails as a 401 on every read — which the site absorbs by falling back to its
+  // seed content, so the symptom is a site that looks completely fine and simply
+  // ignores the CMS. Worth half a line to refuse the obviously-wrong ones (a
+  // stray comment picked up out of .env, an unreplaced placeholder).
+  if (!/^\S{20,}$/.test(staticToken ?? '')) {
+    throw new Error(
+      [
+        `"${String(staticToken).slice(0, 40)}" is not a usable token.`,
+        'It must be at least 20 characters with no spaces. This normally means',
+        'DIRECTUS_TOKEN in .env is a placeholder or a malformed line — clear it and',
+        'run the bootstrap again to have a new one generated.',
+      ].join('\n'),
+    );
+  }
+
   const policies = await client.get('/policies?filter[name][_eq]=Website&limit=1');
   let policyId = policies?.[0]?.id;
 
