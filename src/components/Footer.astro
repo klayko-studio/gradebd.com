@@ -47,10 +47,12 @@ const footerLogo = site.logo_reversed_stationary ?? site.logo_reversed ?? null;
            while waiting for it. The tagline is not part of the mark, so it stays as
            a line of type beneath.
 
-           `items-start` matters: this is a flex column, and the default
-           `align-items: stretch` pulls a `w-auto` image out to the column width,
-           which stretches the mark. -->
-      <div class="flex flex-col items-start gap-2">
+           The explicit `items-center` matters for more than the alignment the client
+           asked for: this is a flex column, and the default `align-items: stretch`
+           pulls a `w-auto` image out to the full column width, which with the
+           height pinned stretches the mark to more than twice its aspect. Any
+           value other than `stretch` will do — centring is the one they wanted. -->
+      <div class="flex flex-col items-center gap-2 text-center">
         {
           footerLogo?.src ? (
             <img
@@ -58,7 +60,7 @@ const footerLogo = site.logo_reversed_stationary ?? site.logo_reversed ?? null;
               alt={footerLogo.alt || site.company_name}
               width="196"
               height="61"
-              class="block h-[52px] w-auto self-start"
+              class="block h-[52px] w-auto self-center"
               {...editable({ collection: 'site', fields: 'logo_reversed_stationary', mode: 'drawer' })}
             />
           ) : (
