@@ -91,19 +91,19 @@
       "confirmed": true
     },
     {
+      "platform": "instagram",
+      "url": "#",
+      "confirmed": true
+    },
+    {
       "platform": "linkedin",
       "url": "https://www.linkedin.com/",
       "confirmed": true
     },
     {
-      "platform": "instagram",
-      "url": "#",
-      "confirmed": false
-    },
-    {
       "platform": "youtube",
       "url": "#",
-      "confirmed": false
+      "confirmed": true
     },
     {
       "platform": "x",
