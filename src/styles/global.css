@@ -89,11 +89,14 @@
   html {
     -webkit-text-size-adjust: 100%;
     scroll-behavior: smooth;
+    /* The page colour lives here, not on body: body now paints the splash above
+       it, and a background on body would hide a layer sitting at z-index -1. */
+    background: var(--bg-page);
   }
 
   body {
     margin: 0;
-    background: var(--bg-page);
+    background: transparent;
     color: var(--text-secondary);
     font-family: var(--font-family-sans);
     font-size: var(--font-size-16);
@@ -272,30 +275,29 @@
   }
 
   /**
-   * The client's watercolour splash, behind every white area. Fixed and covering, so
-   * stacked sections read as one continuous wash instead of a picture repeated per
-   * band. Kept low: its green sits outside the owner palette, so it must read as a
-   * tint and never as an image.
+   * The client's watercolour splash, as the background of the whole site.
+   *
+   * One fixed layer on the body rather than a background on each section: it
+   * covers the viewport once, never tiles, and does not move or restretch as the
+   * page scrolls — so a 4,000px page shows one picture rather than the same
+   * picture over and over. Anything with its own background (the menu bar, the
+   * clients band, the footer) paints over it; everything else is transparent and
+   * lets it through, which is what makes the site's white space *be* the splash.
+   *
+   * At full strength, on the client's instruction. It was previously held at 0.2
+   * and desaturated because the artwork's green sits outside the owner palette.
    */
-  .wash::before {
+  body::before {
     content: '';
     position: fixed;
     inset: 0;
     z-index: -1;
     background-image: url('/images/brand/bg-splash-2000.webp');
+    background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
-    /* The artwork's green is a saturated lime that is not in the owner palette.
-       Desaturating slightly keeps the watercolour texture without the colour cast. */
-    filter: saturate(0.72);
-    opacity: 0.2;
     pointer-events: none;
   }
-  .wash {
-    position: relative;
-    isolation: isolate;
-  }
-
 
   .js [data-reveal] {
     opacity: 0;

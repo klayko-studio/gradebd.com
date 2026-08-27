@@ -287,10 +287,14 @@ The code and the design no longer diverge. What changed, and the reasoning worth
   additively, so two half-covered edges sum to about three-quarters coverage, not full — abutting them
   exactly leaves hairline seams along every join. Overlapping is safe because the SVG is fully opaque
   at its left and right edges.
-- **The splash is one fixed layer on `<main class="wash">`,** not a per-section background. Stacked
-  white sections then read as a single continuous wash instead of the same picture repeated band by
-  band, and a 4000px page cannot stretch it. It also needs to be far weaker than in Figma: 0.42 per
-  section is 0.2 as a full-page layer.
+- **The splash is one fixed layer on `body::before`,** not a per-section background — and at full
+  strength, on the client's instruction. It covers the viewport once, never tiles, and does not move
+  with the scroll, so a 4000px page shows one picture rather than the same one band after band. The
+  page colour had to move from `body` to `html` for this: a background on `body` would hide a layer
+  sitting at `z-index: -1`. Anything with its own background (menu bar, `bg-subtle` bands, clients,
+  footer) paints over it; everything else is transparent and lets it through. It was previously 0.2
+  and desaturated, because the artwork's green is outside the owner palette — that is no longer true,
+  so watch body copy contrast over the greener corners.
 - **Client logos are normalised with `filter: brightness(0) invert(1)`** — a one-colour white
   silhouette. Fifteen logos from fifteen brand palettes cannot share a row any other way. The six
   without artwork render as dashed outlines, so a missing logo still reads as pending.
@@ -534,6 +538,20 @@ Nine instructions, all applied. The ones that change what a future session shoul
   are `confirmed: false` in the CMS and will appear the moment real URLs are set.
 - **Footer:** the "Supplying pens… since 2019" strapline is gone, and the social row moved out of the
   brand column into its own centred row above the copyright bar.
+
+## Fourth round of client changes
+
+- **Replacing an image in Directus keeps the same file id**, so `/cms/<id>` never changed and the
+  site kept serving the old picture from cache for up to a day while the admin showed the new one.
+  `assetUrl` now carries `?v=<modified_on in base36>`; the proxy ignores the param, it exists only to
+  make the URL change when the bytes do. Reproduced before fixing and re-tested after.
+- **Sub-category tabs are back on the category pages** — no "All", the first is the default. They are
+  real links to `?sub=…` and the server filters, so they work with no JavaScript, paint the right
+  group on the first frame instead of flashing the whole grid, and can be linked to. A script
+  upgrades them to switching in place with `history.replaceState`.
+- **The clients row auto-advances** every 3.5s, pausing on hover and on focus within, skipped under
+  `prefers-reduced-motion` and while the tab is hidden, and wrapping at the end rather than stopping
+  with a half-cut logo against the edge. The arrows restart the clock.
 
 ## Information architecture
 

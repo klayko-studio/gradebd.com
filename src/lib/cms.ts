@@ -153,7 +153,9 @@ export function assetUrl(id: string | null, params?: Record<string, string | num
  * than a validation error. Every nested key must carry its own prefix.
  */
 const file = (prefix: string): string =>
-  ['id', 'width', 'height', 'description', 'title'].map((key) => `${prefix}.${key}`).join(',');
+  ['id', 'width', 'height', 'description', 'title', 'modified_on']
+    .map((key) => `${prefix}.${key}`)
+    .join(',');
 
 async function api<T>(path: string): Promise<T> {
   const res = await fetch(`${DIRECTUS_URL!.replace(/\/$/, '')}/${path}`, {
@@ -234,7 +236,23 @@ type DirectusFile = {
   height?: number | null;
   description?: string | null;
   title?: string | null;
+  modified_on?: string | null;
 } | null;
+
+/**
+ * A cache-busting token from the file's own modified time.
+ *
+ * Replacing an image in Directus keeps the same file id, so `/cms/<id>` stays
+ * byte-identical as a URL — and that URL is cached for a day in the browser and
+ * a year at any shared cache. Without this, a moderator replaces a photograph,
+ * sees the new one in the admin (which busts its own cache) and the old one on
+ * the site, with nothing to explain the difference. The proxy ignores `v`; it
+ * exists purely to make the URL change when the bytes do.
+ */
+const version = (file: DirectusFile): Record<string, string> => {
+  const stamp = file?.modified_on ? Date.parse(file.modified_on) : NaN;
+  return Number.isNaN(stamp) ? {} : { v: stamp.toString(36) };
+};
 
 /**
  * Alt text lives on the file, in Directus' `description` — the field its own
@@ -245,7 +263,7 @@ function img(file: DirectusFile, fallbackAlt = ''): Image {
   if (!file?.id) return { id: null, src: '', alt: fallbackAlt };
   return {
     id: file.id,
-    src: assetUrl(file.id),
+    src: assetUrl(file.id, version(file)),
     alt: file.description || file.title || fallbackAlt,
     ...(file.width ? { width: file.width } : {}),
     ...(file.height ? { height: file.height } : {}),
@@ -293,8 +311,23 @@ export const getSite = (): Promise<Site> =>
           ].join(','),
       );
       singletonIds.set('site', row.id);
+      /**
+       * Directus returns null for a field a moderator has cleared, and the schema
+       * wants strings. Without this, emptying one optional line — the opening
+       * hours, say — failed the parse for the *whole* record, and the site quietly
+       * served its bundled copy of everything: logo, address, socials, the lot.
+       * One empty field should be one empty field.
+       */
+      const text = (value: unknown): string => (typeof value === 'string' ? value : '');
       return {
         ...row,
+        tagline: text(row.tagline),
+        phone: text(row.phone),
+        phone_href: text(row.phone_href),
+        email: text(row.email),
+        opening_hours: text(row.opening_hours),
+        utility_message: text(row.utility_message),
+        response_promise: text(row.response_promise),
         address_lines: toLines(row.address),
         logo: img(row.logo, `${row.company_name} logo`),
         logo_reversed: img(row.logo_reversed, `${row.company_name} logo`),
@@ -460,7 +493,7 @@ export const getClients = (): Promise<Client[]> =>
         name: row.name,
         qualifier: row.qualifier ?? '',
         mark: row.mark ?? 'ring',
-        logo: row.logo ? assetUrl(row.logo.id) : null,
+        logo: row.logo ? assetUrl(row.logo.id, version(row.logo)) : null,
         placeholder: row.placeholder ?? true,
       }));
     },

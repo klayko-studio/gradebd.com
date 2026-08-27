@@ -64,7 +64,12 @@ export const siteSchema = z.object({
   address_lines: z.array(z.string()).min(1),
   phone: z.string(),
   phone_href: z.string(),
-  email: z.string().email(),
+  /**
+   * Validated when present, but an empty one is allowed: a moderator clearing the
+   * address should blank a line in the footer, not fail the parse and take every
+   * other site field down with it.
+   */
+  email: z.union([z.literal(''), z.string().email()]),
   opening_hours: z.string(),
   utility_message: z.string(),
   response_promise: z.string(),

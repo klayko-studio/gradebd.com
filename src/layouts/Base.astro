@@ -80,11 +80,9 @@ const favicon = site.favicon?.src ?? null;
 
     <Header site={site} categories={categories} active={active} />
 
-    <!-- The client's watercolour splash sits behind every white area of the page.
-         One fixed layer, so stacked white sections read as a single continuous wash
-         rather than the same picture repeated band by band; opaque sections such as
-         the clients band and the footer simply cover it. -->
-    <main id="main" class="wash">
+    <!-- The splash is the site's background now, painted once on the body — see
+         global.css. Nothing to opt into here. -->
+    <main id="main">
       <slot />
     </main>
 

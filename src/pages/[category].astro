@@ -21,7 +21,21 @@ const category = categories.find((entry) => entry.slug === slug);
 // visitor typed while rendering the site's own 404 page.
 if (!category) return Astro.rewrite('/404');
 
-
+/**
+ * Sub-category tabs. There is no "All": the first one is the default, so a
+ * range always opens on a real group rather than an undifferentiated pile.
+ *
+ * The active tab comes from `?sub=` rather than living only in JavaScript. The
+ * page renders per request, so the server can filter — which means the tabs work
+ * with no JavaScript at all, the right group is painted on the first frame
+ * instead of flashing the full grid and then narrowing, and a link to one group
+ * is a link someone can send. The script below upgrades it to instant switching
+ * without a round trip.
+ */
+const subcategories = category.subcategories;
+const requestedSub = Astro.url.searchParams.get('sub');
+const activeSub =
+  subcategories.find((entry) => entry.slug === requestedSub)?.slug ?? subcategories[0]?.slug ?? null;
 ---
 
 <Base seo={category.seo} active="categories">
@@ -47,10 +61,27 @@ if (!category) return Astro.rewrite('/404');
   />
 
   <section class="section">
-    <div class="rail">
-      <!-- Just the cards. The client asked for the filter rows and the item
-           count to go, so the grid is the whole page. -->
-      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-reveal-group>
+    <div class="rail flex flex-col gap-10">
+      {
+        subcategories.length > 0 && (
+          <nav class="flex flex-wrap gap-x-8 gap-y-3" aria-label={`${category.name} sub-categories`}>
+            {subcategories.map((sub) => (
+              <a
+                href={`?sub=${sub.slug}`}
+                class="sub-tab"
+                data-sub-tab={sub.slug}
+                aria-current={sub.slug === activeSub ? 'true' : undefined}
+                style={`--tab-accent:${category.accent}`}
+              >
+                {sub.name}
+                <span aria-hidden="true" class="sub-tab-rule" />
+              </a>
+            ))}
+          </nav>
+        )
+      }
+
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-reveal-group data-item-grid>
         {
           category.items.map((item) => (
             <ProductCard
@@ -66,6 +97,8 @@ if (!category) return Astro.rewrite('/404');
                 fields: ['name', 'meta', 'image', 'features', 'pack_inner', 'pack_carton'],
                 mode: 'drawer',
               })}
+              subcategory={item.subcategory}
+              class={item.subcategory === activeSub || !activeSub ? '' : 'hidden'}
             />
           ))
         }
@@ -81,7 +114,72 @@ if (!category) return Astro.rewrite('/404');
 
 </Base>
 
+<style>
+  /* Text tabs with the range's accent under the active one, as drawn. */
+  .sub-tab {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.9375rem;
+    color: var(--text-muted);
+    transition: color 160ms var(--ease-standard);
+  }
+  .sub-tab:hover {
+    color: var(--text-primary);
+  }
+  .sub-tab[aria-current='true'] {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+  .sub-tab-rule {
+    height: 3px;
+    width: 100%;
+    border-radius: 999px;
+    background: transparent;
+    transition: background-color 160ms var(--ease-standard);
+  }
+  .sub-tab[aria-current='true'] .sub-tab-rule {
+    background: var(--tab-accent);
+  }
+</style>
+
 <script>
+  /**
+   * Sub-category tabs.
+   *
+   * They are real links to `?sub=…`, so they already work with the script
+   * missing — the server renders the right group. This only upgrades them to
+   * switching in place: no round trip, and the URL still updates so the tab
+   * survives a reload or a shared link.
+   */
+  const tabs = [...document.querySelectorAll<HTMLAnchorElement>('[data-sub-tab]')];
+  const grid = document.querySelector<HTMLElement>('[data-item-grid]');
+
+  if (tabs.length > 0 && grid) {
+    const cards = [...grid.querySelectorAll<HTMLElement>('[data-sub]')];
+
+    const select = (slug: string) => {
+      for (const tab of tabs) {
+        if (tab.dataset.subTab === slug) tab.setAttribute('aria-current', 'true');
+        else tab.removeAttribute('aria-current');
+      }
+      for (const card of cards) card.classList.toggle('hidden', card.dataset.sub !== slug);
+
+      const url = new URL(location.href);
+      url.searchParams.set('sub', slug);
+      history.replaceState(null, '', url);
+    };
+
+    for (const tab of tabs) {
+      tab.addEventListener('click', (event) => {
+        const slug = tab.dataset.subTab;
+        if (!slug) return;
+        event.preventDefault();
+        select(slug);
+      });
+    }
+  }
+
   // ---- product detail dialogs
   document.querySelectorAll<HTMLElement>('[data-dialog-open]').forEach((trigger) => {
     trigger.addEventListener('click', () => {

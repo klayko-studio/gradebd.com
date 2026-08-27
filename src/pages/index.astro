@@ -249,12 +249,58 @@ const [home, categories, clients, site] = await Promise.all([
   const track = document.querySelector<HTMLElement>('[data-client-track]');
   if (track) {
     const page = () => Math.max(track.clientWidth * 0.8, 240);
-    document
-      .querySelector('[data-client-prev]')
-      ?.addEventListener('click', () => track.scrollBy({ left: -page(), behavior: 'smooth' }));
-    document
-      .querySelector('[data-client-next]')
-      ?.addEventListener('click', () => track.scrollBy({ left: page(), behavior: 'smooth' }));
+
+    const step = (direction: 1 | -1) => {
+      const atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
+      // Wrap rather than sitting at the end: fifteen logos on a loop should keep
+      // going round, not stop with the last one half-cut against the edge.
+      if (direction === 1 && atEnd) track.scrollTo({ left: 0, behavior: 'smooth' });
+      else if (direction === -1 && track.scrollLeft <= 4) {
+        track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' });
+      } else track.scrollBy({ left: direction * page(), behavior: 'smooth' });
+    };
+
+    /**
+     * Auto-advance.
+     *
+     * Paused while the pointer is over the row or the keyboard is inside it —
+     * a strip that moves out from under someone reading a logo, or tabbing
+     * through the links, is worse than one that never moves. Skipped entirely
+     * under prefers-reduced-motion, and while the tab is in the background,
+     * where the timer would otherwise queue up jumps to replay on return.
+     */
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let timer: number | undefined;
+
+    const stop = () => {
+      if (timer !== undefined) window.clearInterval(timer);
+      timer = undefined;
+    };
+    const start = () => {
+      stop();
+      if (reduced.matches || document.hidden) return;
+      timer = window.setInterval(() => step(1), 3500);
+    };
+
+    // An arrow press restarts the clock, so a deliberate move is not immediately
+    // followed by an automatic one.
+    document.querySelector('[data-client-prev]')?.addEventListener('click', () => {
+      step(-1);
+      start();
+    });
+    document.querySelector('[data-client-next]')?.addEventListener('click', () => {
+      step(1);
+      start();
+    });
+
+    track.addEventListener('pointerenter', stop);
+    track.addEventListener('pointerleave', start);
+    track.addEventListener('focusin', stop);
+    track.addEventListener('focusout', start);
+    document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
+    reduced.addEventListener('change', start);
+
+    start();
   }
 </script>
 

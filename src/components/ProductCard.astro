@@ -19,6 +19,10 @@ interface Props {
   accent?: string;
   /** Directus Visual Editing attributes, from `editable()`. */
   edit?: Record<string, string>;
+  /** Extra classes on the card itself — the category page hides filtered cards. */
+  class?: string;
+  /** Which sub-category this card belongs to, for the tab filter. */
+  subcategory?: string | null;
 }
 
 const {
@@ -31,6 +35,8 @@ const {
   imageHeight = 'tall',
   accent,
   edit = {},
+  class: className = '',
+  subcategory,
 } = Astro.props;
 const ratio = imageHeight === 'short' ? 'aspect-[16/10]' : 'aspect-[4/3]';
 
@@ -49,9 +55,10 @@ const control = dialogId
 <Tag
   {...control}
   {...edit}
+  data-sub={subcategory ?? undefined}
   data-reveal
   aria-label={`${name} — ${action}`}
-  class="group flex flex-col gap-1.5 text-left"
+  class:list={['group flex flex-col gap-1.5 text-left', className]}
 >
   {
     accent && (
