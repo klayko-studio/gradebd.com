@@ -245,6 +245,7 @@ export async function seedContent(client, { force = false } = {}) {
     form_heading: contact.form_heading,
     form_sub: contact.form_sub ?? '',
     map_embed_url: contact.map_embed_url,
+    show_faqs: contact.show_faqs ?? true,
     faqs: contact.faqs.map((f, i) => ({ ...f, sort: i })),
   });
   console.log('   contact');

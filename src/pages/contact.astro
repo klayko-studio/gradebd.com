@@ -232,7 +232,13 @@ const field =
   <!-- ── FAQ ───────────────────────────────────────────────────────────────
        The pill is a label, not a control: every question is on the page from the
        start and each opens on its own. That replaces the single show/hide button
-       from comment #37, which this design supersedes. -->
+       from comment #37, which this design supersedes.
+
+       Whether the section appears at all is a switch in the CMS (`show_faqs`),
+       currently off. The questions are still there — turning it back on is one
+       toggle, not a rebuild. -->
+  {
+    contact.show_faqs && (
   <section class="section pt-0">
     <div class="rail flex flex-col gap-10">
       {/* font-sans explicitly: this is an <h2>, and headings inherit the display
@@ -276,6 +282,8 @@ const field =
       </div>
     </div>
   </section>
+    )
+  }
 </Base>
 
 <script>

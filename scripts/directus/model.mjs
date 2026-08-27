@@ -345,6 +345,10 @@ export const COLLECTIONS = [
       F.text('map_embed_url', {
         note: 'The src of a Google Maps embed. Left empty, the site draws a labelled placeholder and makes no third-party request.',
       }),
+      F.boolean('show_faqs', {
+        default: true,
+        note: 'Show the FAQ section on the contact page. Off hides it without deleting anything.',
+      }),
       F.o2m('faqs'),
     ],
   }),

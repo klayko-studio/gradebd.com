@@ -21,6 +21,7 @@
   },
   "form_heading": "Send us your requirement.",
   "map_embed_url": null,
+  "show_faqs": false,
   "faqs": [
     {
       "question": "Do you supply wholesale to schools?",

@@ -441,6 +441,7 @@ export const getContact = (): Promise<Contact> =>
         form_heading: row.form_heading ?? '',
         form_sub: row.form_sub ?? '',
         map_embed_url: row.map_embed_url || null,
+        show_faqs: row.show_faqs ?? true,
         faqs: (row.faqs ?? [])
           .sort((a: any, b: any) => (a.sort ?? 0) - (b.sort ?? 0))
           .map((f: any) => ({ question: f.question, answer: f.answer })),

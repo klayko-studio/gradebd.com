@@ -153,6 +153,12 @@ export const contactSchema = z.object({
   /** The line under the form heading. Empty is fine — it simply is not rendered. */
   form_sub: z.string().default(''),
   map_embed_url: z.string().nullable().default(null),
+  /**
+   * Whether the FAQ section renders. Defaults on: a null — an older row written
+   * before the field existed — must not silently hide a section that was there.
+   * The questions stay in the CMS either way, so this hides rather than deletes.
+   */
+  show_faqs: z.boolean().default(true),
   faqs: z.array(z.object({ question: z.string(), answer: z.string() })).min(1),
 });
 export type Contact = z.infer<typeof contactSchema>;
