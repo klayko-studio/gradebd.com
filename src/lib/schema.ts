@@ -65,6 +65,11 @@ export const siteSchema = z.object({
   og_image: imageSchema.nullable().default(null),
   /** Site-wide SEO defaults. Per-page values win; this is the floor. */
   seo: seoSchema.nullable().default(null),
+  /**
+   * The header's search button. Off by default, and a null reads as off: there is
+   * no search page yet, so the control has nowhere real to go.
+   */
+  show_search: z.boolean().default(false),
   founded_year: z.number().int(),
   address_lines: z.array(z.string()).min(1),
   phone: z.string(),

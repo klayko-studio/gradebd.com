@@ -590,6 +590,15 @@ Nine instructions, all applied. The ones that change what a future session shoul
   comes from `phone_href`, not `phone` — `phone` is the local form (01842-024378) and wa.me would
   send people looking for that number in their own country.
 
+## Sixth round of client changes
+
+- **The range cards on Home are the category name alone.** `meta` is optional on `ProductCard` now
+  and renders nothing when empty; the field is still in the CMS and still used on the item cards,
+  where it carries the pack size.
+- **The header search button is a CMS switch, `show_search` on the site record, and it ships off.**
+  There is still no search page for it to open — it navigated to Contact — so off is the honest
+  default. A null reads as off.
+
 ## Information architecture
 
 `docs/client/wireframe/` holds nine photographed paper wireframes (WhatsApp images, filenames are not

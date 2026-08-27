@@ -82,6 +82,8 @@ const [home, categories, clients, site] = await Promise.all([
         </a>
       </div>
 
+      <!-- No sub-category line on these cards: the range name is the whole label.
+           `meta` is still in the CMS and still used on the item cards. -->
       <div
         class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
         data-reveal-group
@@ -90,7 +92,6 @@ const [home, categories, clients, site] = await Promise.all([
           categories.map((c) => (
             <ProductCard
               name={c.name}
-              meta={c.meta}
               image={c.image}
               accent={c.accent}
               action="View range"

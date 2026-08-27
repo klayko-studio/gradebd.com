@@ -161,6 +161,7 @@ export async function seedContent(client, { force = false } = {}) {
     og_image: await files.id(home.slides?.[0]?.image?.src ?? null, home.slides?.[0]?.image?.alt),
     seo_title: home.seo.title,
     seo_description: home.seo.description,
+    show_search: site.show_search ?? false,
     socials: site.socials.map((s, i) => ({ ...s, sort: i })),
   });
   console.log('   site');

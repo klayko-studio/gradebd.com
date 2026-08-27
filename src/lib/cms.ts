@@ -337,6 +337,7 @@ export const getSite = (): Promise<Site> =>
         favicon: row.favicon ? img(row.favicon) : null,
         og_image: row.og_image ? img(row.og_image) : null,
         seo: seo(row, { title: row.company_name, description: row.tagline ?? '' }),
+        show_search: row.show_search ?? false,
         socials: (row.socials ?? []).sort((a: any, b: any) => (a.sort ?? 0) - (b.sort ?? 0)),
       };
     },

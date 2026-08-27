@@ -3,7 +3,11 @@ import type { Image } from '../lib/schema';
 
 interface Props {
   name: string;
-  meta: string;
+  /**
+   * The line under the name. Optional: the range cards on Home are just the
+   * category name, and an empty one renders nothing rather than a blank line.
+   */
+  meta?: string;
   image: Image;
   /** Used as the accessible name — the card itself is the control. */
   action: string;
@@ -72,7 +76,7 @@ const control = dialogId
   <h3 class="t-heading-sm transition-colors group-hover:text-[color:var(--text-brand-strong)]">
     {name}
   </h3>
-  <p class="t-label-sm text-[color:var(--text-muted)]">{meta}</p>
+  {meta && <p class="t-label-sm text-[color:var(--text-muted)]">{meta}</p>}
 
   <div
     class:list={[
