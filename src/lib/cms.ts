@@ -5,6 +5,7 @@ import {
   contactSchema,
   gallerySchema,
   homeSchema,
+  notFoundSchema,
   reviewSchema,
   siteSchema,
   type About,
@@ -14,6 +15,7 @@ import {
   type Gallery,
   type Home,
   type Image,
+  type NotFound,
   type Review,
   type Site,
 } from './schema';
@@ -26,6 +28,7 @@ import contactSeed from '../content/contact.json';
 import categoriesSeed from '../content/categories.json';
 import clientsSeed from '../content/clients.json';
 import reviewsSeed from '../content/reviews.json';
+import notFoundSeed from '../content/not-found.json';
 
 /**
  * The only module that knows where content comes from.
@@ -309,7 +312,10 @@ export const getSite = (): Promise<Site> =>
             file('logo_reversed_stationary'),
             file('favicon'),
             file('og_image'),
+            file('doodle_image'),
+            file('background_image'),
             'socials.platform,socials.url,socials.confirmed,socials.sort',
+            'nav.page,nav.label,nav.sort',
           ].join(','),
       );
       singletonIds.set('site', row.id);
@@ -338,6 +344,15 @@ export const getSite = (): Promise<Site> =>
         og_image: row.og_image ? img(row.og_image) : null,
         seo: seo(row, { title: row.company_name, description: row.tagline ?? '' }),
         show_search: row.show_search ?? false,
+        footer_contact_heading: text(row.footer_contact_heading),
+        footer_note: text(row.footer_note),
+        footer_rights: text(row.footer_rights),
+        price_note: text(row.price_note),
+        doodle_image: row.doodle_image ? img(row.doodle_image) : null,
+        background_image: row.background_image ? img(row.background_image) : null,
+        nav: (row.nav ?? [])
+          .sort((a: any, b: any) => (a.sort ?? 0) - (b.sort ?? 0))
+          .map((entry: any) => ({ page: entry.page, label: entry.label })),
         socials: (row.socials ?? []).sort((a: any, b: any) => (a.sort ?? 0) - (b.sort ?? 0)),
       };
     },
@@ -380,6 +395,12 @@ export const getHome = (): Promise<Home> =>
         categories_intro: {
           eyebrow: row.categories_intro_eyebrow ?? '',
           heading: row.categories_intro_heading ?? '',
+        },
+        categories_cta_label: row.categories_cta_label ?? '',
+        brand_band: {
+          eyebrow: row.brand_band_eyebrow ?? '',
+          heading: row.brand_band_heading ?? '',
+          body: row.brand_band_body ?? '',
         },
         pillars_intro: {
           eyebrow: row.pillars_intro_eyebrow ?? '',
@@ -474,8 +495,18 @@ export const getContact = (): Promise<Contact> =>
       return {
         seo: seo(row, { title: 'Contact', description: '' }),
         banner: banner(row),
+        form_eyebrow: row.form_eyebrow ?? '',
         form_heading: row.form_heading ?? '',
         form_sub: row.form_sub ?? '',
+        field_name_label: row.field_name_label || 'Name:',
+        field_email_label: row.field_email_label || 'Email:',
+        field_phone_label: row.field_phone_label || 'Mobile No:',
+        field_message_label: row.field_message_label || 'Message:',
+        send_label: row.send_label || 'Send',
+        visit_eyebrow: row.visit_eyebrow ?? '',
+        office_heading: row.office_heading ?? '',
+        map_heading: row.map_heading ?? '',
+        faq_heading: row.faq_heading ?? '',
         map_embed_url: row.map_embed_url || null,
         show_faqs: row.show_faqs ?? true,
         faqs: (row.faqs ?? [])
@@ -484,6 +515,25 @@ export const getContact = (): Promise<Contact> =>
       };
     },
     () => contactSeed,
+  );
+
+export const getNotFound = (): Promise<NotFound> =>
+  read(
+    'not_found',
+    notFoundSchema,
+    async () => {
+      const row = await api<Record<string, any>>('items/not_found?fields=*');
+      singletonIds.set('not_found', row.id);
+      return {
+        seo: seo(row, { title: 'Page not found', description: '' }),
+        eyebrow: row.eyebrow ?? '',
+        heading: row.heading ?? '',
+        body: row.body ?? '',
+        cta_label: row.cta_label ?? '',
+        phone_label: row.phone_label ?? '',
+      };
+    },
+    () => notFoundSeed,
   );
 
 export const getClients = (): Promise<Client[]> =>

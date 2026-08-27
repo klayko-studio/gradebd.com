@@ -292,7 +292,8 @@
     position: fixed;
     inset: 0;
     z-index: -1;
-    background-image: url('/images/brand/bg-splash-2000.webp');
+    /* Set from the CMS in Base.astro; this is the fallback if none is chosen. */
+    background-image: var(--site-background, url('/images/brand/bg-splash-2000.webp'));
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;

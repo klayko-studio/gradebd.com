@@ -181,7 +181,37 @@ export const COLLECTIONS = [
         default: false,
         note: 'Show the search button in the header. Off until there is a search page for it to open.',
       }),
+      F.string('footer_contact_heading', { note: 'The heading over the footer address block.' }),
+      F.string('footer_note', { note: 'The right-hand line in the bottom bar.' }),
+      F.string('footer_rights', { note: 'Follows "© <year> <company>." in the bottom bar.' }),
+      F.string('price_note', { note: 'Follows the pack sizes in a product’s detail pop-up.' }),
+      F.file('doodle_image', 'The illustration in the band that closes the home page.'),
+      F.file('background_image', 'The watercolour behind every page. Replacing it changes the whole site.'),
+      F.o2m('nav', 'The main menu. Labels and order only — each item’s destination is fixed.'),
       F.o2m('socials', 'Social profiles, in the order they appear.'),
+    ],
+  }),
+
+  collection('nav_items', {
+    icon: 'menu',
+    template: '{{label}}',
+    note: 'The header and mobile menu. The destination comes from the page key, so a label can be reworded and the items reordered without any link breaking.',
+    fields: [
+      F.pk(),
+      F.m2o('site', 'site', { hidden: true }),
+      F.select(
+        'page',
+        [
+          { text: 'Home', value: 'home' },
+          { text: 'About Us', value: 'about' },
+          { text: 'Product Categories', value: 'categories' },
+          { text: 'Gallery', value: 'gallery' },
+          { text: 'Contact', value: 'contact' },
+        ],
+        { required: true, note: 'Which page this points at.' },
+      ),
+      F.string('label', { required: true, width: 'half' }),
+      F.sort(),
     ],
   }),
 
@@ -222,6 +252,10 @@ export const COLLECTIONS = [
       F.string('who_we_are_cta_label'),
       F.string('categories_intro_eyebrow'),
       F.string('categories_intro_heading'),
+      F.string('categories_cta_label', { note: 'The link beside that heading.' }),
+      F.string('brand_band_eyebrow'),
+      F.string('brand_band_heading', { note: 'The band that closes the page.' }),
+      F.text('brand_band_body'),
       F.string('pillars_intro_eyebrow'),
       F.string('pillars_intro_heading'),
       F.o2m('pillars'),
@@ -344,8 +378,18 @@ export const COLLECTIONS = [
       F.pk(),
       ...SEO,
       ...BANNER,
+      F.string('form_eyebrow'),
       F.string('form_heading'),
       F.text('form_sub', { note: 'The line under the form heading.' }),
+      F.string('field_name_label', { width: 'half', note: 'Shown inside the field.' }),
+      F.string('field_email_label', { width: 'half' }),
+      F.string('field_phone_label', { width: 'half' }),
+      F.string('field_message_label', { width: 'half' }),
+      F.string('send_label', { width: 'half', note: 'The submit button.' }),
+      F.string('visit_eyebrow'),
+      F.string('office_heading'),
+      F.string('map_heading'),
+      F.string('faq_heading', { note: 'The pill above the questions.' }),
       F.text('map_embed_url', {
         note: 'The src of a Google Maps embed. Left empty, the site draws a labelled placeholder and makes no third-party request.',
       }),
@@ -476,6 +520,21 @@ export const COLLECTIONS = [
     ],
   }),
 
+  collection('not_found', {
+    icon: 'error',
+    singleton: true,
+    note: 'The page shown for a URL that does not exist.',
+    fields: [
+      F.pk(),
+      ...SEO,
+      F.string('eyebrow'),
+      F.string('heading'),
+      F.text('body'),
+      F.string('cta_label', { width: 'half', note: 'The button back to the home page.' }),
+      F.string('phone_label', { width: 'half', note: 'Precedes the phone number beside it.' }),
+    ],
+  }),
+
   /* ── inbound ───────────────────────────────────────────────────────────── */
   collection('enquiries', {
     icon: 'inbox',
@@ -500,6 +559,7 @@ export const COLLECTIONS = [
 /** `[childCollection, m2oField, parentCollection, parentO2mField]` */
 export const O2M = [
   ['socials', 'site', 'site', 'socials'],
+  ['nav_items', 'site', 'site', 'nav'],
   ['home_slides', 'home', 'home', 'slides'],
   ['home_stats', 'home', 'home', 'stats'],
   ['home_pillars', 'home', 'home', 'pillars'],
@@ -520,6 +580,8 @@ export const M2O_ONLY = [
 /** `[collection, field]` — single-file relations onto directus_files. */
 export const FILE_FIELDS = [
   ['site', 'logo'],
+  ['site', 'doodle_image'],
+  ['site', 'background_image'],
   ['site', 'logo_reversed'],
   ['site', 'logo_reversed_stationary'],
   ['site', 'favicon'],

@@ -70,6 +70,29 @@ export const siteSchema = z.object({
    * no search page yet, so the control has nowhere real to go.
    */
   show_search: z.boolean().default(false),
+  /* Footer copy. All default to '' — an empty one simply is not rendered. */
+  footer_contact_heading: z.string().default(''),
+  footer_note: z.string().default(''),
+  footer_rights: z.string().default(''),
+  /** Follows the pack sizes in a product's detail pop-up. */
+  price_note: z.string().default(''),
+  /** The illustration in the band that closes the home page. */
+  doodle_image: imageSchema.nullable().default(null),
+  /** The watercolour behind every page. */
+  background_image: imageSchema.nullable().default(null),
+  /**
+   * The main menu. `page` is a fixed key rather than a URL: a moderator can
+   * reword and reorder the menu without any chance of pointing an item at a page
+   * that does not exist.
+   */
+  nav: z
+    .array(
+      z.object({
+        page: z.enum(['home', 'about', 'categories', 'gallery', 'contact']),
+        label: z.string(),
+      }),
+    )
+    .default([]),
   founded_year: z.number().int(),
   address_lines: z.array(z.string()).min(1),
   phone: z.string(),
@@ -130,6 +153,11 @@ export const homeSchema = z.object({
     cta_label: z.string(),
   }),
   categories_intro: z.object({ eyebrow: z.string(), heading: z.string() }),
+  categories_cta_label: z.string().default(''),
+  /** The band that closes the page. */
+  brand_band: z
+    .object({ eyebrow: z.string(), heading: z.string(), body: z.string() })
+    .default({ eyebrow: '', heading: '', body: '' }),
   pillars_intro: z.object({ eyebrow: z.string(), heading: z.string() }),
   pillars: z
     .array(z.object({ title: z.string(), body: z.string() }))
@@ -164,7 +192,18 @@ export type Gallery = z.infer<typeof gallerySchema>;
 export const contactSchema = z.object({
   seo: seoSchema,
   banner: bannerSchema,
+  form_eyebrow: z.string().default(''),
   form_heading: z.string(),
+  /* The labels that sit inside the form's fields. */
+  field_name_label: z.string().default('Name:'),
+  field_email_label: z.string().default('Email:'),
+  field_phone_label: z.string().default('Mobile No:'),
+  field_message_label: z.string().default('Message:'),
+  send_label: z.string().default('Send'),
+  visit_eyebrow: z.string().default(''),
+  office_heading: z.string().default(''),
+  map_heading: z.string().default(''),
+  faq_heading: z.string().default(''),
   /** The line under the form heading. Empty is fine — it simply is not rendered. */
   form_sub: z.string().default(''),
   map_embed_url: z.string().nullable().default(null),
@@ -177,6 +216,17 @@ export const contactSchema = z.object({
   faqs: z.array(z.object({ question: z.string(), answer: z.string() })).min(1),
 });
 export type Contact = z.infer<typeof contactSchema>;
+
+/** The page shown for a URL that does not exist. */
+export const notFoundSchema = z.object({
+  seo: seoSchema,
+  eyebrow: z.string().default(''),
+  heading: z.string(),
+  body: z.string().default(''),
+  cta_label: z.string().default(''),
+  phone_label: z.string().default(''),
+});
+export type NotFound = z.infer<typeof notFoundSchema>;
 
 /* -------------------------------------------------------------- collections */
 

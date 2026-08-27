@@ -88,7 +88,14 @@ const footerLogo = site.logo_reversed_stationary ?? site.logo_reversed ?? null;
       {/* The colour is spelled out because the base stylesheet gives every
           heading `--text-primary`, which is dark ink — inheriting the footer's
           white does not survive that. */}
-      <h2 class="t-label-xs text-[color:var(--text-inverse)]">Get in touch</h2>
+      {site.footer_contact_heading && (
+        <h2
+          class="t-label-xs text-[color:var(--text-inverse)]"
+          {...editable({ collection: 'site', fields: 'footer_contact_heading', mode: 'popover' })}
+        >
+          {site.footer_contact_heading}
+        </h2>
+      )}
       <address class="flex flex-col gap-3 t-body-sm not-italic">
         <span
           class="flex flex-col"
@@ -116,8 +123,14 @@ const footerLogo = site.logo_reversed_stationary ?? site.logo_reversed ?? null;
 
   <div class="relative bg-footer-deep">
     <div class="rail flex flex-wrap items-center justify-between gap-2 py-5 t-label-sm">
-      <p>© {new Date().getFullYear()} {site.company_name}. All rights reserved.</p>
-      <p>Stationery · Dhanmondi, Dhaka</p>
+      <p {...editable({ collection: 'site', fields: 'footer_rights', mode: 'popover' })}>
+        © {new Date().getFullYear()} {site.company_name}. {site.footer_rights}
+      </p>
+      {site.footer_note && (
+        <p {...editable({ collection: 'site', fields: 'footer_note', mode: 'popover' })}>
+          {site.footer_note}
+        </p>
+      )}
     </div>
   </div>
 </footer>

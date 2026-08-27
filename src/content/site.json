@@ -32,6 +32,46 @@
   "og_image": null,
   "seo": null,
   "show_search": false,
+  "footer_contact_heading": "Get in touch",
+  "footer_note": "Stationery · Dhanmondi, Dhaka",
+  "footer_rights": "All rights reserved.",
+  "price_note": "price quoted on enquiry",
+  "doodle_image": {
+    "id": null,
+    "src": "/images/brand/doodles.png",
+    "alt": "",
+    "width": 1600,
+    "height": 1067
+  },
+  "background_image": {
+    "id": null,
+    "src": "/images/brand/bg-splash-2000.webp",
+    "alt": "",
+    "width": 2000,
+    "height": 1333
+  },
+  "nav": [
+    {
+      "page": "home",
+      "label": "Home"
+    },
+    {
+      "page": "about",
+      "label": "About Us"
+    },
+    {
+      "page": "categories",
+      "label": "Product Categories"
+    },
+    {
+      "page": "gallery",
+      "label": "Gallery"
+    },
+    {
+      "page": "contact",
+      "label": "Contact"
+    }
+  ],
   "founded_year": 2019,
   "address_lines": [
     "Akram Manjil, H-8/A/8,",

@@ -25,6 +25,16 @@ const favicon = site.favicon?.src ?? null;
  * From the file's own media type, not the URL: a proxied `/cms/<id>` has no
  * extension to read. The filename fallback covers the seed path, which does.
  */
+/**
+ * The page background, from the CMS. Injected as a custom property rather than
+ * an inline style on an element, because the artwork is painted by
+ * `body::before` in the stylesheet — a pseudo-element nothing can reach from the
+ * markup. An unset one falls back to the file in global.css.
+ */
+const backgroundImage = site.background_image?.src
+  ? `url('${site.background_image.src}')`
+  : null;
+
 const faviconType =
   site.favicon?.mime ?? (favicon?.toLowerCase().endsWith('.svg') ? 'image/svg+xml' : undefined);
 ---
@@ -52,6 +62,7 @@ const faviconType =
     {/* Both from the CMS. Without one, the browser falls back to /favicon.ico. */}
     {/* The type matters: without it a browser will not treat an SVG as an icon,
         and Safari in particular falls back to the default tab mark. */}
+    {backgroundImage && <style set:html={`:root{--site-background:${backgroundImage}}`} />}
     {favicon && <link rel="icon" href={favicon} type={faviconType} />}
     {favicon && <link rel="apple-touch-icon" href={favicon} />}
 

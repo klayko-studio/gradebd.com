@@ -40,7 +40,7 @@ const field =
        are filled in is unusable with a screen reader. -->
   <section class="section">
     <div class="rail flex flex-col gap-6">
-      <Eyebrow>Enquiry form</Eyebrow>
+      <Eyebrow>{contact.form_eyebrow}</Eyebrow>
       <h2
         class="t-heading-xl"
         {...editable({ collection: 'contact', fields: 'form_heading', mode: 'popover' })}
@@ -68,7 +68,7 @@ const field =
                 name="name"
                 type="text"
                 autocomplete="name"
-                placeholder="Name:"
+                placeholder={contact.field_name_label}
                 required
                 class={field}
               />
@@ -82,7 +82,7 @@ const field =
                 name="email"
                 type="email"
                 autocomplete="email"
-                placeholder="Email:"
+                placeholder={contact.field_email_label}
                 required
                 class={field}
               />
@@ -97,7 +97,7 @@ const field =
                 type="tel"
                 inputmode="tel"
                 autocomplete="tel"
-                placeholder="Mobile No:"
+                placeholder={contact.field_phone_label}
                 required
                 class={field}
               />
@@ -112,7 +112,7 @@ const field =
             <textarea
               id="requirement"
               name="requirement"
-              placeholder="Message:"
+              placeholder={contact.field_message_label}
               required
               class={`${field} h-full min-h-[200px] resize-y`}></textarea>
             <p
@@ -136,7 +136,7 @@ const field =
                    transition-colors duration-200 hover:bg-brand-hover
                    disabled:pointer-events-none disabled:opacity-60"
           >
-            Send
+            {contact.send_label}
             <svg
               width="26"
               height="12"
@@ -172,11 +172,11 @@ const field =
        its own full-width band (comment #38); this layout supersedes that. -->
   <section class="section pt-0">
     <div class="rail flex flex-col gap-8">
-      <Eyebrow accent="var(--color-accent-cyan)">Visit or call</Eyebrow>
+      <Eyebrow accent="var(--color-accent-cyan)">{contact.visit_eyebrow}</Eyebrow>
 
       <div class="grid gap-12 lg:grid-cols-2 lg:gap-20">
         <div class="flex flex-col gap-5">
-          <h2 class="t-heading-md">Head Office</h2>
+          <h2 class="t-heading-md" {...editable({ collection: 'contact', fields: 'office_heading', mode: 'popover' })}>{contact.office_heading}</h2>
           <address class="flex flex-col gap-1.5 t-body-md not-italic">
             <span class="text-ink">{site.company_name}</span>
             {site.address_lines.map((line) => <span>{line}</span>)}
@@ -202,7 +202,7 @@ const field =
           class="flex flex-col gap-5"
           {...editable({ collection: 'contact', fields: 'map_embed_url', mode: 'drawer' })}
         >
-          <h2 class="t-heading-md">Google Map Location</h2>
+          <h2 class="t-heading-md" {...editable({ collection: 'contact', fields: 'map_heading', mode: 'popover' })}>{contact.map_heading}</h2>
           {
             contact.map_embed_url ? (
               <iframe
@@ -247,7 +247,7 @@ const field =
         class="self-center rounded-full bg-inverse px-7 py-3 font-sans t-label-md
                text-[color:var(--text-inverse)]"
       >
-        Frequently Asked Questions
+        {contact.faq_heading}
       </h2>
 
       <div

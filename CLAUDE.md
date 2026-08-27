@@ -599,6 +599,32 @@ Nine instructions, all applied. The ones that change what a future session shoul
   There is still no search page for it to open — it navigated to Contact — so off is the honest
   default. A null reads as off.
 
+## Everything visible is CMS content now
+
+The remaining hardcoded copy moved into Directus in one pass. What was left, and where it went:
+
+- **`site`** gained `footer_contact_heading`, `footer_note`, `footer_rights` (the bottom bar's
+  "© 2026 Grade Limited." is composed, so only the trailing sentence is a field), `price_note` for
+  the product dialog, and two files: `doodle_image` for the closing band and `background_image` for
+  the watercolour behind every page.
+- **`nav_items`** is the main menu. Labels and order are editable; destinations are not. Each row
+  names a *page key* and the href is looked up in `Header.astro`, so a moderator can reword "Product
+  Categories" or move Gallery ahead of it with no way to point the menu at a URL that does not exist.
+  An empty nav falls back to the five defaults rather than rendering no menu.
+- **`not_found`** is a new singleton for the 404 page — SEO, eyebrow, heading, body, and both link
+  labels. It was the last page with no CMS record at all.
+- **`home`** gained `categories_cta_label` ("See all") and the `brand_band_*` trio.
+- **`contact`** gained every remaining label: the two eyebrows, the four field placeholders, the Send
+  button, "Head Office", "Google Map Location" and the FAQ pill.
+
+**The page background is a custom property, not an inline style.** It is painted by `body::before` in
+the stylesheet, which nothing in the markup can reach, so `Base.astro` injects
+`:root{--site-background:url(…)}` and `global.css` falls back to the bundled file when it is unset.
+
+Left in code deliberately: `aria-label`s on controls, the honeypot's hidden label, and the card
+`action` strings — those are accessibility text describing what a control does, not copy anyone would
+translate or rewrite, and they are not visible on the page.
+
 ## Information architecture
 
 `docs/client/wireframe/` holds nine photographed paper wireframes (WhatsApp images, filenames are not

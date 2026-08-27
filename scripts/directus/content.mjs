@@ -121,7 +121,8 @@ export async function seedContent(client, { force = false } = {}) {
   const folders = await ensureFolders(client);
   const files = createUploader(client, folders);
 
-  const [site, home, about, gallery, contact, categories, clients, reviews] = await Promise.all([
+  const [site, home, about, gallery, contact, categories, clients, reviews, notFound] =
+    await Promise.all([
     readJson('site.json'),
     readJson('home.json'),
     readJson('about.json'),
@@ -130,6 +131,7 @@ export async function seedContent(client, { force = false } = {}) {
     readJson('categories.json'),
     readJson('clients.json'),
     readJson('reviews.json'),
+    readJson('not-found.json'),
   ]);
 
   /* ── site ─────────────────────────────────────────────────────────────── */
@@ -162,6 +164,13 @@ export async function seedContent(client, { force = false } = {}) {
     seo_title: home.seo.title,
     seo_description: home.seo.description,
     show_search: site.show_search ?? false,
+    footer_contact_heading: site.footer_contact_heading ?? '',
+    footer_note: site.footer_note ?? '',
+    footer_rights: site.footer_rights ?? '',
+    price_note: site.price_note ?? '',
+    doodle_image: await files.id(site.doodle_image?.src, site.doodle_image?.alt),
+    background_image: await files.id(site.background_image?.src, site.background_image?.alt),
+    nav: (site.nav ?? []).map((n, i) => ({ ...n, sort: i })),
     socials: site.socials.map((s, i) => ({ ...s, sort: i })),
   });
   console.log('   site');
@@ -194,6 +203,10 @@ export async function seedContent(client, { force = false } = {}) {
     who_we_are_cta_label: home.who_we_are.cta_label,
     categories_intro_eyebrow: home.categories_intro.eyebrow,
     categories_intro_heading: home.categories_intro.heading,
+    categories_cta_label: home.categories_cta_label ?? '',
+    brand_band_eyebrow: home.brand_band?.eyebrow ?? '',
+    brand_band_heading: home.brand_band?.heading ?? '',
+    brand_band_body: home.brand_band?.body ?? '',
     pillars_intro_eyebrow: home.pillars_intro.eyebrow,
     pillars_intro_heading: home.pillars_intro.heading,
     pillars: home.pillars.map((p, i) => ({ ...p, sort: i })),
@@ -253,13 +266,34 @@ export async function seedContent(client, { force = false } = {}) {
     seo_title: contact.seo.title,
     seo_description: contact.seo.description,
     ...(await banner(contact.banner)),
+    form_eyebrow: contact.form_eyebrow ?? '',
     form_heading: contact.form_heading,
     form_sub: contact.form_sub ?? '',
+    field_name_label: contact.field_name_label ?? '',
+    field_email_label: contact.field_email_label ?? '',
+    field_phone_label: contact.field_phone_label ?? '',
+    field_message_label: contact.field_message_label ?? '',
+    send_label: contact.send_label ?? '',
+    visit_eyebrow: contact.visit_eyebrow ?? '',
+    office_heading: contact.office_heading ?? '',
+    map_heading: contact.map_heading ?? '',
+    faq_heading: contact.faq_heading ?? '',
     map_embed_url: contact.map_embed_url,
     show_faqs: contact.show_faqs ?? true,
     faqs: contact.faqs.map((f, i) => ({ ...f, sort: i })),
   });
   console.log('   contact');
+
+  await client.patch('/items/not_found', {
+    seo_title: notFound.seo.title,
+    seo_description: notFound.seo.description,
+    eyebrow: notFound.eyebrow,
+    heading: notFound.heading,
+    body: notFound.body,
+    cta_label: notFound.cta_label,
+    phone_label: notFound.phone_label,
+  });
+  console.log('   not found');
 
   /* ── catalogue ────────────────────────────────────────────────────────── */
   // Two passes on purpose: an item points at a sub-category and a sub-brand by

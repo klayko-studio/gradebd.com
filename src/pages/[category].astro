@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import PageBanner from '../components/PageBanner.astro';
 import ProductCard from '../components/ProductCard.astro';
 import ProductDialog from '../components/ProductDialog.astro';
-import { getCategories, editable } from '../lib/cms';
+import { getCategories, getSite, editable } from '../lib/cms';
 import type { Category } from '../lib/schema';
 
 /**
@@ -14,7 +14,7 @@ import type { Category } from '../lib/schema';
  * CMS has to answer immediately, not after the next build.
  */
 const slug = Astro.params.category;
-const categories: Category[] = await getCategories();
+const [categories, site] = await Promise.all([getCategories(), getSite()]);
 const category = categories.find((entry) => entry.slug === slug);
 
 // An unknown slug is a real 404, not an exception. Rewriting keeps the URL the
@@ -108,7 +108,12 @@ const activeSub =
 
   {
     category.items.map((item) => (
-      <ProductDialog item={item} accent={category.accent} categoryName={category.name} />
+      <ProductDialog
+        item={item}
+        accent={category.accent}
+        categoryName={category.name}
+        priceNote={site.price_note}
+      />
     ))
   }
 

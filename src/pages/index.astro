@@ -73,7 +73,7 @@ const [home, categories, clients, site] = await Promise.all([
           data-reveal
           class="group flex items-center gap-2 t-button text-[color:var(--text-brand-strong)]"
         >
-          See all
+          {home.categories_cta_label}
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"
             class="transition-transform duration-200 group-hover:translate-x-1">
             <path d="M5 12h13M12.5 6.5L18 12l-5.5 5.5" stroke="currentColor" stroke-width="1.6"
@@ -152,7 +152,7 @@ const [home, categories, clients, site] = await Promise.all([
                 <span
                   class="flex h-16 w-full items-center justify-center rounded-sharp border border-dashed
                          border-[color:rgb(255_255_255/0.34)]"
-                  title="Placeholder — logo pending"
+                  title={`${client.name} — logo pending`}
                 />
               )}
               <span class="t-label-xs text-[color:var(--text-inverse-muted)]">{client.name}</span>
@@ -195,7 +195,18 @@ const [home, categories, clients, site] = await Promise.all([
   <!-- The section is the social row now, so the copy about stocking a school year
        is gone with it; a lead-in about pencil boxes under a "Contacts" heading read
        as two unrelated things stacked. -->
-  <BrandBand heading="Our Social Media Contacts" socials={site.socials} />
+  <BrandBand
+    eyebrow={home.brand_band.eyebrow}
+    heading={home.brand_band.heading}
+    body={home.brand_band.body}
+    image={site.doodle_image}
+    socials={site.socials}
+    edit={editable({
+      collection: 'home',
+      fields: ['brand_band_eyebrow', 'brand_band_heading', 'brand_band_body'],
+      mode: 'drawer',
+    })}
+  />
 </Base>
 
 <style>

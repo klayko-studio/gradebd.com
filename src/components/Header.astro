@@ -10,13 +10,34 @@ interface Props {
 
 const { site, categories, active } = Astro.props;
 
-const nav = [
-  { key: 'home', label: 'Home', href: '/' },
-  { key: 'about', label: 'About Us', href: '/about/' },
-  { key: 'categories', label: 'Product Categories', href: `/${categories[0]?.slug ?? ''}/` },
-  { key: 'gallery', label: 'Gallery', href: '/gallery/' },
-  { key: 'contact', label: 'Contact', href: '/contact/' },
-] as const;
+/**
+ * The menu is CMS-driven for its labels and its order, but never for its
+ * destinations: each item names a page and the href is looked up here. A
+ * moderator can reword "Product Categories" or move Gallery ahead of it without
+ * any possibility of pointing the menu at a URL that does not exist.
+ */
+const HREF: Record<string, string> = {
+  home: '/',
+  about: '/about/',
+  categories: `/${categories[0]?.slug ?? ''}/`,
+  gallery: '/gallery/',
+  contact: '/contact/',
+};
+
+const DEFAULT_NAV = [
+  { page: 'home', label: 'Home' },
+  { page: 'about', label: 'About Us' },
+  { page: 'categories', label: 'Product Categories' },
+  { page: 'gallery', label: 'Gallery' },
+  { page: 'contact', label: 'Contact' },
+];
+
+// An empty nav in the CMS means "nobody has set one up", not "no menu".
+const nav = (site.nav.length > 0 ? site.nav : DEFAULT_NAV).map((item) => ({
+  key: item.page,
+  label: item.label,
+  href: HREF[item.page] ?? '/',
+}));
 
 /* Nav sits on the client's light blue. Active is ink + a red rule; the rest is
    a deep shade of the same blue, which reads better on the tint than grey. */

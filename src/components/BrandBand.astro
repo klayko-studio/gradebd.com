@@ -1,6 +1,6 @@
 ---
 import SocialLinks from './SocialLinks.astro';
-import type { Site } from '../lib/schema';
+import type { Image, Site } from '../lib/schema';
 
 /**
  * The light blue band that closes the home page — the client's own doodle
@@ -19,15 +19,19 @@ interface Props {
   /** Optional: the section is the social row, so it does not always need a lead-in. */
   body?: string;
   socials: Site['socials'];
+  /** The illustration, from the CMS. Nothing is drawn without one. */
+  image?: Image | null;
+  /** Directus Visual Editing attributes for the copy. */
+  edit?: Record<string, string>;
 }
-const { eyebrow, heading, body, socials } = Astro.props;
+const { eyebrow, heading, body, socials, image, edit = {} } = Astro.props;
 ---
 
 <section class="relative isolate overflow-hidden bg-menu">
   <!-- Copy sits above the artwork and is held to the left half on wide screens,
        so the two never overlap however long the heading runs. -->
   <div class="rail relative z-10 py-14 lg:py-20">
-    <div class="flex max-w-[34ch] flex-col gap-4 md:max-w-[46%]">
+    <div class="flex max-w-[34ch] flex-col gap-4 md:max-w-[46%]" {...edit}>
       {eyebrow && <p class="t-eyebrow text-[color:var(--text-on-menu-muted)]">{eyebrow}</p>}
       <h2 class="t-heading-xl text-[color:var(--text-on-menu)]">{heading}</h2>
       {body && <p class="t-body-md max-w-[46ch] text-[color:var(--text-on-menu-muted)]">{body}</p>}
@@ -50,16 +54,20 @@ const { eyebrow, heading, body, socials } = Astro.props;
     falls back to a plain block underneath, where it is a picture rather than a
     background.
   -->
-  <img
-    src="/images/brand/doodles.png"
-    alt=""
-    aria-hidden="true"
-    width="1600"
-    height="1067"
-    loading="lazy"
-    decoding="async"
-    class="pointer-events-none mx-auto block w-full max-w-[520px] select-none
-           md:absolute md:right-0 md:bottom-0 md:z-0 md:mx-0 md:w-[clamp(360px,54vw,900px)]
-           md:max-w-none md:origin-bottom-right md:translate-x-[6%] md:translate-y-[8%]
-           md:rotate-[-11deg]"
-  /></section>
+  {
+    image?.src && (
+      <img
+        src={image.src}
+        alt=""
+        aria-hidden="true"
+        width={image.width}
+        height={image.height}
+        loading="lazy"
+        decoding="async"
+        class="pointer-events-none mx-auto block w-full max-w-[520px] select-none
+               md:absolute md:right-0 md:bottom-0 md:z-0 md:mx-0 md:w-[clamp(360px,54vw,900px)]
+               md:max-w-none md:origin-bottom-right md:translate-x-[6%] md:translate-y-[8%]
+               md:rotate-[-11deg]"
+      />
+    )
+  }</section>

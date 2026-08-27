@@ -19,6 +19,7 @@
       "We’re here to help!"
     ]
   },
+  "form_eyebrow": "Enquiry form",
   "form_heading": "Send us your requirement.",
   "map_embed_url": null,
   "show_faqs": false,
@@ -44,5 +45,14 @@
       "answer": "One working day for stock lines. Custom branding or unusually large volumes may take longer, and we will tell you when you enquire rather than leaving you waiting."
     }
   ],
-  "form_sub": "Include the item, the quantity and the date you need it by — that is enough for us to quote."
+  "form_sub": "Include the item, the quantity and the date you need it by — that is enough for us to quote.",
+  "field_name_label": "Name:",
+  "field_email_label": "Email:",
+  "field_phone_label": "Mobile No:",
+  "field_message_label": "Message:",
+  "send_label": "Send",
+  "visit_eyebrow": "Visit or call",
+  "office_heading": "Head Office",
+  "map_heading": "Google Map Location",
+  "faq_heading": "Frequently Asked Questions"
 }
