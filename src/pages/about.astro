@@ -3,10 +3,9 @@ import Base from '../layouts/Base.astro';
 import PageBanner from '../components/PageBanner.astro';
 import Eyebrow from '../components/Eyebrow.astro';
 import SectionHead from '../components/SectionHead.astro';
-import QuoteBand from '../components/QuoteBand.astro';
-import { getAbout, getSite, editable } from '../lib/cms';
+import { getAbout, editable } from '../lib/cms';
 
-const [about, site] = await Promise.all([getAbout(), getSite()]);
+const about = await getAbout();
 ---
 
 <Base seo={about.seo} active="about">
@@ -34,7 +33,7 @@ const [about, site] = await Promise.all([getAbout(), getSite()]);
           <article
             data-reveal
             id={i === 0 ? 'vision' : 'mission'}
-            class="flex flex-col gap-4 border-t-2 border-line-brand pt-6"
+            class="flex flex-col gap-4"
             {...editable({
               collection: 'about',
               fields:
@@ -44,7 +43,13 @@ const [about, site] = await Promise.all([getAbout(), getSite()]);
               mode: 'drawer',
             })}
           >
-            <Eyebrow>{block.eyebrow}</Eyebrow>
+            {/*
+              The heading is the label now — "Our Vision", "Our Mission" — so the
+              eyebrow above it would say the same words twice. Guarded rather than
+              deleted: it is still a CMS field, and a moderator who fills it in
+              should get it back.
+            */}
+            {block.eyebrow && <Eyebrow>{block.eyebrow}</Eyebrow>}
             <h2 class="t-heading-lg max-w-[34ch]">{block.heading}</h2>
             {block.body && <p class="t-body-md max-w-[70ch]">{block.body}</p>}
           </article>
@@ -102,9 +107,4 @@ const [about, site] = await Promise.all([getAbout(), getSite()]);
     </div>
   </section>
 
-  <QuoteBand
-    site={site}
-    heading="Planning next term’s stationery order?"
-    body={`Send us the list and the quantities. ${site.response_promise}`}
-  />
 </Base>

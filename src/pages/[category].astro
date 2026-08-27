@@ -3,9 +3,8 @@ import Base from '../layouts/Base.astro';
 import PageBanner from '../components/PageBanner.astro';
 import ProductCard from '../components/ProductCard.astro';
 import ProductDialog from '../components/ProductDialog.astro';
-import QuoteBand from '../components/QuoteBand.astro';
-import { getCategories, getSite, editable } from '../lib/cms';
-import type { Category, Site } from '../lib/schema';
+import { getCategories, editable } from '../lib/cms';
+import type { Category } from '../lib/schema';
 
 /**
  * One route for all five ranges. Adding a sixth category in Directus creates a
@@ -22,7 +21,6 @@ const category = categories.find((entry) => entry.slug === slug);
 // visitor typed while rendering the site's own 404 page.
 if (!category) return Astro.rewrite('/404');
 
-const site: Site = await getSite();
 
 /**
  * Two filter axes, and a range only shows the ones it actually has.
@@ -171,11 +169,6 @@ const showSubs = category.subcategories.length > 0;
     ))
   }
 
-  <QuoteBand
-    site={site}
-    heading={`Need ${category.name.toLowerCase()} in volume?`}
-    body={`Send the specification and quantity. ${site.response_promise}`}
-  />
 </Base>
 
 <style>

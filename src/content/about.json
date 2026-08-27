@@ -21,13 +21,13 @@
     ]
   },
   "vision": {
-    "eyebrow": "Our Vision",
-    "heading": "To become Bangladesh’s most loved stationery brand.",
+    "eyebrow": "",
+    "heading": "Our Vision",
     "body": "To become Bangladesh’s most loved stationery brand, empowering every learner to reach their potential."
   },
   "mission": {
-    "eyebrow": "Our Mission",
-    "heading": "Stationery that inspires learning.",
+    "eyebrow": "",
+    "heading": "Our Mission",
     "body": "To create dependable, innovative stationery that inspires learning, fuels creativity and improves everyday performance."
   },
   "values_intro": {
@@ -37,23 +37,23 @@
   "values": [
     {
       "title": "Empowerment",
-      "body": "Every line exists to put capability in someone’s hands — the pencil a child learns to write with, the file that holds a day’s work together."
+      "body": ""
     },
     {
       "title": "Innovation",
-      "body": "We look for the better version of an ordinary thing: break-resistant lead, ink that does not skip on recycled paper, a grip that survives a long exam."
+      "body": ""
     },
     {
       "title": "Reliability",
-      "body": "The reorder matches the first order. Specification, pack size and finish stay exactly where we said they would."
+      "body": ""
     },
     {
       "title": "Continuous Improvement",
-      "body": "More than a decade in the category means we keep revising — a hexagonal barrel, a jam-resistant rail, a jar that keeps erasers clean."
+      "body": ""
     },
     {
       "title": "Customer First",
-      "body": "Schools, retailers and offices buy on trust and timing. We answer quickly, quote honestly, and say so when we cannot supply."
+      "body": ""
     }
   ],
   "story": {

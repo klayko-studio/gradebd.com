@@ -1,10 +1,9 @@
 ---
 import Base from '../layouts/Base.astro';
 import PageBanner from '../components/PageBanner.astro';
-import QuoteBand from '../components/QuoteBand.astro';
-import { getGallery, getSite, editable } from '../lib/cms';
+import { getGallery, editable } from '../lib/cms';
 
-const [gallery, site] = await Promise.all([getGallery(), getSite()]);
+const gallery = await getGallery();
 ---
 
 <Base seo={gallery.seo} active="gallery">
@@ -60,9 +59,4 @@ const [gallery, site] = await Promise.all([getGallery(), getSite()]);
     </div>
   </section>
 
-  <QuoteBand
-    site={site}
-    heading="Want to see a sample before you order?"
-    body="Ask for a sample carton and we will arrange it with your quote."
-  />
 </Base>
