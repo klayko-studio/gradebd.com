@@ -150,8 +150,11 @@ if (reduced) {
     marks.forEach((mark, i) => {
       const depth = ((i % 3) + 1) / 3; // three planes
       gsap.to(mark, {
-        y: (i % 2 === 0 ? -1 : 1) * 26 * depth,
-        x: (i % 3 === 0 ? 1 : -1) * 10 * depth,
+        // Small on purpose. The marks now sit one to a grid cell with only a
+        // few pixels of slack around each, so a drift of the old 26px would
+        // walk them straight into their neighbours halfway down the scroll.
+        y: (i % 2 === 0 ? -1 : 1) * 9 * depth,
+        x: (i % 3 === 0 ? 1 : -1) * 4 * depth,
         ease: 'none',
         scrollTrigger: {
           trigger: field.parentElement ?? field,
