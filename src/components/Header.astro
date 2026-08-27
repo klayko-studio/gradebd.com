@@ -101,18 +101,18 @@ const linkOff = 'text-[color:var(--text-on-menu-muted)] hover:text-[color:var(--
                           >
                             {c.name}
                           </a>
+                          {/*
+                            The sub-categories read as a list of what is in the
+                            range, not as links: the range name above them is the
+                            one place to click. They stopped being destinations
+                            when the category pages lost their filter rows, and a
+                            link that only scrolls to the top of the same page is
+                            worse than plain text.
+                          */}
                           {c.subcategories.length > 0 && (
                             <ul class="flex flex-col gap-2">
                               {c.subcategories.map((sub) => (
-                                <li>
-                                  <a
-                                    href={`/${c.slug}/#${sub.slug}`}
-                                    class="t-body-sm text-[color:var(--text-muted)] transition-colors
-                                           hover:text-[color:var(--text-brand-strong)]"
-                                  >
-                                    {sub.name}
-                                  </a>
-                                </li>
+                                <li class="t-body-sm text-[color:var(--text-muted)]">{sub.name}</li>
                               ))}
                             </ul>
                           )}

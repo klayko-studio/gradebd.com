@@ -529,5 +529,16 @@ export const FILE_FIELDS = [
 /** `[collection, aliasField, junctionCollection]` — ordered many-files. */
 export const M2M_FILES = [['items', 'images', 'items_files']];
 
-/** Collections the website's read-only token needs. Enquiries is create-only. */
-export const READABLE = COLLECTIONS.map((c) => c.name).filter((n) => n !== 'enquiries');
+/**
+ * Collections the website's read-only token needs. Enquiries is create-only.
+ *
+ * The m2m junctions are in here for a reason worth knowing: without read access
+ * to `items_files`, Directus does not refuse the request — it answers 200 and
+ * silently leaves the nested `images` out. The products looked as though they
+ * had lost their extra photographs when what they had actually lost was
+ * permission to be seen.
+ */
+export const READABLE = [
+  ...COLLECTIONS.map((c) => c.name).filter((n) => n !== 'enquiries'),
+  ...M2M_FILES.map(([, , junction]) => junction),
+];

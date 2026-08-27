@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import PageBanner from '../components/PageBanner.astro';
+import GalleryLightbox from '../components/GalleryLightbox.astro';
 import { getGallery, editable } from '../lib/cms';
 
 const gallery = await getGallery();
@@ -28,16 +29,28 @@ const gallery = await getGallery();
       {...editable({ collection: 'gallery', fields: 'images', mode: 'drawer' })}
       data-reveal-group>
       {
-        gallery.images.map((plate) => (
+        gallery.images.map((plate, i) => (
           <figure data-reveal class="group flex flex-col gap-3">
-            {/* Comment #32: a slight pop on hover. The plate lifts and the image
-                scales inside its own clip, so nothing shifts around it. */}
-            <div
-              class="overflow-hidden rounded-sharp border border-line-subtle bg-muted-surface
+            {/*
+              A button, not a link: it opens the viewer rather than going
+              anywhere. It carries its own data so the lightbox can build its
+              list from the page instead of the two being written out twice.
+            */}
+            <button
+              type="button"
+              class="cursor-zoom-in overflow-hidden rounded-sharp border border-line-subtle bg-muted-surface
                      transition-[transform,box-shadow,border-color] duration-300 ease-[var(--ease-standard)]
                      group-hover:-translate-y-1 group-hover:border-line-brand
                      group-hover:shadow-[var(--shadow-raised)]"
+              data-plate
+              data-plate-src={plate.image.src}
+              data-plate-alt={plate.image.alt}
+              data-plate-caption={plate.caption}
+              data-plate-tag={plate.tag}
+              aria-label={`${plate.caption} — open image ${i + 1} of ${gallery.images.length}`}
             >
+              {/* Comment #32: a slight pop on hover. The plate lifts and the image
+                  scales inside its own clip, so nothing shifts around it. */}
               <img
                 src={plate.image.src}
                 alt={plate.image.alt}
@@ -48,7 +61,7 @@ const gallery = await getGallery();
                 class="aspect-[5/3] w-full object-cover transition-transform duration-500
                        ease-[var(--ease-standard)] group-hover:scale-[1.04]"
               />
-            </div>
+            </button>
             <figcaption class="flex flex-wrap items-center justify-between gap-2">
               <span class="t-label-md text-[color:var(--text-primary)]">{plate.caption}</span>
               <span class="t-label-xs text-[color:var(--text-brand-strong)]">{plate.tag}</span>
@@ -59,4 +72,5 @@ const gallery = await getGallery();
     </div>
   </section>
 
+  <GalleryLightbox images={gallery.images} />
 </Base>

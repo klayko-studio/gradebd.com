@@ -198,24 +198,40 @@ export async function ensureWebsiteAccess(client, staticToken) {
     });
     policyId = policy.id;
     log('+ policy "Website"');
-
-    const permissions = [
-      // Files must be readable for the asset proxy to fetch bytes.
-      ...[...READABLE, 'directus_files'].map((collection) => ({
-        policy: policyId,
-        collection,
-        action: 'read',
-        fields: ['*'],
-        permissions: {},
-      })),
-      // The contact form writes here. Read is deliberately not granted: the site
-      // has no reason to list other people's enquiries.
-      { policy: policyId, collection: 'enquiries', action: 'create', fields: ['*'], permissions: {} },
-    ];
-    await client.post('/permissions', permissions);
-    log(`+ ${permissions.length} permissions`);
   } else {
     log('· policy "Website" — already there');
+  }
+
+  /**
+   * Reconciled on every run, not just when the policy is created.
+   *
+   * Adding a collection to the model and re-running `--schema-only` used to
+   * leave the site unable to read it, and a missing read permission is close to
+   * invisible: for a *nested* field Directus answers 200 and simply leaves it
+   * out, so the symptom is content that looks deleted rather than an error.
+   */
+  const wanted = [
+    // Files must be readable for the asset proxy to fetch bytes.
+    ...[...READABLE, 'directus_files'].map((collection) => ({ collection, action: 'read' })),
+    // The contact form writes here. Read is deliberately not granted: the site
+    // has no reason to list other people's enquiries.
+    { collection: 'enquiries', action: 'create' },
+  ];
+
+  const existing = await client.get(
+    `/permissions?limit=-1&filter[policy][_eq]=${policyId}&fields=collection,action`,
+  );
+  const have = new Set((existing ?? []).map((p) => `${p.collection}:${p.action}`));
+  const missing = wanted.filter((w) => !have.has(`${w.collection}:${w.action}`));
+
+  if (missing.length > 0) {
+    await client.post(
+      '/permissions',
+      missing.map((w) => ({ ...w, policy: policyId, fields: ['*'], permissions: {} })),
+    );
+    for (const w of missing) log(`+ ${w.action} ${w.collection}`);
+  } else {
+    log(`· ${wanted.length} permissions — already there`);
   }
 
   const roles = await client.get('/roles?filter[name][_eq]=Website&limit=1');
