@@ -15,7 +15,7 @@ const { slides, edit = {} } = Astro.props;
 ---
 
 <section
-  class="arch-bottom relative isolate overflow-hidden bg-inverse"
+  class="relative isolate overflow-hidden bg-inverse"
   {...edit}
   data-slider
   aria-roledescription="carousel"
@@ -51,8 +51,8 @@ const { slides, edit = {} } = Astro.props;
   </div>
 
   <!-- Header + hero add up to one viewport, so the first content section starts
-       below the fold. Extra bottom padding keeps the copy clear of the arch. -->
-  <div class="h-viewport-minus-header rail flex flex-col justify-center py-20 pb-32">
+       below the fold. -->
+  <div class="h-viewport-minus-header rail flex flex-col justify-center py-20">
     {
       slides.map((slide, i) => (
         <div
@@ -85,14 +85,27 @@ const { slides, edit = {} } = Astro.props;
               <p class="t-body-lg max-w-[54ch] text-[color:var(--text-inverse-muted)]">{slide.body}</p>
             </>
           )}
-          <div class="mt-2 flex flex-wrap items-center gap-4">
-            <Button href="/contact/" variant="primary">Request a quote</Button>
-            {slide.range_slug && (
-              <Button href={`/${slide.range_slug}/`} variant="on-dark">
-                View the range
-              </Button>
-            )}
-          </div>
+          {/*
+            Per-slide, from the CMS. A slide whose copy is the whole message —
+            "Every Tool / Every Dream / Endless Potential" — can be worse for a
+            button under it, so `show_cta` is a switch a moderator owns rather
+            than something only a developer can change. The range link is
+            separate and still follows range_slug.
+          */}
+          {(slide.show_cta || slide.range_slug) && (
+            <div class="mt-2 flex flex-wrap items-center gap-4">
+              {slide.show_cta && (
+                <Button href="/contact/" variant="primary">
+                  Request a quote
+                </Button>
+              )}
+              {slide.range_slug && (
+                <Button href={`/${slide.range_slug}/`} variant="on-dark">
+                  View the range
+                </Button>
+              )}
+            </div>
+          )}
         </div>
       ))
     }

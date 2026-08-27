@@ -63,12 +63,6 @@ const footerLogo = site.logo_reversed_stationary ?? site.logo_reversed ?? null;
           {site.tagline}
         </span>
       </div>
-      <p class="t-body-sm max-w-[34ch]">
-        Supplying pens, exercise books and office stationery to businesses across Bangladesh since {
-          site.founded_year
-        }.
-      </p>
-      {showSocials && <SocialLinks socials={site.socials} tone="on-dark" />}
     </div>
 
     <!-- Comment #7: the Products and Company columns are gone, but their grid space
@@ -115,10 +109,23 @@ const footerLogo = site.logo_reversed_stationary ?? site.logo_reversed ?? null;
     </div>
   </div>
 
+  <!-- Centred, and its own row rather than tucked under the logo: the client
+       asked for the icons in the middle of the footer, which the brand column
+       could not do without pulling the address and logo off-axis with them. -->
+  {
+    showSocials && (
+      <div class="relative">
+        <div class="rail flex justify-center border-t border-[color:rgb(255_255_255/0.22)] py-8">
+          <SocialLinks socials={site.socials} tone="on-dark" />
+        </div>
+      </div>
+    )
+  }
+
   <div class="relative bg-footer-deep">
     <div class="rail flex flex-wrap items-center justify-between gap-2 py-5 t-label-sm">
       <p>© {new Date().getFullYear()} {site.company_name}. All rights reserved.</p>
-      <p>B2B supplier · Dhanmondi, Dhaka</p>
+      <p>Stationery · Dhanmondi, Dhaka</p>
     </div>
   </div>
 </footer>

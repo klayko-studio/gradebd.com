@@ -49,9 +49,9 @@ const about = {
   ],
   story: {
     eyebrow: 'About Us',
-    heading: 'From B2B supplier to a one-stop procurement partner.',
+    heading: 'From a single supply line to a one-stop procurement partner.',
     body: [
-      'Since its inception in 2019, Grade has grown from a B2B supplier into a platform serving both traditional supply and end-consumer purchasing. The B2B side holds to the same commitment throughout: eliminate the intermediaries, source direct from manufacturers, and pass the difference on.',
+      'Since its inception in 2019, Grade has grown from a single supply line into a platform serving both trade supply and end-consumer purchasing. The commitment holds throughout: eliminate the intermediaries, source direct from manufacturers, and pass the difference on.',
       'This site covers the stationery range only — pens, exercise books, school supplies, office consumables and filing. Orders are quoted by the carton for schools, retailers and corporate procurement teams across Bangladesh.',
     ],
   },

@@ -93,6 +93,12 @@ export const homeSchema = z.object({
         label: z.string(),
         /** The client's three-line treatment for this slide. Falls back to headline. */
         lines: z.array(z.string()).default([]),
+        /**
+         * Whether this slide shows the "Request a quote" button. Defaults on, so
+         * an older row with no value behaves as it always did. Per-slide because
+         * a slide whose copy is the whole message can be worse for a button.
+         */
+        show_cta: z.boolean().default(true),
       }),
     )
     .min(1),

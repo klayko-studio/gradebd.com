@@ -1,5 +1,5 @@
 ---
-import { socialPaths, socialLabels } from '../lib/social-icons';
+import { socialPaths, socialLabels, socialColours } from '../lib/social-icons';
 import type { Site } from '../lib/schema';
 
 /**
@@ -13,8 +13,13 @@ interface Props {
    * Which ground the row sits on. The footer is the brand red, so the buttons are
    * drawn in white; the Home band is the light blue, where white would disappear —
    * there the marks take the same deep blue the rest of that section's type uses.
+   *
+   * `brand` is different in kind: each mark in its own colour, on a white disc.
+   * The client asked for the real logos on the Home contacts section, and a row
+   * of six different brand colours needs a neutral ground to sit on or it reads
+   * as noise.
    */
-  tone?: 'on-dark' | 'on-light';
+  tone?: 'on-dark' | 'on-light' | 'brand';
   class?: string;
 }
 const { socials, tone = 'on-dark', class: className = '' } = Astro.props;
@@ -25,12 +30,19 @@ const { socials, tone = 'on-dark', class: className = '' } = Astro.props;
  */
 const shown = socials.filter((s) => s.confirmed);
 
-const button =
-  tone === 'on-light'
-    ? `border-[color:rgb(13_32_56/0.28)] bg-[color:rgb(255_255_255/0.5)]
-       text-[color:var(--text-on-menu)] hover:bg-[color:rgb(255_255_255/0.9)]`
-    : `border-[color:rgb(255_255_255/0.38)] bg-[color:rgb(255_255_255/0.14)]
-       text-[color:var(--text-inverse)] hover:bg-[color:rgb(255_255_255/0.26)]`;
+const TONE = {
+  'on-light': `border-[color:rgb(13_32_56/0.28)] bg-[color:rgb(255_255_255/0.5)]
+     text-[color:var(--text-on-menu)] hover:bg-[color:rgb(255_255_255/0.9)]`,
+  'on-dark': `border-[color:rgb(255_255_255/0.38)] bg-[color:rgb(255_255_255/0.14)]
+     text-[color:var(--text-inverse)] hover:bg-[color:rgb(255_255_255/0.26)]`,
+  brand: `border-[color:rgb(13_32_56/0.12)] bg-white shadow-[0_1px_3px_rgb(10_82_115/0.14)]
+     hover:-translate-y-0.5 hover:shadow-[0_6px_16px_rgb(10_82_115/0.22)]`,
+} as const;
+
+const button = TONE[tone];
+/** Brand tone draws each glyph in its own colour; the others inherit the row's. */
+const glyph = (platform: string) =>
+  tone === 'brand' ? (socialColours[platform] ?? 'currentColor') : 'currentColor';
 ---
 
 {
@@ -44,12 +56,17 @@ const button =
             rel="noopener noreferrer"
             target="_blank"
             class:list={[
-              'flex h-10 w-10 items-center justify-center rounded-full border transition-colors',
+              'flex h-10 w-10 items-center justify-center rounded-full border transition-all duration-200',
               button,
             ]}
           >
-            <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true">
-              <path d={socialPaths[s.platform]} fill="currentColor" />
+            <svg
+              width={tone === 'brand' ? 19 : 17}
+              height={tone === 'brand' ? 19 : 17}
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path d={socialPaths[s.platform]} fill={glyph(s.platform)} />
             </svg>
           </a>
         </li>

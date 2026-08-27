@@ -28,3 +28,20 @@ export const socialLabels: Record<string, string> = {
   x: 'X',
   whatsapp: 'WhatsApp',
 };
+
+/**
+ * Each platform's own brand colour, for the places the client asked for the real
+ * logos rather than a one-colour silhouette.
+ *
+ * Instagram has no single colour — its mark is a gradient — so this is the pink
+ * its own guidelines give for flat single-colour use. X is pure black, which
+ * needs a light ground to sit on.
+ */
+export const socialColours: Record<string, string> = {
+  facebook: '#1877F2',
+  linkedin: '#0A66C2',
+  instagram: '#E4405F',
+  youtube: '#FF0000',
+  x: '#000000',
+  whatsapp: '#25D366',
+};

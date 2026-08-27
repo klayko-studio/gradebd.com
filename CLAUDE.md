@@ -18,7 +18,9 @@ A marketing/catalog website for **Grade Limited** of Dhaka, Bangladesh (Akram Ma
 Rd-14 (New), Dhanmondi R/A, Dhaka 1205). The site is a browsable product catalog with no e-commerce:
 no cart, no checkout, no prices in the wireframes. Purchase intent is funneled to the contact form.
 
-**Grade is a B2B supplier/distributor, not a manufacturer.** Their existing site describes a marketplace
+**Grade is a supplier/distributor, not a manufacturer — and never describe them as "B2B".** The
+client was explicit: that label is wrong and must not appear anywhere, in copy or in these notes.
+Their existing site describes a marketplace
 that "directly sources products from manufacturers" to cut out intermediaries — it never claims to
 produce anything. Do not write "manufactured by Grade" copy, and do not use owned-factory imagery,
 unless the client confirms otherwise. (An earlier version of this file called them a manufacturer; that
@@ -227,9 +229,9 @@ top-left without an explicit `margin: auto`; and scoped styles must live in the 
 renders the element, not the page that imports it.
 
 **Category pages filter on both axes at once** — Range (sub-brand, shown only when a category has
-more than one) and sub-category — with a live item count. Home carries a sub-brand band.
+more than one) and sub-category — with a live item count.
 
-The client's voice is aspirational and learner-focused ("Every Tool, Every Dream"), not the B2B
+The client's voice is aspirational and learner-focused ("Every Tool, Every Dream"), not the
 trade-supply voice the earlier copy used. All invented trade claims are gone from the seed — no more
 "order by the carton, not the piece", no "cut the intermediaries", no manufacturer claims. Vision,
 Mission and the five Values (Empowerment, Innovation, Reliability, Continuous Improvement, Customer
@@ -497,6 +499,32 @@ on the rendered page. `docs/cms.md` is the guide; what is worth carrying forward
 Deployment adds one hostname: `nginx/admin.gradebd.com.conf` puts Directus on `admin.gradebd.com`
 with its own certificate, which the Visual Editor needs because a browser will not frame http inside
 https. If in-place editing is not wanted, do not publish the admin at all — an SSH tunnel is enough.
+
+## The client's second round of cuts
+
+Nine instructions, all applied. The ones that change what a future session should expect:
+
+- **"B2B" is banned.** Not a rewording — the client says the label is simply wrong for them. Gone
+  from the copy, the seed, the footer, the readme and this file.
+- **Home is much shorter.** The credibility strip ("Since 2019", "300+ work orders"), the sub-brand
+  band (Champ · Neo · Xtreme · Dox) and "Our Values" are all no longer rendered. Following the
+  precedent set by Client Feedback (comment #17): the data stays in the CMS and the markup stays in
+  git history, so restoring any of them is a revert rather than a rebuild. Values still has its own
+  section on About, which is where the client's own copy for it lives.
+- **The arch is gone.** Every hero and page banner is a plain rectangle now, and the `.arch-bottom`
+  mask and its long explanation are deleted from `global.css`. Worth knowing because that shape was
+  drawn by the client themselves and rebuilt twice; if it ever comes back, the geometry and the
+  reasoning are in the history of that file, not lost.
+- **`show_cta` on each hero slide.** A boolean in `home_slides`, defaulting on — a null from a row
+  created before the field existed has to read as "as before", not "off". The range link is separate
+  and still follows `range_slug`.
+- **Home's closing band is now "Our Social Media Contacts"** with the real platform logos in their
+  own brand colours, from a new `brand` tone on `SocialLinks` (white disc, coloured glyph — fifteen
+  brand colours on one row need a neutral ground). `socialColours` in `src/lib/social-icons.ts`.
+  Note only **confirmed** socials render, so today that is Facebook and LinkedIn; the other three
+  are `confirmed: false` in the CMS and will appear the moment real URLs are set.
+- **Footer:** the "Supplying pens… since 2019" strapline is gone, and the social row moved out of the
+  brand column into its own centred row above the copyright bar.
 
 ## Information architecture
 

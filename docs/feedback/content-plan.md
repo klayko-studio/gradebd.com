@@ -165,5 +165,5 @@ not the piece", "supplied direct… so you don't pay the middleman", the pen and
 the category pages, the pop-up's description, and the stats block. These documents are the source of
 truth from here.
 
-Note the voice: aspirational and learner-focused ("Every Tool, Every Dream"), not the B2B
+Note the voice: aspirational and learner-focused ("Every Tool, Every Dream"), not the
 trade-supply voice the current copy uses. That is a tone change, not just a text swap.

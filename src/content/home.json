@@ -5,7 +5,7 @@
   },
   "slides": [
     {
-      "eyebrow": "B2B supplier · Dhaka, Bangladesh",
+      "eyebrow": "Stationery · Dhaka, Bangladesh",
       "headline": "Every Tool Every Dream Endless Potential",
       "body": "",
       "image": {
@@ -21,7 +21,8 @@
         "Every Tool",
         "Every Dream",
         "Endless Potential"
-      ]
+      ],
+      "show_cta": true
     },
     {
       "eyebrow": "Range 02 · Pen",
@@ -40,7 +41,8 @@
         "Write Every Idea",
         "Shape Every Future",
         "Empower Potential"
-      ]
+      ],
+      "show_cta": true
     },
     {
       "eyebrow": "Range 03 · Exercise Book",
@@ -59,7 +61,8 @@
         "Write Today",
         "Learn Better",
         "Achieve Tomorrow"
-      ]
+      ],
+      "show_cta": true
     },
     {
       "eyebrow": "Range 04 · School Stationery",
@@ -78,7 +81,8 @@
         "Learn, Create",
         "Explore, Achieve",
         "We’re With You"
-      ]
+      ],
+      "show_cta": true
     },
     {
       "eyebrow": "Range 05 · Office Stationery",
@@ -97,7 +101,8 @@
         "Organize",
         "Work Smarter",
         "Achieve More"
-      ]
+      ],
+      "show_cta": true
     },
     {
       "eyebrow": "Range 06 · File & Folder",
@@ -116,7 +121,8 @@
         "Organize Better",
         "Stay Focused",
         "Go Further"
-      ]
+      ],
+      "show_cta": true
     }
   ],
   "stats": [

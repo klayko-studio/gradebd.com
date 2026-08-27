@@ -1,6 +1,6 @@
 # Grade Limited — website
 
-Marketing and catalogue site for Grade Limited, a B2B stationery supplier in Dhanmondi, Dhaka.
+Marketing and catalogue site for Grade Limited, a stationery supplier in Dhanmondi, Dhaka.
 Browsable catalogue, no e-commerce: every purchase intent funnels to the enquiry form.
 
 Astro + Tailwind CSS v4 + GSAP, with Directus planned as the CMS behind the same data layer.

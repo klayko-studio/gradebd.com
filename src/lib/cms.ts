@@ -48,13 +48,10 @@ import reviewsSeed from '../content/reviews.json';
  * build box had — which, for the site image, is nothing: only SITE_URL is a build
  * arg. Reading `process.env` first means one image works in dev, staging and
  * production, configured by the compose file rather than by rebuilding.
- *
  * `import.meta.env` stays as the fallback because `astro dev` loads .env into it
  * and not into `process.env`.
- */
-/**
- * An empty runtime value means *off*, not "fall back to whatever was baked in".
  *
+ * An empty runtime value means *off*, not "fall back to whatever was baked in".
  * docker-compose passes `DIRECTUS_URL: ${DIRECTUS_INTERNAL_URL:-}`, so leaving
  * that blank hands the container an empty string rather than nothing at all. A
  * plain `||` would step over it and quietly use the build-time value — the site
@@ -332,6 +329,9 @@ export const getHome = (): Promise<Home> =>
           range_slug: slide.range_slug ?? null,
           label: slide.label ?? '',
           lines: toLines(slide.lines),
+          // A row created before the field existed reads as null, which has to
+          // mean "as before" — on — not "off".
+          show_cta: slide.show_cta ?? true,
         })),
         stats: (row.stats ?? []).sort(bySort).map((s: any) => ({ value: s.value, label: s.label })),
         who_we_are: {

@@ -15,61 +15,15 @@ const [home, categories, clients, site] = await Promise.all([
   getSite(),
 ]);
 
-/**
- * Sub-brands, counted straight off the catalogue so the band cannot drift from the
- * data. The blurb says which desk each line is for — that is the distinction the
- * client's naming makes, and it is not obvious from the name alone.
- */
-const BLURBS: Record<string, string> = {
-  Champ: 'School kit — pencils, colour, erasers, boxes and boards.',
-  Neo: 'Everyday utility — pencils, sharpeners, clipboards, dusters.',
-  Xtreme: 'Office hardware — staplers, punches, staples.',
-  Dox: 'Filing — covers, bags, folders, files and carriers.',
-};
-const subBrands = Object.values(
-  categories.reduce<Record<string, { name: string; count: number; accent: string; categorySlug: string; blurb: string }>>(
-    (acc, category) => {
-      for (const item of category.items) {
-        if (!item.sub_brand) continue;
-        acc[item.sub_brand] ??= {
-          name: item.sub_brand,
-          count: 0,
-          accent: category.accent,
-          categorySlug: category.slug,
-          blurb: BLURBS[item.sub_brand] ?? '',
-        };
-        acc[item.sub_brand].count += 1;
-      }
-      return acc;
-    },
-    {},
-  ),
-).sort((a, b) => b.count - a.count);
 ---
 
 <Base seo={home.seo} active="home">
   <HeroSlider slides={home.slides} edit={editable({ collection: 'home', fields: 'slides', mode: 'drawer' })} />
 
-  <!-- credibility strip -->
-  <section class="border-b border-line-subtle">
-    <div
-      class="rail grid grid-cols-2 gap-y-8 py-8 md:grid-cols-4"
-      data-reveal-group
-      {...editable({ collection: 'home', fields: 'stats', mode: 'drawer' })}
-    >
-      {
-        home.stats.map((stat, i) => (
-          <div
-            data-reveal
-            class:list={['flex flex-col gap-1 md:px-8', i > 0 && 'md:border-l md:border-line-subtle', i === 0 && 'md:pl-0']}
-          >
-            <p class="t-heading-sm tabular-nums" data-count={stat.value}>{stat.value}</p>
-            <p class="t-body-sm text-[color:var(--text-muted)]">{stat.label}</p>
-          </div>
-        ))
-      }
-    </div>
-  </section>
+  <!-- The credibility strip — "Since 2019", "300+ work orders" — is not
+       rendered, on the client's instruction. The `stats` data is still in the
+       CMS and this markup is in git history, so putting it back is a revert
+       rather than a rebuild. -->
 
   <!-- who we are -->
   <section class="section">
@@ -149,62 +103,13 @@ const subBrands = Object.values(
     </div>
   </section>
 
-  <!-- The client's own sub-brands. Every SKU is named "Grade <sub-brand> …", so this
-       is how the range is actually organised — and it gives the packaging-led brand
-       direction somewhere to live beyond colour. -->
-  {
-    subBrands.length > 0 && (
-      <section class="section pt-0">
-        <div class="rail">
-          <SectionHead
-            eyebrow="Our sub-brands"
-            heading="Four lines, each built for a different desk."
-          />
-          <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4" data-reveal-group>
-            {subBrands.map((brand) => (
-              <a
-                href={`/${brand.categorySlug}/`}
-                class="group flex flex-col gap-3 rounded-sharp border border-line-subtle bg-surface p-6
-                       transition-[border-color,box-shadow] duration-200 ease-[var(--ease-standard)]
-                       hover:border-line-brand hover:shadow-[var(--shadow-ambient)]"
-              >
-                <span
-                  aria-hidden="true"
-                  class="h-[4px] w-8 rounded-full transition-[width] duration-300 ease-[var(--ease-standard)] group-hover:w-14"
-                  style={`background:${brand.accent}`}
-                />
-                <h3 class="t-heading-md">{brand.name}</h3>
-                <p class="t-body-sm text-[color:var(--text-secondary)]">{brand.blurb}</p>
-                <p class="mt-1 t-label-sm text-[color:var(--text-muted)]">
-                  {brand.count} {brand.count === 1 ? 'product' : 'products'}
-                </p>
-              </a>
-            ))}
-          </div>
-        </div>
-      </section>
-    )
-  }
+  <!-- The sub-brand band (Champ · Neo · Xtreme · Dox) is not rendered, on the
+       client's instruction. The ranges are still browsable by sub-brand from the
+       filter row on each category page. -->
 
-  <!-- why grade -->
-  <section class="section bg-subtle">
-    <div class="rail">
-      <SectionHead eyebrow={home.pillars_intro.eyebrow} heading={home.pillars_intro.heading} />
-      <div class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5" data-reveal-group>
-        {
-          home.pillars.map((pillar, i) => (
-            <div data-reveal class="flex flex-col gap-3 border-t-2 border-line-brand pt-5">
-              <p class="t-label-xs text-[color:var(--text-brand-strong)]">
-                {String(i + 1).padStart(2, '0')}
-              </p>
-              <h3 class="t-heading-md">{pillar.title}</h3>
-              {pillar.body && <p class="t-body-sm">{pillar.body}</p>}
-            </div>
-          ))
-        }
-      </div>
-    </div>
-  </section>
+  <!-- "Our Values" is not rendered here, on the client's instruction. It still
+       has its own section on the About page, which is where the client's own copy
+       for it lives. -->
 
   <!-- corporate clients -->
   <section class="section bg-inverse text-[color:var(--text-inverse)]" id="clients">
@@ -292,10 +197,12 @@ const subBrands = Object.values(
        whole Client Feedback section for now. Might need it later."). The data and the
        markup are intact in git history; nothing here is deleted, just not rendered. -->
 
+  <!-- The section is the social row now, so the copy about stocking a school year
+       is gone with it; a lead-in about pencil boxes under a "Contacts" heading read
+       as two unrelated things stacked. -->
   <BrandBand
     eyebrow="Empowering your potential"
-    heading="Stocked for the whole school year."
-    body="From the first pencil box in January to the last file of the audit season — quoted by the carton, delivered on the date agreed."
+    heading="Our Social Media Contacts"
     socials={site.socials}
   />
 </Base>

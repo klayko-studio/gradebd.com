@@ -25,7 +25,7 @@ const { eyebrow, title, sub, image, lines = [], accent, edit = {}, editImage = {
 const stack = lines.length > 0;
 ---
 
-<section class="arch-bottom relative isolate overflow-hidden bg-inverse" data-anim-banner>
+<section class="relative isolate overflow-hidden bg-inverse" data-anim-banner>
   <img
     src={image.src}
     alt={image.alt}
@@ -44,8 +44,8 @@ const stack = lines.length > 0;
   >
   </div>
 
-  <!-- Full-height banner, with the copy sitting low so it clears the arch. -->
-  <div class="h-viewport-minus-header rail flex flex-col justify-end gap-4 py-16 pb-32" {...edit}>
+  <!-- Full-height banner, with the copy sitting low in the frame. -->
+  <div class="h-viewport-minus-header rail flex flex-col justify-end gap-4 py-16 pb-24" {...edit}>
     <Eyebrow tone="dark" accent={accent}>{eyebrow}</Eyebrow>
     {
       stack ? (
