@@ -22,7 +22,7 @@
         "Every Dream",
         "Endless Potential"
       ],
-      "show_cta": true
+      "show_cta": false
     },
     {
       "eyebrow": "Range 02 · Pen",
@@ -42,7 +42,7 @@
         "Shape Every Future",
         "Empower Potential"
       ],
-      "show_cta": true
+      "show_cta": false
     },
     {
       "eyebrow": "Range 03 · Exercise Book",
@@ -62,7 +62,7 @@
         "Learn Better",
         "Achieve Tomorrow"
       ],
-      "show_cta": true
+      "show_cta": false
     },
     {
       "eyebrow": "Range 04 · School Stationery",
@@ -82,7 +82,7 @@
         "Explore, Achieve",
         "We’re With You"
       ],
-      "show_cta": true
+      "show_cta": false
     },
     {
       "eyebrow": "Range 05 · Office Stationery",
@@ -102,7 +102,7 @@
         "Work Smarter",
         "Achieve More"
       ],
-      "show_cta": true
+      "show_cta": false
     },
     {
       "eyebrow": "Range 06 · File & Folder",
@@ -122,7 +122,7 @@
         "Stay Focused",
         "Go Further"
       ],
-      "show_cta": true
+      "show_cta": false
     }
   ],
   "stats": [

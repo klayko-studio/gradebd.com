@@ -165,7 +165,7 @@ export async function seedContent(client, { force = false } = {}) {
       body: slide.body,
       lines: lines(slide.lines),
       range_slug: slide.range_slug,
-      show_cta: slide.show_cta ?? true,
+      show_cta: slide.show_cta ?? false,
       image: await files.id(slide.image?.src, slide.image?.alt),
       sort: i,
     });

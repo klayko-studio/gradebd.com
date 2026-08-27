@@ -329,9 +329,9 @@ export const getHome = (): Promise<Home> =>
           range_slug: slide.range_slug ?? null,
           label: slide.label ?? '',
           lines: toLines(slide.lines),
-          // A row created before the field existed reads as null, which has to
-          // mean "as before" — on — not "off".
-          show_cta: slide.show_cta ?? true,
+          // Off unless a moderator has explicitly switched it on, which is also
+          // what a null from a pre-existing row should mean.
+          show_cta: slide.show_cta ?? false,
         })),
         stats: (row.stats ?? []).sort(bySort).map((s: any) => ({ value: s.value, label: s.label })),
         who_we_are: {

@@ -515,9 +515,18 @@ Nine instructions, all applied. The ones that change what a future session shoul
   mask and its long explanation are deleted from `global.css`. Worth knowing because that shape was
   drawn by the client themselves and rebuilt twice; if it ever comes back, the geometry and the
   reasoning are in the history of that file, not lost.
-- **`show_cta` on each hero slide.** A boolean in `home_slides`, defaulting on — a null from a row
-  created before the field existed has to read as "as before", not "off". The range link is separate
-  and still follows `range_slug`.
+- **`show_cta` on each hero slide, defaulting OFF.** A boolean in `home_slides`. The client wants the
+  hero to carry its copy alone, so "Request a quote" only appears where a moderator switches it on;
+  a null reads as off, matching the default. The range link is separate and still follows
+  `range_slug`. Note the bootstrap's `ensureField` is create-only, so changing a field's default in
+  `model.mjs` does **not** update an instance that already has the field — patch
+  `/fields/<collection>/<field>` directly, or re-bootstrap from empty.
+- **Patching Directus content from the shell mangles non-ASCII.** A `curl -d` body carrying a middle
+  dot arrived as U+FFFD, twice, and the page rendered a diamond — the shell re-encodes the byte before
+  curl sees it, and `--data-binary` does not save you. Use a small Node script with `JSON.stringify`
+  when a value has anything outside ASCII in it.
+- The "Request a quote" button in `QuoteBand` is a different thing and is untouched: that band is a
+  whole section with its own heading, on About, Gallery and every category page.
 - **Home's closing band is now "Our Social Media Contacts"** with the real platform logos in their
   own brand colours, from a new `brand` tone on `SocialLinks` (white disc, coloured glyph — fifteen
   brand colours on one row need a neutral ground). `socialColours` in `src/lib/social-icons.ts`.

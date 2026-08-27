@@ -94,11 +94,13 @@ export const homeSchema = z.object({
         /** The client's three-line treatment for this slide. Falls back to headline. */
         lines: z.array(z.string()).default([]),
         /**
-         * Whether this slide shows the "Request a quote" button. Defaults on, so
-         * an older row with no value behaves as it always did. Per-slide because
-         * a slide whose copy is the whole message can be worse for a button.
+         * Whether this slide shows the "Request a quote" button. **Off by
+         * default**, on the client's instruction: the slide copy is the whole
+         * message and they want the hero to carry it alone. A moderator turns it
+         * on per slide in the CMS. Null reads as off, so the default holds for
+         * rows written before the field existed.
          */
-        show_cta: z.boolean().default(true),
+        show_cta: z.boolean().default(false),
       }),
     )
     .min(1),

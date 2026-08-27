@@ -243,8 +243,8 @@ export const COLLECTIONS = [
       F.file('image'),
       F.string('range_slug', { width: 'half', note: 'Optional. The category this slide links to.' }),
       F.boolean('show_cta', {
-        default: true,
-        note: 'Show the "Request a quote" button on this slide.',
+        default: false,
+        note: 'Show the "Request a quote" button on this slide. Off by default.',
       }),
       F.sort(),
     ],
