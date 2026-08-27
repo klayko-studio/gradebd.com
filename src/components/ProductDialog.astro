@@ -8,7 +8,8 @@ import type { Item } from '../lib/schema';
  *
  * A native <dialog> does the heavy lifting: it gets the top layer, a backdrop, ESC
  * to close and focus trapping without a line of our own code for any of it. The
- * script below only adds thumbnail switching and click-outside-to-close.
+ * page's script adds thumbnail switching, click-outside-to-close, and opening the
+ * full-screen viewer from the main image.
  */
 interface Props {
   item: Item;
@@ -32,6 +33,7 @@ const packLine = [item.pack_inner, item.pack_carton].filter(Boolean).join('  · 
          text-ink backdrop:bg-[rgb(10_82_115_/_0.55)]"
   aria-labelledby={`dlg-${item.id}-title`}
   data-dialog-accent={accent}
+  data-views={JSON.stringify(views.map((view) => ({ src: view.src, alt: view.alt })))}
 >
   <div class="grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)]">
     <!-- gallery: thumbnails in a column down the left of the main image, the way
@@ -56,14 +58,38 @@ const packLine = [item.pack_inner, item.pack_carton].filter(Boolean).join('  · 
           </div>
         )
       }
-      <img
-        src={views[0].src}
-        alt={views[0].alt}
-        width={views[0].width}
-        height={views[0].height}
-        class="aspect-[4/3] w-full min-w-0 flex-1 self-start rounded-xl object-cover"
-        data-dialog-main
-      />
+      <!-- The main image is a control, not a picture: pressing it hands this SKU's
+           photographs to the page's viewer, which opens over this dialog. Modal
+           dialogs stack in the top layer, so the one opened last is the one on
+           top and the one ESC closes — no z-index and no hiding this panel. -->
+      <button
+        type="button"
+        class="group relative min-w-0 flex-1 cursor-zoom-in self-start overflow-hidden rounded-xl"
+        data-dialog-zoom
+        aria-label={`View ${item.name} images full screen`}
+      >
+        <img
+          src={views[0].src}
+          alt={views[0].alt}
+          width={views[0].width}
+          height={views[0].height}
+          class="aspect-[4/3] w-full rounded-xl object-cover transition-transform duration-500
+                 ease-[var(--ease-standard)] group-hover:scale-[1.03]"
+          data-dialog-main
+        />
+        <span
+          aria-hidden="true"
+          class="absolute bottom-3 right-3 grid size-9 translate-y-1 place-items-center rounded-full
+                 bg-[color:rgb(10_82_115/0.72)] text-white opacity-0 transition-[opacity,transform]
+                 duration-200 ease-[var(--ease-standard)] group-hover:translate-y-0
+                 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" />
+            <path d="M11 8v6M8 11h6M20 20l-3.8-3.8" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </span>
+      </button>
     </div>
 
     <!-- detail -->

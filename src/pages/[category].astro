@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import PageBanner from '../components/PageBanner.astro';
 import ProductCard from '../components/ProductCard.astro';
 import ProductDialog from '../components/ProductDialog.astro';
+import ImageLightbox from '../components/ImageLightbox.astro';
 import { getCategories, getSite, editable } from '../lib/cms';
 import type { Category } from '../lib/schema';
 
@@ -117,6 +118,8 @@ const activeSub =
     ))
   }
 
+  <!-- One viewer for the whole page, shared by all 30-odd dialogs. -->
+  <ImageLightbox id="product-lightbox" label="Product images" captions={false} />
 </Base>
 
 <style>
@@ -149,6 +152,8 @@ const activeSub =
 </style>
 
 <script>
+  import { mountLightbox } from '../scripts/lightbox';
+
   /**
    * Sub-category tabs.
    *
@@ -186,6 +191,8 @@ const activeSub =
   }
 
   // ---- product detail dialogs
+  const viewer = mountLightbox('product-lightbox');
+
   document.querySelectorAll<HTMLElement>('[data-dialog-open]').forEach((trigger) => {
     trigger.addEventListener('click', () => {
       const id = trigger.dataset.dialogOpen;
@@ -197,23 +204,44 @@ const activeSub =
   document.querySelectorAll<HTMLDialogElement>('dialog.product-dialog').forEach((dialog) => {
     dialog.querySelector('[data-dialog-close]')?.addEventListener('click', () => dialog.close());
 
-    // Clicking the backdrop closes. The dialog element covers the whole viewport,
-    // so compare against the inner panel's box rather than the event target.
+    /**
+     * Clicking the backdrop closes. A click whose target is the dialog element
+     * itself landed on the backdrop, because everything visible is inside the
+     * panel and the dialog carries no padding of its own.
+     *
+     * This used to compare the pointer's coordinates against the panel's box
+     * instead, which closed the dialog whenever anyone activated a control inside
+     * it from the keyboard: an Enter or Space press fires a click with clientX and
+     * clientY both 0, and 0,0 is outside a centred panel. Pressing Enter on a
+     * thumbnail shut the whole dialog.
+     */
     dialog.addEventListener('click', (event) => {
-      const panel = dialog.firstElementChild;
-      if (!(panel instanceof HTMLElement)) return;
-      const box = panel.getBoundingClientRect();
-      const outside =
-        event.clientX < box.left ||
-        event.clientX > box.right ||
-        event.clientY < box.top ||
-        event.clientY > box.bottom;
-      if (outside) dialog.close();
+      if (event.target === dialog) dialog.close();
     });
 
     const main = dialog.querySelector<HTMLImageElement>('[data-dialog-main]');
     const accent = dialog.dataset.dialogAccent ?? 'currentColor';
     const thumbs = dialog.querySelectorAll<HTMLButtonElement>('[data-dialog-thumb]');
+
+    /**
+     * Pressing the main image opens the full-screen viewer over this dialog with
+     * every photograph of this SKU.
+     *
+     * It opens on whichever view is showing rather than always on the first, and
+     * that is worked out by matching `src` back against the list — the thumbnails
+     * swap the image in place, so the attribute is the only record of which one
+     * the reader is actually looking at. `getAttribute` and not `.src`, because
+     * the property resolves to an absolute URL and would never match.
+     */
+    const zoom = dialog.querySelector<HTMLButtonElement>('[data-dialog-zoom]');
+    if (viewer && zoom) {
+      const views = JSON.parse(dialog.dataset.views ?? '[]') as { src: string; alt: string }[];
+      zoom.addEventListener('click', () => {
+        const showing = main?.getAttribute('src');
+        const at = views.findIndex((view) => view.src === showing);
+        viewer.open(views, at < 0 ? 0 : at, zoom);
+      });
+    }
     thumbs.forEach((thumb) => {
       thumb.addEventListener('click', () => {
         if (!main) return;

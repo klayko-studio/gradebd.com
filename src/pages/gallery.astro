@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import PageBanner from '../components/PageBanner.astro';
-import GalleryLightbox from '../components/GalleryLightbox.astro';
+import ImageLightbox from '../components/ImageLightbox.astro';
 import { getGallery, editable } from '../lib/cms';
 
 const gallery = await getGallery();
@@ -72,5 +72,27 @@ const gallery = await getGallery();
     </div>
   </section>
 
-  <GalleryLightbox images={gallery.images} />
+  <ImageLightbox id="gallery-lightbox" label="Gallery viewer" />
 </Base>
+
+<script>
+  import { mountLightbox } from '../scripts/lightbox';
+
+  /* Slides are read straight off the plates, so the viewer cannot list something
+     the page does not show. */
+  const viewer = mountLightbox('gallery-lightbox');
+  const plates = [...document.querySelectorAll<HTMLButtonElement>('[data-plate]')];
+
+  if (viewer) {
+    const slides = plates.map((plate) => ({
+      src: plate.dataset.plateSrc ?? '',
+      alt: plate.dataset.plateAlt ?? '',
+      caption: plate.dataset.plateCaption ?? '',
+      tag: plate.dataset.plateTag ?? '',
+    }));
+
+    plates.forEach((plate, index) => {
+      plate.addEventListener('click', () => viewer.open(slides, index, plate));
+    });
+  }
+</script>

@@ -1,0 +1,130 @@
+---
+/**
+ * Full-screen image viewer — markup only; `src/scripts/lightbox.ts` drives it.
+ *
+ * One dialog per page rather than one per picture: the images are large, and
+ * thirty copies of the same markup to show one at a time is thirty times the DOM
+ * for no gain. Whoever opens it hands it the list.
+ */
+interface Props {
+  id: string;
+  label: string;
+  /** Off for product photos, which carry no caption of their own. */
+  captions?: boolean;
+}
+const { id, label, captions = true } = Astro.props;
+---
+
+<dialog {id} class="lightbox border-0 bg-transparent p-0" aria-label={label}>
+  <div
+    class="relative flex h-full w-full flex-col items-center justify-center gap-4 p-4 md:p-8"
+    data-lightbox-backdrop
+  >
+    <!-- The close and step controls sit above the picture on every size, so they
+         never end up over the image on a narrow screen. -->
+    <div class="flex w-full max-w-[1200px] shrink-0 items-center justify-between gap-4">
+      <p class="t-label-sm text-[color:rgb(255_255_255/0.9)]" data-lightbox-counter>
+        <span data-lightbox-index>1</span> / <span data-lightbox-total>1</span>
+      </p>
+      <button
+        type="button"
+        class="ms-auto grid size-11 place-items-center rounded-full bg-[color:rgb(255_255_255/0.16)]
+               text-white transition-colors hover:bg-[color:rgb(255_255_255/0.3)]"
+        data-lightbox-close
+        aria-label="Close viewer"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path
+            d="M18 6 6 18M6 6l12 12"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div class="flex min-h-0 w-full max-w-[1200px] flex-1 items-center gap-3 md:gap-5">
+      <button
+        type="button"
+        class="grid size-11 shrink-0 place-items-center rounded-full bg-[color:rgb(255_255_255/0.16)]
+               text-white transition-colors hover:bg-[color:rgb(255_255_255/0.3)] md:size-14"
+        data-lightbox-prev
+        aria-label="Previous image"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path
+            d="M15 18 9 12l6-6"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"></path>
+        </svg>
+      </button>
+
+      <img
+        src=""
+        alt=""
+        class="min-h-0 w-full flex-1 rounded-sharp object-contain"
+        style="max-height:calc(100dvh - 12rem)"
+        data-lightbox-image
+      />
+
+      <button
+        type="button"
+        class="grid size-11 shrink-0 place-items-center rounded-full bg-[color:rgb(255_255_255/0.16)]
+               text-white transition-colors hover:bg-[color:rgb(255_255_255/0.3)] md:size-14"
+        data-lightbox-next
+        aria-label="Next image"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path
+            d="m9 18 6-6-6-6"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Not a <figcaption>: there is no <figure> here, and the caption belongs to
+         whichever picture is showing rather than to fixed markup. -->
+    {
+      captions && (
+        <p class="flex w-full max-w-[1200px] shrink-0 flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center">
+          <span class="t-label-md text-white" data-lightbox-caption />
+          <span class="t-label-xs text-[color:rgb(255_255_255/0.7)]" data-lightbox-tag />
+        </p>
+      )
+    }
+  </div>
+</dialog>
+
+<style>
+  /* Fills the viewport rather than sitting in the middle of it: this is a viewer,
+     not a panel. `margin: 0` because the reset zeroes the auto-centring a dialog
+     normally does, and here we want the corners anyway. */
+  .lightbox {
+    margin: 0;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+  }
+  .lightbox::backdrop {
+    background: rgb(6 20 28 / 0.92);
+  }
+  .lightbox[open] {
+    animation: lightbox-in 160ms var(--ease-standard);
+  }
+  @keyframes lightbox-in {
+    from {
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lightbox[open] {
+      animation: none;
+    }
+  }
+</style>
