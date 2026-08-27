@@ -1,5 +1,5 @@
 ---
-import { socialPaths, socialOutlines, socialLabels, socialColours } from '../lib/social-icons';
+import { socialPaths, socialLabels, socialColours } from '../lib/social-icons';
 import type { Site } from '../lib/schema';
 
 /**
@@ -14,8 +14,9 @@ interface Props {
    * drawn in white; the Home band is the light blue, where white would disappear —
    * there the marks take the same deep blue the rest of that section's type uses.
    *
-   * `brand` is different in kind: the outline mark in its own colour, with no
-   * disc and nothing filled behind it. The glyph is the whole control, which is
+   * `brand` is different in kind: each platform's real logo in its own colour,
+   * with no disc and nothing filled behind it. The client wanted the actual
+   * marks, not outline substitutes, so the glyph is the whole control — which is
    * why it is drawn larger than the other two tones.
    */
   tone?: 'on-dark' | 'on-light' | 'brand';
@@ -62,28 +63,14 @@ const glyph = (platform: string) =>
               button,
             ]}
           >
-            {/*
-              Two icon sets, chosen by tone. The footer's silhouettes are solid
-              marks, which is right for a one-colour row on red; the brand tone
-              needs the outline set instead, so the four sit together as one
-              family rather than three filled plates and a camera.
-            */}
             <svg
-              width={isBrand ? 26 : 17}
-              height={isBrand ? 26 : 17}
+              width={isBrand ? 28 : 17}
+              height={isBrand ? 28 : 17}
               viewBox="0 0 24 24"
-              fill={isBrand ? 'none' : undefined}
-              stroke={isBrand ? glyph(s.platform) : undefined}
-              stroke-width={isBrand ? 1.9 : undefined}
-              stroke-linecap={isBrand ? 'round' : undefined}
-              stroke-linejoin={isBrand ? 'round' : undefined}
               aria-hidden="true"
-              set:html={
-                isBrand && socialOutlines[s.platform]
-                  ? socialOutlines[s.platform]
-                  : `<path d="${socialPaths[s.platform]}" fill="${glyph(s.platform)}" />`
-              }
-            />
+            >
+              <path d={socialPaths[s.platform]} fill={glyph(s.platform)} />
+            </svg>
           </a>
         </li>
       ))}
