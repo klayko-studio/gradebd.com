@@ -28,6 +28,7 @@ import { fileURLToPath } from 'node:url';
 import { createClient, waitForDirectus } from './directus/client.mjs';
 import { applySchema, ensureWebsiteAccess, ensureVisualEditorUrl } from './directus/schema.mjs';
 import { seedContent } from './directus/content.mjs';
+import { backfillContent } from './directus/backfill.mjs';
 
 // Not import.meta.dirname: that landed in Node 20.11 and is evaluated the moment
 // the module loads, so on an older Node it throws before anything can explain
@@ -104,6 +105,10 @@ Options
   --password <pw>    admin password  (default DIRECTUS_ADMIN_PASSWORD from .env)
   --token <token>    the static token to install (default: generate one)
   --site <url>       the website's URL, registered with the Visual Editor
+  --fill-empty       fill only the fields that are still empty, from the seed —
+                     use after a pull that adds fields to an installation that
+                     already has content. Never overwrites an existing value.
+  --dry-run          with --fill-empty, list what it would change and stop
   --force            seed content again even if some already exists
   --schema-only      collections, relations and access — no content
   --content-only     content only — assumes the schema is there
@@ -184,7 +189,12 @@ async function main() {
     await ensureWebsiteAccess(client, token);
     await ensureVisualEditorUrl(client, arg('site') || process.env.SITE_URL);
   }
-  if (!has('schema-only')) {
+  if (has('fill-empty')) {
+    // Deliberately not part of a normal run: a fresh install is seeded by
+    // `seedContent`, and this is only for an installation that already has
+    // content and has just been given new fields.
+    await backfillContent(client, { dryRun: has('dry-run') });
+  } else if (!has('schema-only')) {
     await seedContent(client, { force: has('force') });
   }
 

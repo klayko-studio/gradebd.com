@@ -625,6 +625,26 @@ Left in code deliberately: `aria-label`s on controls, the honeypot's hidden labe
 `action` strings — those are accessibility text describing what a control does, not copy anyone would
 translate or rewrite, and they are not visible on the page.
 
+## Adding a CMS field is two steps on a live install, not one
+
+`ensureField` is create-only and `seedContent` bails out once content exists, so
+`--schema-only` leaves a live Directus holding new columns with nothing in them. The site then
+renders the new markup against nulls and the section comes out as an empty shape — this actually
+shipped: Home's social band went to production with no heading, no artwork and the pre-change two
+icons, while the same commit looked correct locally. Reproduced by blanking those fields in a local
+Directus, which reproduced the production screenshot exactly.
+
+`npm run directus:bootstrap -- --fill-empty` (`--dry-run` to look first) fills only fields whose
+current value is empty, so it cannot overwrite a moderator's edit; `--force` would, and is the wrong
+tool. `socials.confirmed` is the one deliberate exception — `false` is a real stored value, not an
+empty one, so the empty-only rule can never reach it and an older install keeps its original icon
+set forever; which platforms appear is configuration, so the seed wins there and every change is
+logged.
+
+**Editing `src/content/*.json` changes nothing for a running Directus.** The seed is only the
+fallback for when Directus is unreachable. Content changes have to be made against the instance —
+locally *and* on the server — or written into the seed and then applied with `--fill-empty`.
+
 ## Information architecture
 
 `docs/client/wireframe/` holds nine photographed paper wireframes (WhatsApp images, filenames are not

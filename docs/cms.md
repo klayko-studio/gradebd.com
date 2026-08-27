@@ -43,6 +43,32 @@ content is skipped once categories exist — `--force` seeds again on top.
 `--schema-only` applies model changes without touching content, which is what to
 run after editing `scripts/directus/model.mjs`.
 
+### After a pull that adds fields
+
+`--schema-only` creates the new columns but puts nothing in them, and the content
+seeder refuses to run at all once content exists. An installation that has been
+live for a while therefore ends up rendering the new markup against columns that
+are null — which looks like a broken deploy rather than missing content. Home's
+social band shipped to production with no heading and no artwork for exactly this
+reason.
+
+```bash
+npm run directus:bootstrap -- --fill-empty --dry-run   # see what is missing
+npm run directus:bootstrap -- --fill-empty             # fill it
+```
+
+It only writes where the current value is empty, so it can never overwrite
+something a moderator has written, and it prints every field it fills and counts
+the ones it leaves alone. `--force` is the wrong tool here: it re-seeds
+everything and discards their edits.
+
+`socials.confirmed` is the one deliberate exception. It decides whether a
+platform's icon appears at all, and `false` is a real stored value rather than an
+empty one, so the empty-only rule would never reach it and an older installation
+would keep showing the original two icons forever. Which platforms appear is
+configuration rather than authored copy, so the seed wins — and every change is
+printed.
+
 ## How the site reads it
 
 `src/lib/cms.ts` is still the only module that knows where content comes from,

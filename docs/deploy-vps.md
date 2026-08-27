@@ -243,7 +243,14 @@ Changed the CMS model in `scripts/directus/model.mjs`?
 
 ```bash
 npm run directus:bootstrap -- --schema-only
+npm run directus:bootstrap -- --fill-empty
 ```
+
+The first creates the new columns; the second puts the seed's values into the
+ones nobody has filled in. Without it the new sections render empty here even
+though they look right locally — `--schema-only` adds a column, it does not put
+anything in it. `--fill-empty` never overwrites an existing value; run it with
+`--dry-run` first to see the list.
 
 Changed `nginx/*.conf` in the repo? certbot's edits live only in the installed copy, so merge by hand
 rather than overwriting, then `sudo nginx -t && sudo systemctl reload nginx`.
