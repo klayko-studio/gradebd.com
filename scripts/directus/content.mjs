@@ -243,6 +243,7 @@ export async function seedContent(client, { force = false } = {}) {
     seo_description: contact.seo.description,
     ...(await banner(contact.banner)),
     form_heading: contact.form_heading,
+    form_sub: contact.form_sub ?? '',
     map_embed_url: contact.map_embed_url,
     faqs: contact.faqs.map((f, i) => ({ ...f, sort: i })),
   });

@@ -2,17 +2,15 @@
 import Base from '../layouts/Base.astro';
 import PageBanner from '../components/PageBanner.astro';
 import Eyebrow from '../components/Eyebrow.astro';
-import SectionHead from '../components/SectionHead.astro';
-import Button from '../components/Button.astro';
 import { getContact, getSite, editable } from '../lib/cms';
 
 const [contact, site] = await Promise.all([getContact(), getSite()]);
 
-/* Item cards link here with ?item=… so the enquiry arrives pre-filled. The page is
-   prerendered, so the query string is only known in the browser — see the script below. */
+/* Item cards link here with ?item=… so the enquiry arrives pre-filled. The query
+   string is only known in the browser — see the script below. */
 
 const field =
-  'w-full rounded-sharp border border-line bg-page px-4 py-3.5 t-body-md text-ink ' +
+  'w-full rounded-sharp border border-line bg-page px-5 py-4 t-body-md text-ink ' +
   'transition-colors placeholder:text-[color:var(--text-muted)] focus:border-line-brand focus:outline-none';
 ---
 
@@ -31,58 +29,75 @@ const field =
     editImage={editable({ collection: 'contact', fields: 'banner_image', mode: 'drawer' })}
   />
 
-  <section class="section">
-    <div class="rail grid gap-14 lg:grid-cols-[1.4fr_1fr] lg:gap-20">
-      <!-- enquiry form -->
-      <div class="flex flex-col gap-6">
-        <Eyebrow>Query Zone</Eyebrow>
-        <h2
-          class="t-heading-xl"
-          {...editable({ collection: 'contact', fields: 'form_heading', mode: 'popover' })}
-        >
-          {contact.form_heading}
-        </h2>
+  <!-- ── enquiry form ──────────────────────────────────────────────────────
+       Laid out as the client drew it: the three short fields stacked in a left
+       column with the message filling the full height beside them, and one wide
+       Send button centred underneath.
 
-        <form id="enquiry" class="flex flex-col gap-5" novalidate>
-          <div class="grid gap-5 sm:grid-cols-2">
+       The labels live inside the fields, which is what the drawing asks for. They
+       are still real <label> elements, visually hidden — a placeholder disappears
+       the moment someone types, and a form whose fields lose their names as they
+       are filled in is unusable with a screen reader. -->
+  <section class="section">
+    <div class="rail flex flex-col gap-6">
+      <Eyebrow>Enquiry form</Eyebrow>
+      <h2
+        class="t-heading-xl"
+        {...editable({ collection: 'contact', fields: 'form_heading', mode: 'popover' })}
+      >
+        {contact.form_heading}
+      </h2>
+      {
+        contact.form_sub && (
+          <p
+            class="t-body-md max-w-[70ch] text-[color:var(--text-secondary)]"
+            {...editable({ collection: 'contact', fields: 'form_sub', mode: 'popover' })}
+          >
+            {contact.form_sub}
+          </p>
+        )
+      }
+
+      <form id="enquiry" class="mt-4 flex flex-col gap-5" novalidate>
+        <div class="grid gap-5 lg:grid-cols-2">
+          <div class="flex flex-col gap-5">
             <div class="flex flex-col gap-2">
-              <label for="name" class="t-label-md text-ink">
-                Name <span aria-hidden="true" class="text-[color:var(--text-brand-strong)]">*</span>
-              </label>
-              <input id="name" name="name" type="text" autocomplete="name" required class={field} />
-              <p class="t-label-sm text-[color:var(--text-brand-strong)]" data-error="name" hidden></p>
-            </div>
-            <div class="flex flex-col gap-2">
-              <label for="organisation" class="t-label-md text-ink">Organisation</label>
+              <label for="name" class="sr-only">Name</label>
               <input
-                id="organisation"
-                name="organisation"
+                id="name"
+                name="name"
                 type="text"
-                autocomplete="organization"
+                autocomplete="name"
+                placeholder="Name:"
+                required
                 class={field}
               />
+              <p class="t-label-sm text-[color:var(--text-brand-strong)]" data-error="name" hidden></p>
             </div>
-          </div>
 
-          <div class="grid gap-5 sm:grid-cols-2">
             <div class="flex flex-col gap-2">
-              <label for="email" class="t-label-md text-ink">
-                Email <span aria-hidden="true" class="text-[color:var(--text-brand-strong)]">*</span>
-              </label>
-              <input id="email" name="email" type="email" autocomplete="email" required class={field} />
+              <label for="email" class="sr-only">Email</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autocomplete="email"
+                placeholder="Email:"
+                required
+                class={field}
+              />
               <p class="t-label-sm text-[color:var(--text-brand-strong)]" data-error="email" hidden></p>
             </div>
+
             <div class="flex flex-col gap-2">
-              <label for="phone" class="t-label-md text-ink">
-                Mobile no <span aria-hidden="true" class="text-[color:var(--text-brand-strong)]">*</span>
-              </label>
+              <label for="phone" class="sr-only">Mobile number</label>
               <input
                 id="phone"
                 name="phone"
                 type="tel"
                 inputmode="tel"
                 autocomplete="tel"
-                placeholder="+880"
+                placeholder="Mobile No:"
                 required
                 class={field}
               />
@@ -91,74 +106,103 @@ const field =
           </div>
 
           <div class="flex flex-col gap-2">
-            <label for="requirement" class="t-label-md text-ink">
-              What do you need, and how many?
-              <span aria-hidden="true" class="text-[color:var(--text-brand-strong)]">*</span>
-            </label>
+            <label for="requirement" class="sr-only">Message</label>
+            {/* h-full so the message box matches the three fields beside it, which
+                is what makes the two columns read as one block rather than two. */}
             <textarea
               id="requirement"
               name="requirement"
-              rows="5"
+              placeholder="Message:"
               required
-              class={field}
-              placeholder="e.g. 40 cartons of Student Large exercise books, 100 pages"></textarea>
-            <p class="t-label-sm text-[color:var(--text-brand-strong)]" data-error="requirement" hidden></p>
+              class={`${field} h-full min-h-[200px] resize-y`}></textarea>
+            <p
+              class="t-label-sm text-[color:var(--text-brand-strong)]"
+              data-error="requirement"
+              hidden></p>
           </div>
+        </div>
 
-          <!-- Bots fill this; humans never see it. -->
-          <div class="absolute h-0 w-0 overflow-hidden" aria-hidden="true">
-            <label for="honeypot">Leave this field empty</label>
-            <input id="honeypot" name="honeypot" type="text" tabindex="-1" autocomplete="off" />
-          </div>
+        <!-- Bots fill this; humans never see it. -->
+        <div class="absolute h-0 w-0 overflow-hidden" aria-hidden="true">
+          <label for="honeypot">Leave this field empty</label>
+          <input id="honeypot" name="honeypot" type="text" tabindex="-1" autocomplete="off" />
+        </div>
 
-          <div class="mt-2 flex flex-wrap items-center gap-5">
-            <Button type="submit" variant="primary">Send enquiry</Button>
-            <p class="t-label-sm text-[color:var(--text-muted)]">
-              * required · {site.response_promise}
-            </p>
-          </div>
-
-          <p
-            role="status"
-            aria-live="polite"
-            class="rounded-sharp border px-4 py-3.5 t-body-sm"
-            data-form-status
-            hidden
+        <div class="mt-4 flex justify-center">
+          <button
+            type="submit"
+            class="group inline-flex w-full max-w-[420px] items-center justify-center gap-4 rounded-sharp
+                   bg-brand px-8 py-4 t-button text-[color:var(--text-on-brand)]
+                   transition-colors duration-200 hover:bg-brand-hover
+                   disabled:pointer-events-none disabled:opacity-60"
           >
-          </p>
-        </form>
-      </div>
+            Send
+            <svg
+              width="26"
+              height="12"
+              viewBox="0 0 26 12"
+              fill="none"
+              aria-hidden="true"
+              class="transition-transform duration-200 group-hover:translate-x-1"
+            >
+              <path
+                d="M0 6h24M19 1l5 5-5 5"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"></path>
+            </svg>
+          </button>
+        </div>
 
-      <!-- head office -->
-      <aside class="flex flex-col gap-6">
-        <div class="flex flex-col gap-3 rounded-sharp border border-line-subtle bg-subtle px-6 py-6">
-          <h2 class="t-label-xs text-[color:var(--text-brand-strong)]">Head Office</h2>
+        <p
+          role="status"
+          aria-live="polite"
+          class="mx-auto max-w-[560px] rounded-sharp border px-4 py-3.5 text-center t-body-sm"
+          data-form-status
+          hidden
+        >
+        </p>
+      </form>
+    </div>
+  </section>
+
+  <!-- ── visit or call ─────────────────────────────────────────────────────
+       The map sits beside the address again, as drawn. It had been moved out to
+       its own full-width band (comment #38); this layout supersedes that. -->
+  <section class="section pt-0">
+    <div class="rail flex flex-col gap-8">
+      <Eyebrow accent="var(--color-accent-cyan)">Visit or call</Eyebrow>
+
+      <div class="grid gap-12 lg:grid-cols-2 lg:gap-20">
+        <div class="flex flex-col gap-5">
+          <h2 class="t-heading-md">Head Office</h2>
           <address class="flex flex-col gap-1.5 t-body-md not-italic">
             <span class="text-ink">{site.company_name}</span>
             {site.address_lines.map((line) => <span>{line}</span>)}
           </address>
-          <hr class="my-1 w-10 border-line" />
-          <a href={site.phone_href} class="t-body-md text-ink hover:text-[color:var(--text-brand-strong)]">
-            {site.phone}
-          </a>
-          <a href={`mailto:${site.email}`} class="t-body-md text-ink hover:text-[color:var(--text-brand-strong)]">
-            {site.email}
-          </a>
-          <p class="t-body-sm text-[color:var(--text-muted)]">{site.opening_hours}</p>
+          <div class="flex flex-col gap-1.5">
+            <a
+              href={site.phone_href}
+              class="t-body-md text-ink hover:text-[color:var(--text-brand-strong)]"
+            >
+              {site.phone}
+            </a>
+            <a
+              href={`mailto:${site.email}`}
+              class="t-body-md text-ink hover:text-[color:var(--text-brand-strong)]"
+            >
+              {site.email}
+            </a>
+            <p class="t-body-sm text-[color:var(--text-muted)]">{site.opening_hours}</p>
+          </div>
         </div>
 
-      </aside>
-    </div>
-  </section>
-
-  <!-- Comment #38: the map was too small in the sidebar, so it now takes the full
-       content width in its own section. -->
-  <section class="section-tight pb-0">
         <div
-          class="rail flex flex-col gap-3"
+          class="flex flex-col gap-5"
           {...editable({ collection: 'contact', fields: 'map_embed_url', mode: 'drawer' })}
         >
-          <h2 class="t-label-xs text-[color:var(--text-brand-strong)]">Google Map location</h2>
+          <h2 class="t-heading-md">Google Map Location</h2>
           {
             contact.map_embed_url ? (
               <iframe
@@ -166,78 +210,66 @@ const field =
                 title="Grade Limited head office on Google Maps"
                 loading="lazy"
                 referrerpolicy="no-referrer-when-downgrade"
-                class="aspect-[21/9] w-full rounded-sharp border border-line"
+                class="aspect-[2.2/1] w-full rounded-sharp border border-line"
               />
             ) : (
-              /* No key configured yet, so we render a labelled placeholder rather
-                 than an empty iframe or a third-party request nobody consented to. */
+              /* No embed URL set yet, so this is a labelled placeholder rather than
+                 an empty iframe or a third-party request nobody consented to. */
               <div
-                class="flex aspect-[21/9] w-full flex-col items-center justify-center gap-1 rounded-sharp
+                class="flex aspect-[2.2/1] w-full flex-col items-center justify-center gap-1 rounded-sharp
                        border border-line bg-muted-surface px-6 text-center"
               >
-                <p class="t-label-md text-[color:var(--text-secondary)]">Map embed</p>
-                <p class="t-label-sm text-[color:var(--text-muted)]">
-                  {site.address_lines.join(' ')}
-                </p>
+                <p class="t-label-md text-[color:var(--text-secondary)]">Google Map embed</p>
+                <p class="t-label-sm text-[color:var(--text-muted)]">{site.address_lines.join(' ')}</p>
               </div>
             )
           }
         </div>
+      </div>
+    </div>
   </section>
 
-  <!-- FAQ -->
-  <section class="section bg-subtle">
-    <div class="rail">
-      <SectionHead eyebrow="Frequently asked questions" heading="Before you enquire." />
-
-      <!-- Comment #37: nothing but the button shows initially; every question is
-           revealed on the click. The list is in the markup either way, so it is
-           there for search engines and for anyone without JavaScript — the button
-           only exists once the script has run. -->
-      <div class="mt-8" data-faq-toggle-wrap hidden>
-        <button
-          type="button"
-          class="group inline-flex items-center gap-3 rounded-full bg-brand px-6 py-3.5 t-button
-                 text-[color:var(--text-on-brand)] transition-transform hover:-translate-y-px"
-          data-faq-toggle
-          aria-expanded="false"
-          aria-controls="faq-list"
-        >
-          <span data-faq-toggle-label>Show the questions</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"
-            class="transition-transform duration-200 group-aria-expanded:rotate-180">
-            <path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-        </button>
-      </div>
+  <!-- ── FAQ ───────────────────────────────────────────────────────────────
+       The pill is a label, not a control: every question is on the page from the
+       start and each opens on its own. That replaces the single show/hide button
+       from comment #37, which this design supersedes. -->
+  <section class="section pt-0">
+    <div class="rail flex flex-col gap-10">
+      {/* font-sans explicitly: this is an <h2>, and headings inherit the display
+          serif, but the drawing sets this pill in the interface face. */}
+      <h2
+        class="self-center rounded-full bg-inverse px-7 py-3 font-sans t-label-md
+               text-[color:var(--text-inverse)]"
+      >
+        Frequently Asked Questions
+      </h2>
 
       <div
-        id="faq-list"
-        class="mt-10 overflow-hidden rounded-sharp border border-line-subtle bg-page"
+        class="border-t border-line-subtle"
         data-reveal
-        data-faq-list
         {...editable({ collection: 'contact', fields: 'faqs', mode: 'drawer' })}
       >
         {
-          contact.faqs.map((faq, i) => (
-            <details class="group border-b border-line-subtle last:border-0" open={i === 0}>
+          contact.faqs.map((faq) => (
+            <details class="group border-b border-line-subtle">
               <summary
-                class="flex cursor-pointer list-none items-center gap-4 px-6 py-5 t-heading-sm
-                       transition-colors hover:bg-subtle"
+                class="flex cursor-pointer list-none items-center gap-6 py-6 t-heading-sm
+                       transition-colors hover:text-[color:var(--text-brand-strong)]"
               >
                 <span class="grow">{faq.question}</span>
+                {/* Two bars: the upright one rotates flat, so + becomes −. */}
                 <span
                   aria-hidden="true"
-                  class="relative h-4 w-4 shrink-0 text-[color:var(--text-brand-strong)]"
+                  class="relative h-3.5 w-3.5 shrink-0 text-[color:var(--text-brand-strong)]"
                 >
-                  <span class="absolute top-1/2 left-0 h-[2px] w-4 -translate-y-1/2 bg-current"></span>
+                  <span class="absolute top-1/2 left-0 h-[1.5px] w-3.5 -translate-y-1/2 bg-current" />
                   <span
-                    class="absolute top-1/2 left-0 h-[2px] w-4 -translate-y-1/2 rotate-90 bg-current
+                    class="absolute top-1/2 left-0 h-[1.5px] w-3.5 -translate-y-1/2 rotate-90 bg-current
                            transition-transform duration-200 group-open:rotate-0"
-                  ></span>
+                  />
                 </span>
               </summary>
-              <p class="px-6 pb-6 t-body-md max-w-[80ch]">{faq.answer}</p>
+              <p class="max-w-[80ch] pb-6 t-body-md">{faq.answer}</p>
             </details>
           ))
         }
@@ -247,32 +279,10 @@ const field =
 </Base>
 
 <script>
-  // The FAQ starts collapsed behind a single button. Progressive enhancement: the
-  // button is hidden in the markup and only unhidden here, so a visitor without
-  // JavaScript keeps the full, readable list rather than a control that does nothing.
-  const wrap = document.querySelector<HTMLElement>('[data-faq-toggle-wrap]');
-  const list = document.querySelector<HTMLElement>('[data-faq-list]');
-  const button = document.querySelector<HTMLButtonElement>('[data-faq-toggle]');
-  const label = document.querySelector<HTMLElement>('[data-faq-toggle-label]');
-  if (wrap && list && button && label) {
-    wrap.hidden = false;
-    list.hidden = true;
-    button.addEventListener('click', () => {
-      const open = list.hidden;
-      list.hidden = !open;
-      button.setAttribute('aria-expanded', String(open));
-      label.textContent = open ? 'Hide the questions' : 'Show the questions';
-    });
-  }
-</script>
-
-
-<script>
   const form = document.querySelector<HTMLFormElement>('#enquiry');
   const status = document.querySelector<HTMLElement>('[data-form-status]');
 
-  /* Prefill from ?item=… — a product card sent the buyer here about one line item.
-     Done in the browser because the page itself is prerendered. */
+  /* Prefill from ?item=… — a product card sent the buyer here about one line item. */
   const requirement = form?.querySelector<HTMLTextAreaElement>('#requirement');
   const item = new URLSearchParams(location.search).get('item');
   if (requirement && item && !requirement.value.trim()) {
@@ -286,7 +296,11 @@ const field =
     status.hidden = false;
     status.textContent = message;
     status.style.borderColor =
-      kind === 'error' ? 'var(--border-brand)' : kind === 'ok' ? 'var(--border-default)' : 'var(--border-subtle)';
+      kind === 'error'
+        ? 'var(--border-brand)'
+        : kind === 'ok'
+          ? 'var(--border-default)'
+          : 'var(--border-subtle)';
     status.style.background = kind === 'error' ? 'var(--bg-brand-subtle)' : 'var(--bg-subtle)';
     status.style.color = kind === 'error' ? 'var(--text-brand-strong)' : 'var(--text-primary)';
   }

@@ -150,6 +150,8 @@ export const contactSchema = z.object({
   seo: seoSchema,
   banner: bannerSchema,
   form_heading: z.string(),
+  /** The line under the form heading. Empty is fine — it simply is not rendered. */
+  form_sub: z.string().default(''),
   map_embed_url: z.string().nullable().default(null),
   faqs: z.array(z.object({ question: z.string(), answer: z.string() })).min(1),
 });

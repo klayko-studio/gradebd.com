@@ -439,6 +439,7 @@ export const getContact = (): Promise<Contact> =>
         seo: seo(row, { title: 'Contact', description: '' }),
         banner: banner(row),
         form_heading: row.form_heading ?? '',
+        form_sub: row.form_sub ?? '',
         map_embed_url: row.map_embed_url || null,
         faqs: (row.faqs ?? [])
           .sort((a: any, b: any) => (a.sort ?? 0) - (b.sort ?? 0))

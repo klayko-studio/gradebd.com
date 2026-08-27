@@ -341,6 +341,7 @@ export const COLLECTIONS = [
       ...SEO,
       ...BANNER,
       F.string('form_heading'),
+      F.text('form_sub', { note: 'The line under the form heading.' }),
       F.text('map_embed_url', {
         note: 'The src of a Google Maps embed. Left empty, the site draws a labelled placeholder and makes no third-party request.',
       }),
