@@ -3,10 +3,10 @@
   "tagline": "Empowering Your Potential",
   "logo": {
     "id": null,
-    "src": "/images/brand/grade-logo.png",
+    "src": "/images/brand/grade-logo.svg",
     "alt": "Grade Limited",
-    "width": 1024,
-    "height": 367
+    "width": 348,
+    "height": 99
   },
   "logo_reversed": {
     "id": null,
@@ -17,12 +17,18 @@
   },
   "logo_reversed_stationary": {
     "id": null,
-    "src": "/images/brand/grade-logo-white-stationary.png",
-    "alt": "Grade Limited Stationary",
-    "width": 1024,
-    "height": 367
+    "src": "/images/brand/grade-lockup.svg",
+    "alt": "Grade Limited Stationery",
+    "width": 532,
+    "height": 217
   },
-  "favicon": null,
+  "favicon": {
+    "id": null,
+    "src": "/images/brand/favicon.svg",
+    "alt": "Grade Limited",
+    "width": 206,
+    "height": 217
+  },
   "og_image": null,
   "seo": null,
   "founded_year": 2019,

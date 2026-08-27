@@ -15,6 +15,11 @@ export const imageSchema = z.object({
   id: z.string().nullable().default(null),
   src: z.string(),
   alt: z.string(),
+  /**
+   * The file's own media type. Needed because a proxied `/cms/<id>` URL carries
+   * no extension, and the favicon link has to declare what it is.
+   */
+  mime: z.string().optional(),
   width: z.number().int().positive().optional(),
   height: z.number().int().positive().optional(),
 });

@@ -146,12 +146,18 @@ export async function seedContent(client, { force = false } = {}) {
     opening_hours: site.opening_hours,
     utility_message: site.utility_message,
     response_promise: site.response_promise,
-    logo: await files.id('/images/brand/grade-logo.png', `${site.company_name} logo`),
-    logo_reversed: await files.id('/images/brand/grade-logo-white.png', `${site.company_name} logo, reversed`),
-    logo_reversed_stationary: await files.id(
-      '/images/brand/grade-logo-white-stationary.png',
-      `${site.company_name} Stationary logo, reversed`,
+    // The client's own vector exports. SVG so the mark is crisp at any size and
+    // on any screen — the PNGs it replaces were fixed-width raster.
+    logo: await files.id('/images/brand/grade-logo.svg', `${site.company_name} logo`),
+    logo_reversed: await files.id(
+      '/images/brand/grade-lockup-white.svg',
+      `${site.company_name} lockup, reversed`,
     ),
+    logo_reversed_stationary: await files.id(
+      '/images/brand/grade-lockup.svg',
+      `${site.company_name} Stationery lockup`,
+    ),
+    favicon: await files.id('/images/brand/favicon.svg', `${site.company_name}`),
     og_image: await files.id(home.slides?.[0]?.image?.src ?? null, home.slides?.[0]?.image?.alt),
     seo_title: home.seo.title,
     seo_description: home.seo.description,

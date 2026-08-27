@@ -21,6 +21,12 @@ const shareImage = site.og_image?.src
   ? new URL(site.og_image.src, Astro.site ?? 'https://www.gradebd.com').href
   : null;
 const favicon = site.favicon?.src ?? null;
+/**
+ * From the file's own media type, not the URL: a proxied `/cms/<id>` has no
+ * extension to read. The filename fallback covers the seed path, which does.
+ */
+const faviconType =
+  site.favicon?.mime ?? (favicon?.toLowerCase().endsWith('.svg') ? 'image/svg+xml' : undefined);
 ---
 
 <!doctype html>
@@ -44,7 +50,9 @@ const favicon = site.favicon?.src ?? null;
     <meta name="theme-color" content="#0d2038" />
 
     {/* Both from the CMS. Without one, the browser falls back to /favicon.ico. */}
-    {favicon && <link rel="icon" href={favicon} />}
+    {/* The type matters: without it a browser will not treat an SVG as an icon,
+        and Safari in particular falls back to the default tab mark. */}
+    {favicon && <link rel="icon" href={favicon} type={faviconType} />}
     {favicon && <link rel="apple-touch-icon" href={favicon} />}
 
     <link

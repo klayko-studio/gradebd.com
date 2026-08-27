@@ -412,7 +412,26 @@ The low-fi frames carry inline red-bordered `Note` callouts recording every inte
 the paper wireframes were ambiguous. Read those before changing a layout — they are the record of what
 was assumed and what still needs the client.
 
-### The logo problem is solved — proper marks arrived
+### Vectors arrived, and the footer lockup is still a two-part mark
+
+`docs/client/references/SVG/` holds the client's Illustrator exports, copied into
+`public/images/brand/` and seeded into the CMS: `grade-logo.svg` in every header,
+`grade-lockup.svg` (their "Artboard 1") in every footer, `favicon.svg` as the site icon, and
+`grade-lockup-white.svg` (their "white.svg") on `logo_reversed` as an alternative.
+
+**The footer lockup renders red-on-red.** `grade-lockup.svg` is the same two-part construction as the
+original PNG — red wordmark, near-black "StationerY" — so on the brand-red footer the wordmark all
+but disappears. It is what the client asked for and it is what is live; the alternatives, in order of
+how well they read on red, are `grade-logo-white-stationary.png` (a true reversed mark, still in the
+repo), then `grade-lockup-white.svg`. Swapping is one field on the `site` singleton.
+
+Two other things worth carrying: the vectors' red is **`#ee212e`**, a third value alongside the
+`#EA1F27` in the tokens and the `#EE1E2C` from the client call — nobody has said which is
+authoritative. And a proxied `/cms/<id>` URL has no file extension, so the favicon's `type` comes
+from the file's own media type, carried through `imageSchema.mime`; deriving it from the URL silently
+produced no type at all.
+
+### The earlier logo problem — proper raster marks arrived
 
 **`docs/logos/` holds three clean single-colour PNGs with real alpha**, and they are now what the site
 uses. This closes a defect that shaped a lot of earlier decisions, so ignore any older note that works

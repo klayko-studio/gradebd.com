@@ -153,7 +153,7 @@ export function assetUrl(id: string | null, params?: Record<string, string | num
  * than a validation error. Every nested key must carry its own prefix.
  */
 const file = (prefix: string): string =>
-  ['id', 'width', 'height', 'description', 'title', 'modified_on']
+  ['id', 'width', 'height', 'description', 'title', 'modified_on', 'type']
     .map((key) => `${prefix}.${key}`)
     .join(',');
 
@@ -237,6 +237,7 @@ type DirectusFile = {
   description?: string | null;
   title?: string | null;
   modified_on?: string | null;
+  type?: string | null;
 } | null;
 
 /**
@@ -265,6 +266,7 @@ function img(file: DirectusFile, fallbackAlt = ''): Image {
     id: file.id,
     src: assetUrl(file.id, version(file)),
     alt: file.description || file.title || fallbackAlt,
+    ...(file.type ? { mime: file.type } : {}),
     ...(file.width ? { width: file.width } : {}),
     ...(file.height ? { height: file.height } : {}),
   };
