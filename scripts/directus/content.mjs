@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 /**
  * Pushes the site's existing content into a fresh Directus: every image in
@@ -10,7 +11,10 @@ import path from 'node:path';
  * their own site rather than an empty admin.
  */
 
-const ROOT = path.resolve(import.meta.dirname, '../..');
+// Not import.meta.dirname: that landed in Node 20.11, and this is evaluated
+// the moment the module is imported — so on an older Node it throws before
+// anything has a chance to explain why. fileURLToPath works everywhere.
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const MIME = {
   '.png': 'image/png',
   '.jpg': 'image/jpeg',

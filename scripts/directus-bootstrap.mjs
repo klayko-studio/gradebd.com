@@ -24,11 +24,38 @@
 import { randomBytes } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { createClient, waitForDirectus } from './directus/client.mjs';
 import { applySchema, ensureWebsiteAccess, ensureVisualEditorUrl } from './directus/schema.mjs';
 import { seedContent } from './directus/content.mjs';
 
-const ROOT = path.resolve(import.meta.dirname, '..');
+// Not import.meta.dirname: that landed in Node 20.11 and is evaluated the moment
+// the module loads, so on an older Node it throws before anything can explain
+// why. fileURLToPath works everywhere.
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+
+/**
+ * Checked at module scope, not inside main(): a requirement this basic has to be
+ * reported before anything else runs. Checked by capability rather than version
+ * number, because `fetch` is what every request here depends on — it, FormData
+ * and Blob all became global in Node 18, which is the real floor.
+ */
+if (typeof fetch !== 'function') {
+  console.error(
+    [
+      '',
+      `✗ This needs Node 18 or newer; this is ${process.versions.node}.`,
+      '',
+      'Either install a newer Node on the server, or run the bootstrap from a machine',
+      'that has one, over an SSH tunnel:',
+      '',
+      '  ssh -L 8055:127.0.0.1:8055 user@vps',
+      '  node scripts/directus-bootstrap.mjs --url http://127.0.0.1:8055',
+      '',
+    ].join('\n'),
+  );
+  process.exit(1);
+}
 
 /**
  * Minimal .env reader — enough for KEY=value, quoted or not.
@@ -95,18 +122,6 @@ async function main() {
   if (has('help') || process.argv.includes('-h')) {
     console.log(HELP);
     return;
-  }
-
-  // import.meta.dirname, used to find the repo root, landed in 20.11.
-  const [major, minor] = process.versions.node.split('.').map(Number);
-  if (major < 20 || (major === 20 && minor < 11)) {
-    throw new Error(
-      [
-        `Node 20.11 or newer is needed; this is ${process.versions.node}.`,
-        'Either install Node 22 on the server, or run the bootstrap from a machine that',
-        'has it, over an SSH tunnel — see --help.',
-      ].join('\n'),
-    );
   }
 
   await loadEnv();
