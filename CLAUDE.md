@@ -553,6 +553,24 @@ Nine instructions, all applied. The ones that change what a future session shoul
   `prefers-reduced-motion` and while the tab is hidden, and wrapping at the end rather than stopping
   with a half-cut logo against the edge. The arrows restart the clock.
 
+## Fifth round of client changes
+
+- **The closing band's artwork is anchored to the bottom-right corner** and pushed slightly past it,
+  so it reads as coming out of the corner rather than sitting in a box beside the text. The tilt
+  turns around `origin-bottom-right`: rotating about the centre lifts the drawing off the edge and
+  reopens the gap the anchoring just closed. Absolute from `md` up only — on a phone there is no room
+  beside the copy, so it falls back to a plain block underneath.
+- **Footer:** "Get in touch" needed its colour spelled out. It is an `<h2>`, and the base stylesheet
+  gives every heading `--text-primary` — dark ink — which beats the footer's inherited white. Worth
+  remembering for any other heading placed on a dark ground. The WhatsApp row and the opening hours
+  are gone from the address block, and the social row moved from its own centred strip at the bottom
+  into the empty middle columns of the top row.
+- **A floating WhatsApp button** sits outside `<footer>` on purpose: the footer is
+  `relative overflow-hidden`, and a `fixed` child of an ancestor like that is at the mercy of how the
+  browser resolves its containing block. It fades in only while the footer is in view. The number
+  comes from `phone_href`, not `phone` — `phone` is the local form (01842-024378) and wa.me would
+  send people looking for that number in their own country.
+
 ## Information architecture
 
 `docs/client/wireframe/` holds nine photographed paper wireframes (WhatsApp images, filenames are not

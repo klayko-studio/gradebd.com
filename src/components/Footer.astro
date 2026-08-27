@@ -19,6 +19,16 @@ const { site, categories, showSocials = true } = Astro.props;
 const link = 'transition-opacity hover:opacity-70';
 
 /**
+ * wa.me wants digits only, and it wants the *international* number.
+ * `phone` is the local form the client prints — 01842-024378 — which would send
+ * WhatsApp looking for a number in whatever country the reader happens to be in.
+ * `phone_href` carries the dialable form (tel:+8801842024378), so that is the one
+ * to strip; the local number is only a fallback if nobody has filled it in.
+ */
+const dialable = site.phone_href.replace(/[^0-9]/g, '') || site.phone.replace(/[^0-9]/g, '');
+const whatsapp = `https://wa.me/${dialable}`;
+
+/**
  * The footer sits on the red band, so it needs a reversed mark. Prefer the one
  * carrying "Stationary" — the client's own artwork for comment #22 — and fall
  * back through the plain reversed lockup before giving up and setting the
@@ -65,13 +75,20 @@ const footerLogo = site.logo_reversed_stationary ?? site.logo_reversed ?? null;
       </div>
     </div>
 
-    <!-- Comment #7: the Products and Company columns are gone, but their grid space
-         is deliberately kept so the remaining columns do not reflow. -->
-    <div aria-hidden="true" class="hidden lg:block"></div>
-    <div aria-hidden="true" class="hidden lg:block"></div>
+    <!-- Comment #7 removed the Products and Company columns; their grid space is
+         kept so the remaining columns do not reflow, and the social row now sits
+         in it — centred between the logo and the address, where the client marked
+         it. The container is rendered even when the icons are not (Home), or the
+         two columns beside it would close up. -->
+    <div class="flex items-center justify-center md:col-span-2">
+      {showSocials && <SocialLinks socials={site.socials} tone="on-dark" />}
+    </div>
 
     <div class="flex flex-col gap-4">
-      <h2 class="t-label-xs">Get in touch</h2>
+      {/* The colour is spelled out because the base stylesheet gives every
+          heading `--text-primary`, which is dark ink — inheriting the footer's
+          white does not survive that. */}
+      <h2 class="t-label-xs text-[color:var(--text-inverse)]">Get in touch</h2>
       <address class="flex flex-col gap-3 t-body-sm not-italic">
         <span
           class="flex flex-col"
@@ -93,34 +110,9 @@ const footerLogo = site.logo_reversed_stationary ?? site.logo_reversed ?? null;
         >
           {site.email}
         </a>
-        <a href={`https://wa.me/${site.phone.replace(/[^0-9]/g, '')}`} class={`flex items-center gap-2 ${link}`} rel="noopener noreferrer" target="_blank">
-          <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true" class="shrink-0">
-            <path d={socialPaths.whatsapp} fill="currentColor" />
-          </svg>
-          WhatsApp {site.phone}
-        </a>
-        <span
-          class="text-[color:rgb(255_255_255/0.8)]"
-          {...editable({ collection: 'site', fields: 'opening_hours', mode: 'popover' })}
-        >
-          {site.opening_hours}
-        </span>
       </address>
     </div>
   </div>
-
-  <!-- Centred, and its own row rather than tucked under the logo: the client
-       asked for the icons in the middle of the footer, which the brand column
-       could not do without pulling the address and logo off-axis with them. -->
-  {
-    showSocials && (
-      <div class="relative">
-        <div class="rail flex justify-center border-t border-[color:rgb(255_255_255/0.22)] py-8">
-          <SocialLinks socials={site.socials} tone="on-dark" />
-        </div>
-      </div>
-    )
-  }
 
   <div class="relative bg-footer-deep">
     <div class="rail flex flex-wrap items-center justify-between gap-2 py-5 t-label-sm">
@@ -129,3 +121,76 @@ const footerLogo = site.logo_reversed_stationary ?? site.logo_reversed ?? null;
     </div>
   </div>
 </footer>
+
+<!--
+  Floating WhatsApp button.
+
+  Deliberately a sibling of <footer> rather than a child: the footer is
+  `relative overflow-hidden`, and a fixed element inside an ancestor like that is
+  at the mercy of how the browser resolves its containing block. Outside, it is
+  simply fixed to the viewport.
+
+  It fades in when the footer comes into view and fades out again above it, which
+  is what "on the footer only" means in practice — a button that follows the
+  reader down the whole page is a different, more insistent thing.
+-->
+{
+  site.phone && (
+    <a
+      href={whatsapp}
+      rel="noopener noreferrer"
+      target="_blank"
+      class="whatsapp-fab fixed right-5 bottom-5 z-40 grid size-14 place-items-center rounded-full
+             text-white shadow-[0_10px_28px_rgb(4_10_16/0.28)] md:right-8 md:bottom-8"
+      style="background:#25D366"
+      aria-label={`Message us on WhatsApp — ${site.phone}`}
+      data-whatsapp-fab
+      hidden
+    >
+      <svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true">
+        <path d={socialPaths.whatsapp} fill="currentColor" />
+      </svg>
+    </a>
+  )
+}
+
+<style>
+  /* Hidden until the footer is reached; `hidden` in the markup is removed by the
+     script, so without JavaScript it never appears at all rather than sitting
+     over the page permanently. */
+  .whatsapp-fab {
+    opacity: 0;
+    transform: translateY(12px) scale(0.9);
+    transition:
+      opacity 220ms var(--ease-standard),
+      transform 220ms var(--ease-standard);
+  }
+  .whatsapp-fab.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+  .whatsapp-fab:hover {
+    filter: brightness(1.06);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .whatsapp-fab {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const fab = document.querySelector<HTMLElement>('[data-whatsapp-fab]');
+  const footer = document.querySelector('footer');
+
+  if (fab && footer) {
+    fab.hidden = false;
+    const observer = new IntersectionObserver(
+      ([entry]) => fab.classList.toggle('is-visible', entry.isIntersecting),
+      // A sliver of the footer is enough; waiting for more means the button
+      // arrives after the reader has already passed the contact details.
+      { threshold: 0.01 },
+    );
+    observer.observe(footer);
+  }
+</script>

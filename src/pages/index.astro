@@ -124,12 +124,6 @@ const [home, categories, clients, site] = await Promise.all([
         })}
       />
 
-      <p class="mt-3 max-w-[70ch] t-body-sm text-[color:var(--text-inverse-muted)]">
-        Every mark here is its owner’s registered trademark. Six are still placeholders while we
-        wait on the artwork, and Grade needs written permission from all fifteen before this
-        goes live.
-      </p>
-
       <!-- A slider rather than a wall: fifteen companies will not sit on one row, and
            the client asked for arrows. Native scroll-snap does the work, so it stays
            usable by touch and keyboard with the arrows as an enhancement. -->
@@ -200,11 +194,7 @@ const [home, categories, clients, site] = await Promise.all([
   <!-- The section is the social row now, so the copy about stocking a school year
        is gone with it; a lead-in about pencil boxes under a "Contacts" heading read
        as two unrelated things stacked. -->
-  <BrandBand
-    eyebrow="Empowering your potential"
-    heading="Our Social Media Contacts"
-    socials={site.socials}
-  />
+  <BrandBand heading="Our Social Media Contacts" socials={site.socials} />
 </Base>
 
 <style>
