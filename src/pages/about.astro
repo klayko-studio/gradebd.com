@@ -57,7 +57,16 @@ const about = await getAbout();
     </div>
   </section>
 
-  <section class="section bg-subtle">
+  <!--
+    No band and no padding of its own, both as asked. The grey `bg-subtle` plate
+    used to cut the page background into three, and dropping it lets the
+    watercolour run through unbroken. `py-0` and not simply dropping `section`,
+    so it stays obvious that the missing padding is deliberate — the two
+    neighbours still carry theirs, which is where the air around this comes from.
+    `py-0` beats `.section` because that lives in the components layer and
+    utilities come after it.
+  -->
+  <section class="section py-0">
     <div class="rail">
       <SectionHead
         eyebrow={about.values_intro.eyebrow}
