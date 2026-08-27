@@ -61,10 +61,13 @@ const { slides, edit = {} } = Astro.props;
           role="group"
           aria-label={`${i + 1} of ${slides.length}: ${slide.label}`}
         >
-          <p class="flex items-center gap-3 t-eyebrow text-[color:var(--text-inverse)]">
-            <span aria-hidden="true" class="h-[2px] w-6 shrink-0 bg-brand"></span>
-            {slide.eyebrow}
-          </p>
+          {/* Nothing in the field, nothing on the page — not even the rule. */}
+          {slide.eyebrow && (
+            <p class="flex items-center gap-3 t-eyebrow text-[color:var(--text-inverse)]">
+              <span aria-hidden="true" class="h-[2px] w-6 shrink-0 bg-brand" />
+              {slide.eyebrow}
+            </p>
+          )}
           {slide.lines.length > 0 ? (
             // The client's slide copy is a three-line phrase — "Every Tool / Every
             // Dream / Endless Potential". Tight leading keeps it reading as one unit.

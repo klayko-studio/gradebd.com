@@ -13,7 +13,8 @@ import type { Site } from '../lib/schema';
  * this the site's only page with no social links anywhere would be the front one.
  */
 interface Props {
-  eyebrow: string;
+  /** Optional: an empty one is not rendered at all. */
+  eyebrow?: string;
   heading: string;
   /** Optional: the section is the social row, so it does not always need a lead-in. */
   body?: string;
@@ -25,7 +26,7 @@ const { eyebrow, heading, body, socials } = Astro.props;
 <section class="overflow-hidden bg-menu">
   <div class="rail grid items-center gap-8 py-0 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
     <div class="flex flex-col gap-4 py-14 lg:py-16">
-      <p class="t-eyebrow text-[color:var(--text-on-menu-muted)]">{eyebrow}</p>
+      {eyebrow && <p class="t-eyebrow text-[color:var(--text-on-menu-muted)]">{eyebrow}</p>}
       <h2 class="t-heading-xl max-w-[18ch] text-[color:var(--text-on-menu)]">{heading}</h2>
       {body && <p class="t-body-md max-w-[46ch] text-[color:var(--text-on-menu-muted)]">{body}</p>}
       <!-- The client asked for the real logos here rather than a one-colour row, so

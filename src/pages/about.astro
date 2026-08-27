@@ -45,11 +45,10 @@ const about = await getAbout();
           >
             {/*
               The heading is the label now — "Our Vision", "Our Mission" — so the
-              eyebrow above it would say the same words twice. Guarded rather than
-              deleted: it is still a CMS field, and a moderator who fills it in
-              should get it back.
+              eyebrow fields are empty and Eyebrow renders nothing. Still fields
+              though: a moderator who fills one in gets it back.
             */}
-            {block.eyebrow && <Eyebrow>{block.eyebrow}</Eyebrow>}
+            <Eyebrow>{block.eyebrow}</Eyebrow>
             <h2 class="t-heading-lg max-w-[34ch]">{block.heading}</h2>
             {block.body && <p class="t-body-md max-w-[70ch]">{block.body}</p>}
           </article>

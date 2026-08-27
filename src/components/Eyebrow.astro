@@ -9,12 +9,32 @@ interface Props {
 const { tone = 'light', accent, class: className = '' } = Astro.props;
 const colour =
   tone === 'dark' ? 'text-[color:var(--text-inverse)]' : 'text-[color:var(--text-on-menu-muted)]';
+
+/**
+ * An eyebrow with nothing in it renders nothing at all — not even the rule.
+ *
+ * Every eyebrow on the site is CMS copy, and a moderator clearing one used to
+ * leave a short coloured dash floating above the heading with no text beside it,
+ * which reads as a rendering fault rather than as an empty field. The check
+ * belongs here rather than at each call site: there are ten of those, and the
+ * one that gets forgotten is the one someone empties.
+ *
+ * `Astro.slots.render()` rather than `Astro.slots.has()` — `has` only reports
+ * that a slot was passed, which is true for an empty string too. The rendered
+ * html is reused below so the slot is not evaluated twice.
+ */
+const html = (await Astro.slots.render('default')).trim();
 ---
 
-<p class:list={['flex items-center gap-3 t-eyebrow', colour, className]}>
-  <span
-    aria-hidden="true"
-    class="h-[3px] w-7 shrink-0 rounded-full"
-    style={`background:${accent ?? 'var(--bg-brand)'}`}></span>
-  <slot />
-</p>
+{
+  html && (
+    <p class:list={['flex items-center gap-3 t-eyebrow', colour, className]}>
+      <span
+        aria-hidden="true"
+        class="h-[3px] w-7 shrink-0 rounded-full"
+        style={`background:${accent ?? 'var(--bg-brand)'}`}
+      />
+      <Fragment set:html={html} />
+    </p>
+  )
+}

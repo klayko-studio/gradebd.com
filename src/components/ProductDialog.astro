@@ -14,8 +14,8 @@ interface Props {
   item: Item;
   /** The range's accent, so the dialog is recognisable as part of that category. */
   accent: string;
-  /** Category name for the eyebrow. */
-  categoryName: string;
+  /** Category name for the eyebrow. Empty renders no eyebrow at all. */
+  categoryName?: string;
 }
 const { item, accent, categoryName } = Astro.props;
 
@@ -67,14 +67,21 @@ const packLine = [item.pack_inner, item.pack_carton].filter(Boolean).join('  · 
     <!-- detail -->
     <div class="flex flex-col gap-5 p-8 md:p-11">
       <div class="flex items-start justify-between gap-6">
-        <p class="flex items-center gap-2.5 t-eyebrow text-[color:var(--text-muted)]">
-          <span aria-hidden="true" class="h-[3px] w-6 shrink-0 rounded-full" style={`background:${accent}`}
-          ></span>
-          {categoryName}
-        </p>
+        {categoryName && (
+          <p class="flex items-center gap-2.5 t-eyebrow text-[color:var(--text-muted)]">
+            <span
+              aria-hidden="true"
+              class="h-[3px] w-6 shrink-0 rounded-full"
+              style={`background:${accent}`}
+            />
+            {categoryName}
+          </p>
+        )}
+        {/* ms-auto, not justify-between: with no eyebrow beside it the close
+            button would otherwise slide to the left of the panel. */}
         <button
           type="button"
-          class="grid size-9 shrink-0 place-items-center rounded-full bg-soft text-ink
+          class="ms-auto grid size-9 shrink-0 place-items-center rounded-full bg-soft text-ink
                  transition-colors hover:bg-[color:var(--border-soft)]"
           data-dialog-close
           aria-label="Close"
