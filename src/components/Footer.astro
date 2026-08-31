@@ -1,6 +1,5 @@
 ---
 import { editable } from '../lib/cms';
-import Doodles from './Doodles.astro';
 import SocialLinks from './SocialLinks.astro';
 import { socialPaths } from '../lib/social-icons';
 import type { Category, Site } from '../lib/schema';
@@ -38,7 +37,26 @@ const footerLogo = site.logo_reversed_stationary ?? site.logo_reversed ?? null;
 ---
 
 <footer class="relative overflow-hidden bg-footer text-[color:var(--text-inverse)]">
-  <Doodles color="#ffffff" opacity={0.3} />
+  <!--
+    The client's own line-art artwork, in place of the marks this used to
+    generate. It is stored as white-on-transparent rather than as their JPEG, so
+    the footer colour stays a token instead of being frozen into a picture, and
+    it tiles in both directions — the band is 292px tall on a desktop but 510px
+    on a phone, and their design was drawn against the desktop height.
+
+    Tiling is safe because all four edges of the artwork are clear of ink, so a
+    seam widens the gaps between marks rather than cutting one in half.
+
+    Falls back to the bundled file when the CMS has nothing, the same way the
+    page background does — the client is still iterating on this design, and a
+    new version should be a drag-and-drop rather than a deploy.
+  -->
+  <div
+    aria-hidden="true"
+    class="pointer-events-none absolute inset-0 bg-repeat bg-top"
+    style={`background-image:url(${site.footer_pattern?.src ?? '/images/brand/footer-pattern.webp'})`}
+  >
+  </div>
 
   <div class="rail relative grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1.2fr]">
     <div class="flex flex-col gap-5">

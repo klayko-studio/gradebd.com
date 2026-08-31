@@ -314,6 +314,7 @@ export const getSite = (): Promise<Site> =>
             file('og_image'),
             file('doodle_image'),
             file('background_image'),
+            file('footer_pattern'),
             'socials.platform,socials.url,socials.confirmed,socials.sort',
             'nav.page,nav.label,nav.sort',
           ].join(','),
@@ -350,6 +351,7 @@ export const getSite = (): Promise<Site> =>
         price_note: text(row.price_note),
         doodle_image: row.doodle_image ? img(row.doodle_image) : null,
         background_image: row.background_image ? img(row.background_image) : null,
+        footer_pattern: row.footer_pattern ? img(row.footer_pattern) : null,
         nav: (row.nav ?? [])
           .sort((a: any, b: any) => (a.sort ?? 0) - (b.sort ?? 0))
           .map((entry: any) => ({ page: entry.page, label: entry.label })),

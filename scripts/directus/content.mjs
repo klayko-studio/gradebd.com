@@ -170,6 +170,7 @@ export async function seedContent(client, { force = false } = {}) {
     price_note: site.price_note ?? '',
     doodle_image: await files.id(site.doodle_image?.src, site.doodle_image?.alt),
     background_image: await files.id(site.background_image?.src, site.background_image?.alt),
+    footer_pattern: await files.id(site.footer_pattern?.src, site.footer_pattern?.alt),
     nav: (site.nav ?? []).map((n, i) => ({ ...n, sort: i })),
     socials: site.socials.map((s, i) => ({ ...s, sort: i })),
   });

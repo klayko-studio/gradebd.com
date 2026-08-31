@@ -138,34 +138,6 @@ if (reduced) {
     });
   });
 
-  /* -------------------------------------------------------------------- doodles */
-
-  /**
-   * The client's line-art marks drift as the footer comes into view — alternating
-   * direction and rate so the field feels like depth rather than one moving layer.
-   * Transform-only and scrubbed, so it costs a composite and nothing else.
-   */
-  document.querySelectorAll<HTMLElement>('[data-doodles]').forEach((field) => {
-    const marks = [...field.children] as HTMLElement[];
-    marks.forEach((mark, i) => {
-      const depth = ((i % 3) + 1) / 3; // three planes
-      gsap.to(mark, {
-        // Small on purpose. The marks now sit one to a grid cell with only a
-        // few pixels of slack around each, so a drift of the old 26px would
-        // walk them straight into their neighbours halfway down the scroll.
-        y: (i % 2 === 0 ? -1 : 1) * 9 * depth,
-        x: (i % 3 === 0 ? 1 : -1) * 4 * depth,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: field.parentElement ?? field,
-          start: 'top bottom',
-          end: 'bottom top',
-          scrub: true,
-        },
-      });
-    });
-  });
-
   /* ------------------------------------------------------------------- counters */
 
   /**

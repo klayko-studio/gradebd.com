@@ -17,10 +17,15 @@ will have nothing to switch:
 cd ~/repo/gradebd.com
 git pull
 npm run directus:bootstrap -- --schema-only     # adds categories.hide_subcategory_tabs
+npm run directus:bootstrap -- --fill-empty      # uploads and sets site.footer_pattern
 docker compose up -d --build site
 ```
 
-`--fill-empty` is not needed here: nothing in this round relies on a seeded default.
+`--fill-empty` only writes where a field is currently empty, so it cannot touch anything a moderator
+has edited. Here it uploads the client's footer artwork and points `site.footer_pattern` at it. The
+site falls back to the bundled copy of the same file if the field is left empty, so the footer looks
+right either way — but setting it means the next version of that artwork is a drag-and-drop rather
+than a deploy.
 
 ---
 

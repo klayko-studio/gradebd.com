@@ -81,6 +81,11 @@ export const siteSchema = z.object({
   /** The watercolour behind every page. */
   background_image: imageSchema.nullable().default(null),
   /**
+   * The client's own line-art artwork for the footer. Tiles in both directions,
+   * so it does not care how tall the band gets on a narrow screen.
+   */
+  footer_pattern: imageSchema.nullable().default(null),
+  /**
    * The main menu. `page` is a fixed key rather than a URL: a moderator can
    * reword and reorder the menu without any chance of pointing an item at a page
    * that does not exist.

@@ -34,6 +34,7 @@ The split matters: a content item fixed in code would be overwritten by the CMS,
 | 12 | Product dialog | "Pack Size —", and carton quantity on its own line, not beside | Now `Pack Size — 12 Pcs Paper Box` with `1728 Pcs Ctn.` on the line below. |
 | 13 | File & Folder | No item-wise segregation; all items on one page | A per-range switch in the CMS, not a slug in the template. See the note below. |
 | 14 | Contact | Add a "Frequently Asked Questions" button, unclickable for now | Rendered as a real disabled button, so it says it cannot be used to a screen reader as plainly as it does by eye. |
+| 15 | Footer | Use their supplied artwork as the footer texture | Their JPEG is stored as white-on-transparent, not as the picture, so the footer colour stays a token instead of being frozen into an image — and so it tiles. All four edges of the drawing are clear of ink, so a seam widens the gaps between marks instead of cutting one in half; verified at 1440, 1920 and 390 with no visible join. 7.8 KB. |
 
 **Why the File & Folder switch is called `hide_subcategory_tabs` and not `show_…`.** The bootstrap's
 `ensureField` is create-only, so a new column arrives `null` on every existing row — and `null` is
@@ -67,35 +68,14 @@ Listed in full, with the exact field and value, in `production-content-changes.m
 
 ## Blocked, or needs a decision
 
-**Footer background** — "This background is not looking good, need to fix. Pls. share the size of
-this section we will give the design."
+**Footer background** — *resolved.* Their design arrived as
+`WhatsApp Image 2026-08-30 at 9.10.36 PM.jpeg` and is now what the footer uses; the marks this used
+to generate are gone. See "Footer background" under **Layout — done** above.
 
-The section they mean is the red band above the copyright bar. Measured, not estimated:
-
-| viewport | band (full-bleed) | copyright bar below it |
-| --- | --- | --- |
-| 1920 wide | 1920 × **292px** | 56px |
-| 1440 wide | 1440 × **292px** | 56px |
-| 768 wide | 768 × **510px** | 56px |
-| 390 wide | 390 × **510px** | 80px |
-
-Two things follow, and they should go back to the client with the numbers:
-
-- It is **full-bleed**, so the width is whatever the browser window is. A fixed-width picture gets
-  cropped on a small screen and runs out on a large one.
-- Its **height nearly doubles** below 1024px, because the address block and the logo stack instead of
-  sitting in a row.
-
-So the right deliverable is a **tile that repeats in both directions** — say 480 × 480px — rather
-than one fixed composition. Their own reference image already looks like a horizontally repeating
-tile, so this is probably how it was drawn anyway; it just needs to survive repeating vertically
-too. If they would rather supply a single picture, it needs to be at least **1920 × 520px** with
-nothing important in the outer 240px each side or the bottom 230px.
-
-Their reference (the WhatsApp image) is **sparser, smaller and fainter** than what is on the site
-now. That is worth flagging rather than silently reconciling: the current treatment — 96 marks
-across three planes at 0.3 — is what was asked for on 31 August, after this deck. One of the two
-instructions has to give, and it is the client's call which.
+For the record, since they asked for the section size: the band is full-bleed by **292px** tall on
+desktop and **510px** below 1024px wide, with a separate 56px copyright bar beneath it. Their file
+is 1520×348 — 292 of band plus a 56px bar — so they had drawn it straight onto a screenshot of the
+real footer at desktop width, and the numbers already matched.
 
 **Pen product photography** — "replace all 4 products image from the drive we shared." The drive
 link has not reached this repo. Nothing can be done until the files arrive.

@@ -50,6 +50,13 @@
     "width": 2000,
     "height": 1333
   },
+  "footer_pattern": {
+    "id": null,
+    "src": "/images/brand/footer-pattern.webp",
+    "alt": "",
+    "width": 1520,
+    "height": 292
+  },
   "nav": [
     {
       "page": "home",
