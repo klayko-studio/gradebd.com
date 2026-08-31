@@ -89,6 +89,16 @@
   html {
     -webkit-text-size-adjust: 100%;
     scroll-behavior: smooth;
+    /**
+     * This design is light, and says so.
+     *
+     * Without it the browser paints its own surfaces — a <dialog>'s default
+     * background, scrollbars, and any form control we have not styled — from the
+     * visitor's system preference. On a machine set to dark that makes `Canvas`
+     * black, which is a colour nothing on this site ever asked for and nothing
+     * overrides. Declaring it keeps those surfaces on our side of the line.
+     */
+    color-scheme: light;
     /* The page colour lives here, not on body: body now paints the splash above
        it, and a background on body would hide a layer sitting at z-index -1. */
     background: var(--bg-page);

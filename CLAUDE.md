@@ -625,6 +625,23 @@ Left in code deliberately: `aria-label`s on controls, the honeypot's hidden labe
 `action` strings — those are accessibility text describing what a control does, not copy anyone would
 translate or rewrite, and they are not visible on the page.
 
+## A Tailwind utility that is not in `@theme` fails silently
+
+`global.css` exposes only the semantic tokens, deliberately — there is no `bg-red-500`. The cost is
+that a name which is *not* in that map produces **no CSS and no error**: the class sits in the
+markup looking correct and does nothing. `bg-surface` and `bg-soft` were both phantoms and had
+never once painted anything.
+
+That went unseen because of a second thing: the site declared no `color-scheme`, so the browser
+painted its own surfaces from the visitor's system preference. The product dialog's background was
+the UA default all along — white on a light machine, and **black on a dark one**, which is what the
+client saw. `color-scheme: light` is now on `html`, which also covers scrollbars and any unstyled
+form control.
+
+To check for others: build, then grep the generated CSS in `dist/client/_astro/*.css` for each
+`bg-`/`text-`/`border-` class used in `src/`. Two phantoms out of thirty utilities, both in the one
+component nobody had opened in dark mode.
+
 ## Adding a CMS field is two steps on a live install, not one
 
 `ensureField` is create-only and `seedContent` bails out once content exists, so
