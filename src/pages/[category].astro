@@ -33,7 +33,12 @@ if (!category) return Astro.rewrite('/404');
  * is a link someone can send. The script below upgrades it to instant switching
  * without a round trip.
  */
-const subcategories = category.subcategories;
+/**
+ * A range can switch the row off and show everything on one page — File & Folder
+ * does, on the client's instruction, even though it has sub-categories. When it
+ * is off there is no active group either, so every card renders.
+ */
+const subcategories = category.hide_subcategory_tabs ? [] : category.subcategories;
 const requestedSub = Astro.url.searchParams.get('sub');
 const activeSub =
   subcategories.find((entry) => entry.slug === requestedSub)?.slug ?? subcategories[0]?.slug ?? null;

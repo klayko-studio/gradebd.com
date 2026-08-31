@@ -24,7 +24,14 @@ const { item, accent, categoryName, priceNote = '' } = Astro.props;
 
 /** Card image first, then any extra views the CMS carries. */
 const views = [item.image, ...item.images];
-const packLine = [item.pack_inner, item.pack_carton].filter(Boolean).join('  ·  ');
+
+/**
+ * "Pack Size — 12 Pcs Paper Box" with the carton quantity on its own line
+ * underneath, which is what the client asked for: where an item has two kinds of
+ * pack, the carton figure is a separate fact and reads as one when it is beside
+ * the inner pack rather than below it.
+ */
+const packLines = [item.pack_inner, item.pack_carton].filter(Boolean);
 ---
 
 <dialog
@@ -95,18 +102,11 @@ const packLine = [item.pack_inner, item.pack_carton].filter(Boolean).join('  · 
     <!-- detail -->
     <div class="flex flex-col gap-5 p-8 md:p-11">
       <div class="flex items-start justify-between gap-6">
-        {categoryName && (
-          <p class="flex items-center gap-2.5 t-eyebrow text-[color:var(--text-muted)]">
-            <span
-              aria-hidden="true"
-              class="h-[3px] w-6 shrink-0 rounded-full"
-              style={`background:${accent}`}
-            />
-            {categoryName}
-          </p>
-        )}
-        {/* ms-auto, not justify-between: with no eyebrow beside it the close
-            button would otherwise slide to the left of the panel. */}
+        {/* The category eyebrow is not rendered: the client asked for it off every
+            item in every category. `categoryName` is still passed in, so putting
+            it back is a few lines rather than a rewire. */}
+        {/* ms-auto, not justify-between: with nothing beside it the close button
+            would otherwise slide to the left of the panel. */}
         <button
           type="button"
           class="ms-auto grid size-9 shrink-0 place-items-center rounded-full bg-soft text-ink
@@ -144,10 +144,17 @@ const packLine = [item.pack_inner, item.pack_carton].filter(Boolean).join('  · 
       }
 
       {
-        packLine && (
-          <p class="t-label-sm text-[color:var(--text-muted)]">
-            {packLine}{priceNote && ` · ${priceNote}`}
-          </p>
+        packLines.length > 0 && (
+          <div class="flex flex-col gap-1 t-label-sm text-[color:var(--text-muted)]">
+            <p>
+              <span class="text-[color:var(--text-secondary)]">Pack Size — </span>
+              {packLines[0]}
+            </p>
+            {packLines.slice(1).map((line) => (
+              <p>{line}</p>
+            ))}
+            {priceNote && <p>{priceNote}</p>}
+          </div>
         )
       }
 

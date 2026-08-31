@@ -17,10 +17,10 @@
   },
   "logo_reversed_stationary": {
     "id": null,
-    "src": "/images/brand/grade-lockup.svg",
+    "src": "/images/brand/grade-logo-white-stationary.png",
     "alt": "Grade Limited Stationery",
-    "width": 532,
-    "height": 217
+    "width": 1024,
+    "height": 320
   },
   "favicon": {
     "id": null,

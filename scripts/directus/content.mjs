@@ -307,6 +307,7 @@ export async function seedContent(client, { force = false } = {}) {
       banner_lines: lines(category.banner_lines),
       image: await files.id(category.image?.src, category.image?.alt),
       accent: category.accent,
+      hide_subcategory_tabs: category.hide_subcategory_tabs ?? false,
       seo_title: category.seo.title,
       seo_description: category.seo.description,
       sort: category.sort ?? index,

@@ -105,20 +105,28 @@ const footerLogo = site.logo_reversed_stationary ?? site.logo_reversed ?? null;
         >
           {site.address_lines.map((line) => <span>{line}</span>)}
         </span>
-        <a
-          href={site.phone_href}
-          class={link}
-          {...editable({ collection: 'site', fields: ['phone', 'phone_href'], mode: 'popover' })}
-        >
-          {site.phone}
-        </a>
-        <a
-          href={`mailto:${site.email}`}
-          class={link}
-          {...editable({ collection: 'site', fields: 'email', mode: 'popover' })}
-        >
-          {site.email}
-        </a>
+        {/* Labelled, as asked. The label is outside the link so only the number
+            and the address are clickable — "Phone:" is not a phone number. */}
+        <span class="flex flex-wrap items-baseline gap-x-1.5">
+          <span class="shrink-0 opacity-80">Phone:</span>
+          <a
+            href={site.phone_href}
+            class={link}
+            {...editable({ collection: 'site', fields: ['phone', 'phone_href'], mode: 'popover' })}
+          >
+            {site.phone}
+          </a>
+        </span>
+        <span class="flex flex-wrap items-baseline gap-x-1.5">
+          <span class="shrink-0 opacity-80">Email:</span>
+          <a
+            href={`mailto:${site.email}`}
+            class={link}
+            {...editable({ collection: 'site', fields: 'email', mode: 'popover' })}
+          >
+            {site.email}
+          </a>
+        </span>
       </address>
     </div>
   </div>

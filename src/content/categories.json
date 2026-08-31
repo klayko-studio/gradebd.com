@@ -118,7 +118,8 @@
       "Confident Writing",
       "Endless Possibilities"
     ],
-    "sub_brands": []
+    "sub_brands": [],
+    "hide_subcategory_tabs": false
   },
   {
     "slug": "exercise-book",
@@ -232,7 +233,8 @@
       "Write Today",
       "Achieve Tomorrow"
     ],
-    "sub_brands": []
+    "sub_brands": [],
+    "hide_subcategory_tabs": false
   },
   {
     "slug": "school-stationery",
@@ -704,7 +706,8 @@
         "slug": "champ",
         "name": "Champ"
       }
-    ]
+    ],
+    "hide_subcategory_tabs": false
   },
   {
     "slug": "office-stationery",
@@ -890,7 +893,8 @@
         "slug": "xtreme",
         "name": "Xtreme"
       }
-    ]
+    ],
+    "hide_subcategory_tabs": false
   },
   {
     "slug": "file-folder",
@@ -1199,6 +1203,7 @@
         "slug": "dox",
         "name": "Dox"
       }
-    ]
+    ],
+    "hide_subcategory_tabs": true
   }
 ]

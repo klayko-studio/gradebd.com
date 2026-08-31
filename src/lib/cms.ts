@@ -587,6 +587,7 @@ export const getCategories = (): Promise<Category[]> =>
         sub_brands: (row.sub_brands ?? [])
           .sort(bySort)
           .map((b: any) => ({ slug: b.slug, name: b.name })),
+        hide_subcategory_tabs: row.hide_subcategory_tabs ?? false,
         subcategories: (row.subcategories ?? [])
           .sort(bySort)
           .map((s: any) => ({ slug: s.slug, name: s.name })),

@@ -30,11 +30,12 @@ const { eyebrow, heading, body, socials, image, edit = {} } = Astro.props;
 <section class="relative isolate overflow-hidden bg-menu">
   <!-- Copy sits above the artwork and is held to the left half on wide screens,
        so the two never overlap however long the heading runs. -->
-  <!-- A minimum height from `md` up, so the copy has something to be centred
-       against: the artwork is absolute and contributes no height of its own, and
-       without this the band is only as tall as the heading and there is nothing
-       to centre within. -->
-  <div class="rail relative z-10 flex items-center py-14 md:min-h-[380px] lg:min-h-[440px] lg:py-20">
+  <!-- The copy sits at the top of the band, not centred in it — the client's
+       later instruction, which supersedes the centring. The minimum height stays:
+       the artwork is absolutely positioned and contributes no height of its own,
+       so without it the band collapses to the height of the heading and there is
+       no room for the drawing. -->
+  <div class="rail relative z-10 flex items-start py-14 md:min-h-[380px] lg:min-h-[440px] lg:py-20">
     <div class="flex max-w-[34ch] flex-col gap-5 md:max-w-[46%]" {...edit}>
       {eyebrow && <p class="t-eyebrow text-[color:var(--text-on-menu-muted)]">{eyebrow}</p>}
       <h2 class="t-heading-xl text-[color:var(--text-on-menu)]">{heading}</h2>

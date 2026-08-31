@@ -15,7 +15,7 @@ const { slides, edit = {} } = Astro.props;
 ---
 
 <section
-  class="relative isolate overflow-hidden bg-inverse"
+  class="h-viewport-minus-header relative isolate flex flex-col overflow-hidden bg-inverse"
   {...edit}
   data-slider
   aria-roledescription="carousel"
@@ -46,13 +46,21 @@ const { slides, edit = {} } = Astro.props;
   <div
     aria-hidden="true"
     class="absolute inset-0 -z-10"
-    style="background:linear-gradient(90deg,rgb(10 82 115 / 0.93) 0%,rgb(10 82 115 / 0.62) 45%,rgb(10 82 115 / 0.22) 78%,rgb(10 82 115 / 0.04) 100%)"
+    style="background:linear-gradient(90deg,rgb(10 82 115 / 0.72) 0%,rgb(10 82 115 / 0.44) 45%,rgb(10 82 115 / 0.12) 78%,rgb(10 82 115 / 0) 100%)"
   >
   </div>
 
-  <!-- Header + hero add up to one viewport, so the first content section starts
-       below the fold. -->
-  <div class="h-viewport-minus-header rail flex flex-col justify-center py-20">
+  <!--
+    Header + hero add up to exactly one viewport, so the whole slide is visible
+    without scrolling.
+
+    The height belongs to the <section>, not to this block. It used to sit here,
+    with the controls as a sibling underneath — so the hero came to one viewport
+    *plus* the controls, and the bottom 76px of every slide sat below the fold at
+    every screen size. That is the client's "still need to scroll down to see the
+    full image". Now the copy takes the space that is left after the controls.
+  -->
+  <div class="rail flex min-h-0 flex-1 flex-col justify-center py-16">
     {
       slides.map((slide, i) => (
         <div
@@ -61,13 +69,12 @@ const { slides, edit = {} } = Astro.props;
           role="group"
           aria-label={`${i + 1} of ${slides.length}: ${slide.label}`}
         >
-          {/* Nothing in the field, nothing on the page — not even the rule. */}
-          {slide.eyebrow && (
-            <p class="flex items-center gap-3 t-eyebrow text-[color:var(--text-inverse)]">
-              <span aria-hidden="true" class="h-[2px] w-6 shrink-0 bg-brand" />
-              {slide.eyebrow}
-            </p>
-          )}
+          {/*
+            The eyebrow — "STATIONERY · DHAKA, BANGLADESH", "RANGE 02 · PEN" — is
+            not rendered: the client asked for it off every slider. `eyebrow` is
+            still a field on the slide and still holds their text, so this is a
+            revert rather than a rebuild if they change their mind.
+          */}
           {slide.lines.length > 0 ? (
             // The client's slide copy is a three-line phrase — "Every Tool / Every
             // Dream / Endless Potential". Tight leading keeps it reading as one unit.
@@ -115,11 +122,10 @@ const { slides, edit = {} } = Astro.props;
   </div>
 
   <!-- controls -->
-  <div class="rail relative z-10 flex flex-wrap items-center gap-5 pb-8">
-    <p class="t-label-xs text-[color:var(--text-inverse)]" data-slide-counter>
-      01 / {String(slides.length).padStart(2, '0')} — {slides[0].label}
-    </p>
-
+  <div class="rail relative z-10 flex shrink-0 flex-wrap items-center gap-5 pb-8">
+    <!-- "01 / 06 — ALL ITEMS" is gone, on the client's instruction. The dots stay:
+         they are the control, not a caption, and they are the only thing that
+         says how many slides there are. -->
     <div class="flex items-center gap-2" role="tablist" aria-label="Choose slide">
       {
         slides.map((slide, i) => (
@@ -143,8 +149,9 @@ const { slides, edit = {} } = Astro.props;
         type="button"
         data-slide-prev
         aria-label="Previous slide"
-        class="flex h-11 w-11 items-center justify-center rounded-sharp border border-white/35 text-white
-               transition-colors hover:border-white/70"
+        class="flex h-11 w-11 items-center justify-center rounded-sharp border border-white/60
+               bg-[color:rgb(10_82_115/0.55)] text-white backdrop-blur-[2px] transition-colors
+               hover:border-white hover:bg-[color:rgb(10_82_115/0.8)]"
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
@@ -154,8 +161,9 @@ const { slides, edit = {} } = Astro.props;
         type="button"
         data-slide-next
         aria-label="Next slide"
-        class="flex h-11 w-11 items-center justify-center rounded-sharp border border-white/35 text-white
-               transition-colors hover:border-white/70"
+        class="flex h-11 w-11 items-center justify-center rounded-sharp border border-white/60
+               bg-[color:rgb(10_82_115/0.55)] text-white backdrop-blur-[2px] transition-colors
+               hover:border-white hover:bg-[color:rgb(10_82_115/0.8)]"
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
@@ -175,8 +183,6 @@ const { slides, edit = {} } = Astro.props;
     const media = [...root.querySelectorAll<HTMLElement>('[data-slide-media]')];
     const copies = [...root.querySelectorAll<HTMLElement>('[data-slide-copy]')];
     const dots = [...root.querySelectorAll<HTMLButtonElement>('[data-slide-dot]')];
-    const counter = root.querySelector<HTMLElement>('[data-slide-counter]');
-    const labels = dots.map((d) => d.getAttribute('aria-label') ?? '');
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     let current = 0;
@@ -216,11 +222,6 @@ const { slides, edit = {} } = Astro.props;
         dot.classList.toggle('w-2', !active);
         dot.classList.toggle('bg-white/35', !active);
       });
-
-      if (counter) {
-        counter.textContent =
-          `${String(next + 1).padStart(2, '0')} / ${String(media.length).padStart(2, '0')} — ${labels[next]}`;
-      }
 
       // Let the motion layer re-run the line reveal for the slide now on screen.
       slider.dispatchEvent(new CustomEvent('slide:change', { detail: { index: next } }));

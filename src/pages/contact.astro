@@ -237,6 +237,31 @@ const field =
        Whether the section appears at all is a switch in the CMS (`show_faqs`),
        currently off. The questions are still there — turning it back on is one
        toggle, not a rebuild. -->
+  <!--
+    With the list switched off, the pill still appears — the client asked for a
+    "Frequently Asked Questions" button that is there but does nothing yet. It is
+    rendered as a disabled <button> rather than a styled <span>: it reads as a
+    control to a screen reader the same way it does by eye, and says plainly that
+    it cannot be used.
+  -->
+  {
+    !contact.show_faqs && contact.faq_heading && (
+      <section class="section pt-0">
+        <div class="rail flex justify-center">
+          <button
+            type="button"
+            disabled
+            aria-disabled="true"
+            class="cursor-default rounded-full bg-inverse px-7 py-3 font-sans t-label-md
+                   text-[color:var(--text-inverse)] opacity-90"
+          >
+            {contact.faq_heading}
+          </button>
+        </div>
+      </section>
+    )
+  }
+
   {
     contact.show_faqs && (
   <section class="section pt-0">

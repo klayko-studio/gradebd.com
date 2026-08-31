@@ -431,6 +431,17 @@ export const COLLECTIONS = [
         note: 'A CSS colour from the highlighter range. Marks the card, banner rule and active filter.',
       }),
       ...SEO,
+      /**
+       * Off by default, and phrased as "hide" rather than "show" on purpose. The
+       * bootstrap's `ensureField` is create-only, so on a live install this
+       * arrives as null on every existing row — and null is falsy. Written the
+       * other way round, adding the field would have switched the tabs off for
+       * all five ranges the moment the schema was applied.
+       */
+      F.boolean('hide_subcategory_tabs', {
+        width: 'half',
+        note: 'One page, no filter row. The client asked for this on File & Folder.',
+      }),
       F.o2m('subcategories'),
       F.o2m('sub_brands', 'Shown as a filter row only when a range has two or more.'),
       F.o2m('items'),

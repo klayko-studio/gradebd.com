@@ -10,14 +10,19 @@ import type { Site } from '../lib/schema';
 interface Props {
   socials: Site['socials'];
   /**
-   * Which ground the row sits on. The footer is the brand red, so the buttons are
-   * drawn in white; the Home band is the light blue, where white would disappear —
-   * there the marks take the same deep blue the rest of that section's type uses.
+   * Which ground the row sits on.
    *
-   * `brand` is different in kind: each platform's real logo in its own colour,
-   * with no disc and nothing filled behind it. The client wanted the actual
-   * marks, not outline substitutes, so the glyph is the whole control — which is
-   * why it is drawn larger than the other two tones.
+   * `on-dark` is the footer. The client's reference for it is a white disc with
+   * the platform's own logo inside — the translucent outlined circles it used to
+   * draw were nearly invisible against the brand red, which is what they asked
+   * to fix. A white plate also solves the problem four different brand colours
+   * cause on a red band: none of them have to work on the red.
+   *
+   * `on-light` is the same construction for a pale ground.
+   *
+   * `brand` is the Home contacts row: the bare mark in its own colour, no disc
+   * and nothing filled behind it, drawn large because the glyph is the whole
+   * control.
    */
   tone?: 'on-dark' | 'on-light' | 'brand';
   class?: string;
@@ -25,31 +30,33 @@ interface Props {
 const { socials, tone = 'on-dark', class: className = '' } = Astro.props;
 
 /**
- * Only confirmed accounts are linked. Facebook and LinkedIn are the two that exist;
- * the rest are omitted rather than shipped as dead links to a placeholder.
+ * Only confirmed accounts are linked. The rest are omitted rather than shipped
+ * as dead links to a placeholder.
  */
 const shown = socials.filter((s) => s.confirmed);
+const isBrand = tone === 'brand';
 
 const TONE = {
-  'on-light': `border-[color:rgb(13_32_56/0.28)] bg-[color:rgb(255_255_255/0.5)]
-     text-[color:var(--text-on-menu)] hover:bg-[color:rgb(255_255_255/0.9)]`,
-  'on-dark': `border-[color:rgb(255_255_255/0.38)] bg-[color:rgb(255_255_255/0.14)]
-     text-[color:var(--text-inverse)] hover:bg-[color:rgb(255_255_255/0.26)]`,
-  // No border, no background: `border` is still in the shared class list below,
-  // so the colour has to be cleared rather than simply left unset.
+  'on-light': 'border-[color:rgb(13_32_56/0.10)] bg-white shadow-[0_1px_2px_rgb(10_82_115/0.12)] hover:-translate-y-0.5',
+  'on-dark': 'border-transparent bg-white shadow-[0_2px_8px_rgb(0_0_0/0.18)] hover:-translate-y-0.5 hover:shadow-[0_6px_16px_rgb(0_0_0/0.26)]',
+  // `border` is in the shared class list below, so the colour has to be cleared
+  // rather than simply left unset.
   brand: 'border-transparent bg-transparent hover:-translate-y-0.5 hover:opacity-75',
 } as const;
 
 const button = TONE[tone];
-const isBrand = tone === 'brand';
-/** Brand tone draws each glyph in its own colour; the others inherit the row's. */
-const glyph = (platform: string) =>
-  isBrand ? (socialColours[platform] ?? 'currentColor') : 'currentColor';
+
+/** Every tone now draws the real logo in its own colour. */
+const glyph = (platform: string) => socialColours[platform] ?? 'currentColor';
+
+/* Bigger on both counts, on the client's instruction. */
+const box = isBrand ? '' : 'h-12 w-12';
+const mark = isBrand ? 34 : 24;
 ---
 
 {
   shown.length > 0 && (
-    <ul class:list={['flex items-center', isBrand ? 'gap-4' : 'gap-2.5', className]}>
+    <ul class:list={['flex items-center', isBrand ? 'gap-5' : 'gap-3', className]}>
       {shown.map((s) => (
         <li>
           <a
@@ -59,16 +66,11 @@ const glyph = (platform: string) =>
             target="_blank"
             class:list={[
               'flex items-center justify-center rounded-full border transition-all duration-200',
-              isBrand ? 'h-9 w-9' : 'h-10 w-10',
+              box,
               button,
             ]}
           >
-            <svg
-              width={isBrand ? 28 : 17}
-              height={isBrand ? 28 : 17}
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
+            <svg width={mark} height={mark} viewBox="0 0 24 24" aria-hidden="true">
               <path d={socialPaths[s.platform]} fill={glyph(s.platform)} />
             </svg>
           </a>

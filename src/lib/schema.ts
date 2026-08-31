@@ -283,7 +283,12 @@ export const categorySchema = z.object({
   banner_lines: z.array(z.string()).default([]),
   /** Sub-brands present in this range. Rendered as a filter only when there are 2+. */
   sub_brands: z.array(z.object({ slug: z.string(), name: z.string() })).default([]),
-  /** Empty for File & Folder — the template must not render a filter row. */
+  /**
+   * When set, the range shows every item on one page with no filter row, even
+   * though it has sub-categories. The client asked for this on File & Folder.
+   * Null on an older row reads as false, which is the current behaviour.
+   */
+  hide_subcategory_tabs: z.boolean().nullable().default(false).transform((v) => v ?? false),
   subcategories: z.array(z.object({ slug: z.string(), name: z.string() })),
   items: z.array(itemSchema).min(1),
   sort: z.number().int(),

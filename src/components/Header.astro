@@ -46,7 +46,7 @@ const linkOn = 'font-semibold text-[color:var(--text-on-menu)]';
 const linkOff = 'text-[color:var(--text-on-menu-muted)] hover:text-[color:var(--text-on-menu)]';
 ---
 
-<header class="sticky top-0 z-40 bg-menu transition-shadow duration-300" data-header>
+<header class="sticky top-0 z-40 bg-menu transition-[box-shadow,transform] duration-300" data-header>
   <!-- The bar's height is pinned to the same token the hero subtracts, so the two
        cannot disagree. They did: the bar was ~70px from padding while the mega-menu
        was positioned at 86px, which left a visible gap the pointer had to cross. -->
@@ -273,6 +273,49 @@ const linkOff = 'text-[color:var(--text-on-menu-muted)] hover:text-[color:var(--
   document.querySelector<HTMLButtonElement>('[data-search-toggle]')?.addEventListener('click', () => {
     window.location.href = '/contact/';
   });
+
+  /**
+   * Hide the bar on the way down, bring it back on the way up.
+   *
+   * Three guards, each for a real case: nothing happens in the first
+   * `--header-h` of scroll, so the bar never flickers away at the top of the
+   * page; a movement under 6px is ignored, because trackpad and rubber-band
+   * scrolling arrive as a stream of one-pixel jitter in both directions; and it
+   * is forced back into view whenever focus lands on something inside it, so
+   * tabbing into the nav cannot leave the keyboard on an element that is off
+   * screen.
+   */
+  const bar = document.querySelector<HTMLElement>('[data-header]');
+  if (bar) {
+    const height = bar.offsetHeight || 86;
+    let last = window.scrollY;
+    let queued = false;
+
+    const update = () => {
+      queued = false;
+      const y = window.scrollY;
+      const delta = y - last;
+      if (Math.abs(delta) < 6) return;
+
+      // The mobile panel is part of the bar: hiding it mid-scroll would take the
+      // open menu with it.
+      const menuOpen = document.querySelector('[data-menu-toggle]')?.getAttribute('aria-expanded') === 'true';
+      bar.classList.toggle('is-hidden', delta > 0 && y > height && !menuOpen);
+      last = y;
+    };
+
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(update);
+      },
+      { passive: true },
+    );
+
+    bar.addEventListener('focusin', () => bar.classList.remove('is-hidden'));
+  }
 </script>
 
 <style>
@@ -280,5 +323,17 @@ const linkOff = 'text-[color:var(--text-on-menu-muted)] hover:text-[color:var(--
      Height is deliberately untouched — the hero sizes itself off --header-h. */
   [data-header].is-scrolled {
     box-shadow: 0 10px 30px -12px rgb(10 82 115 / 0.4);
+  }
+
+  /* Out of the way going down, back on the way up. Translating rather than
+     changing `position` or height: the hero measures itself against --header-h,
+     and anything that alters the bar's box would move the fold under it. */
+  [data-header].is-hidden {
+    transform: translateY(-100%);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-header] {
+      transition: none;
+    }
   }
 </style>
