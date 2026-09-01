@@ -21,7 +21,7 @@ The split matters: a content item fixed in code would be overwritten by the CMS,
 | # | Page | What they asked for | What changed |
 | --- | --- | --- | --- |
 | 1 | Home | "Need the sliders within the full screen, still need to scroll down to see the full image" | Real bug. The viewport height was on the copy block with the control row as a sibling below it, so the hero came to one viewport **plus** 76px. Measured 76px of overflow at 1440×800, 1366×640 and 390×780; now 0 at all three. |
-| 2 | Home | Remove the eyebrow from all sliders | `STATIONERY · DHAKA, BANGLADESH`, `RANGE 02 · PEN` no longer rendered. The field keeps their text. |
+| 2 | Home | Search, opening from the header icon | Full-screen dialog over a blurred backdrop, matching all 44 products by name, range, sub-brand, sub-category and pack size. Choosing one opens that product's own detail dialog on its range page. |
 | 3 | Home | Remove `01 / 06 — ALL ITEMS` from all sliders | Gone. The dots stay — they are the control, and the only thing that says how many slides there are. |
 | 4 | Home | Reduce the opacity, all sliders | The scrim over the photograph drops from 0.93 to 0.72 at its darkest edge, and to full transparency at the right. |
 | 5 | Home | Increase the visibility of the two arrows | They had a hairline outline directly on the photograph. Now a solid ground of their own with a stronger border. |
@@ -50,20 +50,20 @@ Listed in full, with the exact field and value, in `production-content-changes.m
 
 | # | Page | Item | Where |
 | --- | --- | --- | --- |
-| 16 | Home | Search icon missing, need to add | `site.show_search` |
-| 17 | Home | Exercise Book slider image + brand name "Grade NEO Exercise Book" | `home_slides` |
-| 18 | Home | Remove the clipboard from the File & Folder slider | `home_slides` |
-| 19 | Footer | Logo needs to be full white | `site.logo_reversed_stationary` |
-| 20 | Footer | Remove "Stationery · Dhanmondi, Dhaka" | `site.footer_note` |
-| 21 | Footer | Phone shown with +88 | `site.phone` |
-| 22 | Pen | Replace all four product images from the shared drive | `items.image` |
-| 23 | Product dialog | Remove "price quoted on enquiry" | `site.price_note` |
-| 24 | File & Folder | Turn the one-page setting on | `categories.hide_subcategory_tabs` |
-| 25 | Contact | "Enquiry form" → "Query Zone" | `contact.form_eyebrow` |
-| 26 | Contact | Delete "Send us your requirement." and its sub-line | `contact.form_heading`, `contact.form_sub` |
-| 27 | Contact | "Visit or call" → "Address" | `contact.visit_eyebrow` |
-| 28 | Contact | Google map incorporation | `contact.map_embed_url` |
-
+| 16 | Home | Eyebrow wording — drop `Dhaka, Bangladesh` and the `Range 0N` prefix | `home_slides.eyebrow` |
+| 17 | Home | Search icon missing, need to add | `site.show_search` |
+| 18 | Home | Exercise Book slider image + brand name "Grade NEO Exercise Book" | `home_slides` |
+| 19 | Home | Remove the clipboard from the File & Folder slider | `home_slides` |
+| 20 | Footer | Logo needs to be full white | `site.logo_reversed_stationary` |
+| 21 | Footer | Remove "Stationery · Dhanmondi, Dhaka" | `site.footer_note` |
+| 22 | Footer | Phone shown with +88 | `site.phone` |
+| 23 | Pen | Replace all four product images from the shared drive | `items.image` |
+| 24 | Product dialog | Remove "price quoted on enquiry" | `site.price_note` |
+| 25 | File & Folder | Turn the one-page setting on | `categories.hide_subcategory_tabs` |
+| 26 | Contact | "Enquiry form" → "Query Zone" | `contact.form_eyebrow` |
+| 27 | Contact | Delete "Send us your requirement." and its sub-line | `contact.form_heading`, `contact.form_sub` |
+| 28 | Contact | "Visit or call" → "Address" | `contact.visit_eyebrow` |
+| 29 | Contact | Google map incorporation | `contact.map_embed_url` |
 ---
 
 ## Blocked, or needs a decision
@@ -92,6 +92,6 @@ against the new one before anyone changes it.
 supplied logo artwork spells the word **Stationary** while every content document they have sent
 spells it **Stationery**; that contradiction is still unresolved and is now baked into a logo file.
 
-**The search button has nowhere to go.** Turning `show_search` on puts the icon back, but there is
-no search page — the control currently navigates to Contact. Worth confirming that is what they
-want, rather than shipping a magnifying glass that does not search.
+**The search button now searches.** It had nowhere to go, which is why it shipped switched off.
+There is a real product search behind it — see item 2 above — so `show_search` now defaults to on
+and the caveat is withdrawn.

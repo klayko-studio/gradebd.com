@@ -198,6 +198,31 @@ const activeSub =
   // ---- product detail dialogs
   const viewer = mountLightbox('product-lightbox');
 
+  /**
+   * `?item=<sku>` opens that product on arrival. It is how search hands a result
+   * over: rather than growing a second, thinner product view inside the search
+   * dialog, the result links here and the page shows the real one.
+   *
+   * The tab has to be switched too, or the card sits behind an open dialog in a
+   * group that is not on screen — and closing the dialog would leave the reader
+   * looking at a grid that does not contain what they just searched for.
+   */
+  function openRequestedItem() {
+    const requested = new URL(location.href).searchParams.get('item');
+    if (!requested) return;
+
+    const dialog = document.getElementById(`dlg-${requested}`);
+    if (!(dialog instanceof HTMLDialogElement)) return;
+
+    const card = document.querySelector<HTMLElement>(`[data-dialog-open="dlg-${requested}"]`);
+    const group = card?.dataset.sub;
+    if (group) {
+      const tab = document.querySelector<HTMLAnchorElement>(`[data-sub-tab="${group}"]`);
+      tab?.click();
+    }
+    dialog.showModal();
+  }
+
   document.querySelectorAll<HTMLElement>('[data-dialog-open]').forEach((trigger) => {
     trigger.addEventListener('click', () => {
       const id = trigger.dataset.dialogOpen;
@@ -259,4 +284,5 @@ const activeSub =
     });
   });
 
+  openRequestedItem();
 </script>

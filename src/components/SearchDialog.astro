@@ -1,0 +1,321 @@
+---
+import type { Category } from '../lib/schema';
+
+/**
+ * Site search.
+ *
+ * The catalogue is 38 items across five ranges, so the whole index ships with
+ * the page as a script tag and the matching happens in the browser. There is no
+ * endpoint, no request per keystroke and no results page — for a list this size
+ * a round trip would only add latency to something that can answer instantly.
+ *
+ * Choosing a result goes to that item's range with `?item=<id>`, and the range
+ * page opens its detail dialog on arrival. That keeps one place where a product
+ * is shown rather than growing a second, thinner version of it inside search.
+ */
+interface Props {
+  categories: Category[];
+}
+const { categories } = Astro.props;
+
+const index = categories.flatMap((category) =>
+  category.items.map((item) => ({
+    id: item.id,
+    name: item.name,
+    meta: item.meta,
+    range: category.name,
+    slug: category.slug,
+    accent: category.accent ?? 'var(--bg-brand)',
+    src: item.image.src,
+    /* The sub-brand and sub-category are matched against but never shown: someone
+       typing "champ" or "pencil box" means it, and a result list that repeats
+       the query back in small print under every row is noise. */
+    terms: [item.name, item.meta, item.sub_brand ?? '', item.subcategory ?? '', category.name]
+      .join(' ')
+      .toLowerCase(),
+  })),
+);
+---
+
+<dialog id="site-search" class="search-dialog border-0 bg-transparent p-0" aria-label="Search products">
+  <div class="flex h-full w-full flex-col items-center px-4 py-6 md:py-16" data-search-backdrop>
+    <div class="flex w-full max-w-[720px] flex-col gap-4">
+      <!-- The field and the close control share a row, so the dialog reads as one
+           object rather than a panel with furniture around it. -->
+      <div class="flex items-center gap-3">
+        <div class="relative flex-1">
+          <svg
+            width="19"
+            height="19"
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden="true"
+            class="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-[color:var(--text-muted)]"
+          >
+            <circle cx="11" cy="11" r="7.5" stroke="currentColor" stroke-width="2" />
+            <path d="m21 21-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+          <input
+            type="search"
+            id="site-search-input"
+            class="w-full rounded-full border border-line bg-page py-4 pe-5 ps-14 t-body-md text-ink
+                   shadow-[0_10px_40px_rgb(4_10_16/0.18)] outline-none
+                   focus-visible:border-line-brand"
+            placeholder="Search products"
+            autocomplete="off"
+            enterkeyhint="search"
+            data-search-input
+          />
+        </div>
+        <button
+          type="button"
+          class="grid size-12 shrink-0 place-items-center rounded-full bg-[color:rgb(255_255_255/0.16)]
+                 text-white transition-colors hover:bg-[color:rgb(255_255_255/0.3)]"
+          data-search-close
+          aria-label="Close search"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M18 6 6 18M6 6l12 12"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- aria-live so the count is announced as the list narrows; a visual reader
+           can see the list change, a screen reader otherwise cannot. -->
+      <p class="px-2 t-label-sm text-[color:rgb(255_255_255/0.85)]" aria-live="polite" data-search-status>
+      </p>
+
+      <ul
+        class="max-h-[min(60vh,520px)] overflow-y-auto rounded-[18px] bg-page p-2
+               shadow-[0_20px_60px_rgb(4_10_16/0.3)]"
+        hidden
+        data-search-results
+      >
+      </ul>
+    </div>
+  </div>
+
+  <!-- A data island, not code: `is:inline` says so explicitly, which also stops
+       Astro warning that it cannot process a script carrying attributes. -->
+  <script is:inline type="application/json" data-search-index set:html={JSON.stringify(index)} />
+</dialog>
+
+<style>
+  /* A viewer, not a panel: it takes the whole window, so `margin: 0` because the
+     reset zeroes the auto-centring a dialog does by default. */
+  .search-dialog {
+    margin: 0;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+  }
+  .search-dialog::backdrop {
+    background: rgb(6 20 28 / 0.86);
+    backdrop-filter: blur(3px);
+  }
+  .search-dialog[open] {
+    animation: search-in 160ms var(--ease-standard);
+  }
+  @keyframes search-in {
+    from {
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .search-dialog[open] {
+      animation: none;
+    }
+  }
+
+  /**
+   * Keyboard selection.
+   *
+   * `:global`, because the rows are built by the script at runtime and so never
+   * carry the scoping attribute Astro adds to markup — a scoped rule matches the
+   * dialog but not a single row inside it. Namespaced under `.search-dialog` so
+   * going global costs nothing.
+   *
+   * It cannot be `:focus` either: focus stays in the field while the arrows walk
+   * the list, because moving it to each row would take the caret with it and the
+   * reader could not keep typing.
+   */
+  .search-dialog :global([data-result].is-active) {
+    background: var(--bg-subtle);
+    box-shadow: inset 0 0 0 2px var(--border-brand);
+  }
+
+  /* The browser's own clear button sits on a rounded field and does not match
+     anything else here; Escape and the close control both do the job. */
+  .search-dialog input[type='search']::-webkit-search-cancel-button {
+    display: none;
+  }
+</style>
+
+<script>
+  interface Entry {
+    id: string;
+    name: string;
+    meta: string;
+    range: string;
+    slug: string;
+    accent: string;
+    src: string;
+    terms: string;
+  }
+
+  const dialog = document.querySelector<HTMLDialogElement>('#site-search');
+  const input = document.querySelector<HTMLInputElement>('[data-search-input]');
+  const list = document.querySelector<HTMLUListElement>('[data-search-results]');
+  const status = document.querySelector<HTMLElement>('[data-search-status]');
+  const raw = document.querySelector<HTMLScriptElement>('[data-search-index]');
+
+  if (dialog && input && list && status && raw) {
+    const entries: Entry[] = JSON.parse(raw.textContent || '[]');
+    let shown: Entry[] = [];
+    let active = -1;
+
+    /**
+     * Every word has to match somewhere, in any order — so "champ pencil" finds
+     * the Champ pencils and "pencil champ" finds the same ones. Substring rather
+     * than word-boundary, because half the catalogue is model names people only
+     * half remember.
+     */
+    const search = (query: string) => {
+      const words = query.toLowerCase().split(/\s+/).filter(Boolean);
+      if (words.length === 0) return [];
+      return entries.filter((entry) => words.every((word) => entry.terms.includes(word)));
+    };
+
+    const highlight = (index: number) => {
+      active = index;
+      [...list.querySelectorAll<HTMLElement>('[data-result]')].forEach((row, i) => {
+        row.classList.toggle('is-active', i === index);
+        if (i === index) row.scrollIntoView({ block: 'nearest' });
+      });
+    };
+
+    const render = (query: string) => {
+      shown = search(query);
+      active = -1;
+
+      if (query.trim() === '') {
+        list.hidden = true;
+        list.replaceChildren();
+        status.textContent = `${entries.length} products — start typing`;
+        return;
+      }
+
+      status.textContent =
+        shown.length === 0
+          ? `Nothing matches “${query}”`
+          : `${shown.length} ${shown.length === 1 ? 'product' : 'products'}`;
+
+      list.hidden = shown.length === 0;
+      list.replaceChildren(
+        ...shown.map((entry, i) => {
+          const li = document.createElement('li');
+          const a = document.createElement('a');
+          // A real link, not a button with a click handler: it can be opened in a
+          // new tab, copied, and read as a destination. Navigation closes the
+          // dialog by leaving the page, so nothing here has to.
+          a.href = `/${entry.slug}/?item=${encodeURIComponent(entry.id)}`;
+          a.dataset.result = String(i);
+          a.className =
+            'flex items-center gap-4 rounded-xl p-2.5 text-left transition-colors hover:bg-subtle';
+
+          const img = document.createElement('img');
+          img.src = entry.src;
+          img.alt = '';
+          img.loading = 'lazy';
+          img.className = 'size-14 shrink-0 rounded-lg border border-line-subtle object-cover';
+
+          const text = document.createElement('span');
+          text.className = 'flex min-w-0 flex-col gap-0.5';
+
+          const name = document.createElement('span');
+          name.className = 't-heading-xs text-ink';
+          name.textContent = entry.name;
+
+          const range = document.createElement('span');
+          range.className = 'flex items-center gap-2 t-label-xs text-[color:var(--text-muted)]';
+          const dot = document.createElement('span');
+          dot.setAttribute('aria-hidden', 'true');
+          dot.className = 'size-2 shrink-0 rounded-full';
+          dot.style.background = entry.accent;
+          range.append(dot, document.createTextNode(entry.meta ? `${entry.range} · ${entry.meta}` : entry.range));
+
+          text.append(name, range);
+          a.append(img, text);
+          li.append(a);
+          return li;
+        }),
+      );
+    };
+
+    const open = () => {
+      render('');
+      dialog.showModal();
+      // After showModal, or the focus lands on the dialog instead of the field.
+      requestAnimationFrame(() => input.focus());
+    };
+
+    document.querySelectorAll('[data-search-toggle]').forEach((button) => {
+      button.addEventListener('click', open);
+    });
+
+    dialog.querySelector('[data-search-close]')?.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('close', () => {
+      input.value = '';
+      list.replaceChildren();
+      list.hidden = true;
+    });
+
+    input.addEventListener('input', () => render(input.value));
+
+    // Up and down walk the list; Enter follows whichever row is marked, or the
+    // first one when the reader has typed and pressed Enter without arrowing.
+    input.addEventListener('keydown', (event) => {
+      if (shown.length === 0) return;
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        highlight((active + 1) % shown.length);
+      }
+      if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        highlight((active - 1 + shown.length) % shown.length);
+      }
+      if (event.key === 'Enter') {
+        const target = list.querySelector<HTMLAnchorElement>(
+          `[data-result="${active < 0 ? 0 : active}"]`,
+        );
+        if (target) {
+          event.preventDefault();
+          target.click();
+        }
+      }
+    });
+
+    // Clicking the dark area closes; everything else in there is a control.
+    dialog.addEventListener('click', (event) => {
+      const target = event.target as HTMLElement;
+      if (target === dialog || target.dataset.searchBackdrop !== undefined) dialog.close();
+    });
+
+    // Ctrl/Cmd-K from anywhere, and "/" when the reader is not already typing.
+    document.addEventListener('keydown', (event) => {
+      const typing =
+        document.activeElement instanceof HTMLInputElement ||
+        document.activeElement instanceof HTMLTextAreaElement;
+      if ((event.key === 'k' && (event.metaKey || event.ctrlKey)) || (event.key === '/' && !typing)) {
+        if (dialog.open) return;
+        event.preventDefault();
+        open();
+      }
+    });
+  }
+</script>

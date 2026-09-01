@@ -164,9 +164,9 @@ const linkOff = 'text-[color:var(--text-on-menu-muted)] hover:text-[color:var(--
     </nav>
 
     <div class="ms-auto flex items-center gap-3 lg:ms-8">
-      <!-- Search is a secondary action here, so it stays an icon button — and it
-           is off unless the CMS says otherwise, because there is still no search
-           page for it to open. See `show_search` on the site record. -->
+      <!-- Search is a secondary action here, so it stays an icon button. It opens
+           the full-screen dialog mounted by the layout; `show_search` on the site
+           record still decides whether it appears at all. -->
       {site.show_search && (
       <button
         type="button"
@@ -266,12 +266,6 @@ const linkOff = 'text-[color:var(--text-on-menu-muted)] hover:text-[color:var(--
     // Morph the two bars into a cross rather than swapping icons.
     if (top) top.style.transform = open ? '' : 'translateY(5px) rotate(45deg)';
     if (bottom) bottom.style.transform = open ? '' : 'translateY(-5px) rotate(-45deg)';
-  });
-
-  // No search page exists yet, so the control tells the truth rather than
-  // pretending to work.
-  document.querySelector<HTMLButtonElement>('[data-search-toggle]')?.addEventListener('click', () => {
-    window.location.href = '/contact/';
   });
 
   /**

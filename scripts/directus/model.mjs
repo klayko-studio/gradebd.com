@@ -178,8 +178,8 @@ export const COLLECTIONS = [
       F.file('og_image', 'The picture shown when a page is shared. 1200x630 works everywhere.'),
       ...SEO,
       F.boolean('show_search', {
-        default: false,
-        note: 'Show the search button in the header. Off until there is a search page for it to open.',
+        default: true,
+        note: 'Show the search button in the header. It opens a full-screen product search.',
       }),
       F.string('footer_contact_heading', { note: 'The heading over the footer address block.' }),
       F.string('footer_note', { note: 'The right-hand line in the bottom bar.' }),
