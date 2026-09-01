@@ -50,19 +50,19 @@ Listed in full, with the exact field and value, in `production-content-changes.m
 
 | # | Page | Item | Where |
 | --- | --- | --- | --- |
-| 15 | Home | Search icon missing, need to add | `site.show_search` |
-| 16 | Home | Exercise Book slider image + brand name "Grade NEO Exercise Book" | `home_slides` |
-| 17 | Home | Remove the clipboard from the File & Folder slider | `home_slides` |
-| 18 | Footer | Logo needs to be full white | `site.logo_reversed_stationary` |
-| 19 | Footer | Remove "Stationery · Dhanmondi, Dhaka" | `site.footer_note` |
-| 20 | Footer | Phone shown with +88 | `site.phone` |
-| 21 | Pen | Replace all four product images from the shared drive | `items.image` |
-| 22 | Product dialog | Remove "price quoted on enquiry" | `site.price_note` |
-| 23 | File & Folder | Turn the one-page setting on | `categories.hide_subcategory_tabs` |
-| 24 | Contact | "Enquiry form" → "Query Zone" | `contact.form_eyebrow` |
-| 25 | Contact | Delete "Send us your requirement." and its sub-line | `contact.form_heading`, `contact.form_sub` |
-| 26 | Contact | "Visit or call" → "Address" | `contact.visit_eyebrow` |
-| 27 | Contact | Google map incorporation | `contact.map_embed_url` |
+| 16 | Home | Search icon missing, need to add | `site.show_search` |
+| 17 | Home | Exercise Book slider image + brand name "Grade NEO Exercise Book" | `home_slides` |
+| 18 | Home | Remove the clipboard from the File & Folder slider | `home_slides` |
+| 19 | Footer | Logo needs to be full white | `site.logo_reversed_stationary` |
+| 20 | Footer | Remove "Stationery · Dhanmondi, Dhaka" | `site.footer_note` |
+| 21 | Footer | Phone shown with +88 | `site.phone` |
+| 22 | Pen | Replace all four product images from the shared drive | `items.image` |
+| 23 | Product dialog | Remove "price quoted on enquiry" | `site.price_note` |
+| 24 | File & Folder | Turn the one-page setting on | `categories.hide_subcategory_tabs` |
+| 25 | Contact | "Enquiry form" → "Query Zone" | `contact.form_eyebrow` |
+| 26 | Contact | Delete "Send us your requirement." and its sub-line | `contact.form_heading`, `contact.form_sub` |
+| 27 | Contact | "Visit or call" → "Address" | `contact.visit_eyebrow` |
+| 28 | Contact | Google map incorporation | `contact.map_embed_url` |
 
 ---
 
