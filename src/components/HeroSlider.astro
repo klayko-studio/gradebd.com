@@ -285,7 +285,8 @@ const { slides, edit = {} } = Astro.props;
     const media = [...root.querySelectorAll<HTMLElement>('[data-slide-media]')];
     const copies = [...root.querySelectorAll<HTMLElement>('[data-slide-copy]')];
     const dots = [...root.querySelectorAll<HTMLButtonElement>('[data-slide-dot]')];
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const reduced = motion.matches;
 
     let current = 0;
     let busy = false;
@@ -333,14 +334,68 @@ const { slides, edit = {} } = Astro.props;
       }, reduced ? 0 : 560);
     }
 
-    root.querySelector('[data-slide-next]')?.addEventListener('click', () => show(current + 1));
-    root.querySelector('[data-slide-prev]')?.addEventListener('click', () => show(current - 1));
-    dots.forEach((dot, i) => dot.addEventListener('click', () => show(i)));
+    /**
+     * Auto-advance, on the same terms as the client row further down the page.
+     *
+     * Paused while the pointer is over the hero or the keyboard is inside it: a
+     * slide that changes out from under someone reading the headline, or tabbing
+     * to the range link, is worse than one that never moves on its own. Skipped
+     * under prefers-reduced-motion, and while the tab is in the background, where
+     * the timer would otherwise queue up transitions to replay all at once on
+     * return.
+     *
+     * 6.5s rather than the 3.5s the logo strip uses. That row is a strip of marks
+     * to glance at; this one is three lines of display type and a button, and it
+     * has to be readable at a normal reading pace before it moves.
+     */
+    const DELAY = 6500;
+    let timer: number | undefined;
+    let onScreen = true;
+
+    const stop = () => {
+      if (timer !== undefined) window.clearInterval(timer);
+      timer = undefined;
+    };
+    const start = () => {
+      stop();
+      if (motion.matches || document.hidden || !onScreen) return;
+      timer = window.setInterval(() => show(current + 1), DELAY);
+    };
+
+    /** Every deliberate move restarts the clock, so an automatic one never treads on it. */
+    const go = (to: number) => {
+      show(to);
+      start();
+    };
+
+    root.querySelector('[data-slide-next]')?.addEventListener('click', () => go(current + 1));
+    root.querySelector('[data-slide-prev]')?.addEventListener('click', () => go(current - 1));
+    dots.forEach((dot, i) => dot.addEventListener('click', () => go(i)));
 
     // Keyboard support for the tablist.
     root.addEventListener('keydown', (event) => {
-      if (event.key === 'ArrowRight') show(current + 1);
-      if (event.key === 'ArrowLeft') show(current - 1);
+      if (event.key === 'ArrowRight') go(current + 1);
+      if (event.key === 'ArrowLeft') go(current - 1);
     });
+
+    root.addEventListener('pointerenter', stop);
+    root.addEventListener('pointerleave', start);
+    root.addEventListener('focusin', stop);
+    root.addEventListener('focusout', start);
+    document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
+    motion.addEventListener('change', start);
+
+    /* Once the reader has scrolled past, there is nothing to advance for — and
+       each change crossfades a full-screen photograph and re-runs the headline
+       reveal, which is real work to be doing off-screen. */
+    new IntersectionObserver(
+      ([entry]) => {
+        onScreen = entry.isIntersecting;
+        start();
+      },
+      { threshold: 0.25 },
+    ).observe(root);
+
+    start();
   }
 </script>
