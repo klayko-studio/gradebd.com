@@ -22,19 +22,7 @@ const { slides, edit = {} } = Astro.props;
   aria-label="Product ranges"
 >
   {
-    slides.map((slide, i) => {
-      /**
-       * The picture's own shape, handed to the stylesheet rather than applied
-       * here, because whether it is used at all depends on the shape of the
-       * window — see the note on `.slide-photo`. Guarded, because a file with no
-       * stored dimensions would otherwise produce `--photo-ratio: /`.
-       */
-      const shape =
-        slide.image.width && slide.image.height
-          ? `--photo-ratio:${slide.image.width}/${slide.image.height}`
-          : null;
-
-      return (
+    slides.map((slide, i) => (
       <div
         class="absolute inset-0 -z-10"
         data-slide-media={i}
@@ -42,53 +30,30 @@ const { slides, edit = {} } = Astro.props;
         style={i === 0 ? 'opacity:1' : 'opacity:0'}
       >
         {/*
-          Two copies of the same file, and no second download — the browser has
-          it cached by the time the second tag asks.
+          `object-cover`, so every slide fills the frame edge to edge.
 
-          The frame is one viewport minus the header, which comes out near 2:1 on
-          a laptop. `object-cover` on its own therefore threw away 29-31% of the
-          height of any photograph narrower than that, which is what the client
-          saw as the slides "exceeding the viewport height": the first slide
-          happened to be a wide shot and survived, the rest were cut in half.
-
-          So the photograph is `object-contain` — all of it, never cropped — and
-          a blurred, over-scaled copy fills whatever is left either side. A shot
-          that is already 2:1 covers the frame exactly and the layer behind it is
-          never seen; a narrower one is shown whole against its own colours
-          instead of black bars. `aria-hidden` on the filler: it is the same
-          picture, and a screen reader should hear the alt text once.
+          This was briefly `contain` with a blurred copy behind it, to answer the
+          client's "the rest are exceeding the viewport height" — the frame is
+          about 2:1 and the photographs are nearer 1.4:1, so covering it discards
+          roughly 30% of each one's height. Showing them whole fixed that but left
+          each slide a different width against a blurred surround, which the
+          client liked less than the crop. Reverted deliberately, and the real fix
+          is with them: a 2400x1200 photograph covers this frame exactly, with
+          nothing cropped and no filler.
         */}
         <img
           src={slide.image.src}
-          alt=""
-          aria-hidden="true"
+          alt={slide.image.alt}
+          width={slide.image.width}
+          height={slide.image.height}
           loading={i === 0 ? 'eager' : 'lazy'}
-          class="absolute inset-0 h-full w-full scale-110 object-cover blur-2xl"
-          style={i === 0 ? 'transform:scaleX(-1) scale(1.1)' : undefined}
+          fetchpriority={i === 0 ? 'high' : undefined}
+          class="h-full w-full object-cover"
+          style={i === 0 ? 'transform:scaleX(-1)' : undefined}
         />
-        <div class="slide-photo absolute inset-0" style={shape}>
-          <img
-            src={slide.image.src}
-            alt={slide.image.alt}
-            width={slide.image.width}
-            height={slide.image.height}
-            loading={i === 0 ? 'eager' : 'lazy'}
-            fetchpriority={i === 0 ? 'high' : undefined}
-            class="h-full w-full"
-            style={i === 0 ? 'transform:scaleX(-1)' : undefined}
-          />
-        </div>
       </div>
-      );
-    })
+    ))
   }
-
-  <div
-    aria-hidden="true"
-    class="absolute inset-0 -z-10"
-    style="background:linear-gradient(90deg,rgb(10 82 115 / 0.72) 0%,rgb(10 82 115 / 0.44) 45%,rgb(10 82 115 / 0.12) 78%,rgb(10 82 115 / 0) 100%)"
-  >
-  </div>
 
   <!--
     Header + hero add up to exactly one viewport, so the whole slide is visible
@@ -213,67 +178,6 @@ const { slides, edit = {} } = Astro.props;
     </div>
   </div>
 </section>
-
-<style>
-  /**
-   * Whether the photograph is shown whole or cropped depends on the shape of the
-   * window, not on the device width.
-   *
-   * On anything landscape the frame is wider than the photographs, so containing
-   * one costs a little width at the sides and keeps every bit of its height —
-   * which is the fix the client asked for. On a phone the frame is *portrait*
-   * (390x694, about 0.56:1), and a landscape photograph contained inside it fell
-   * to 41% of the height with blurred bands above and below. That is further
-   * from "fullscreen" than the crop it replaced, so a narrow window keeps
-   * `cover`.
-   *
-   * 3/2 rather than 1/1 as the threshold: at 1:1 a 2:1 photograph still only
-   * reaches half the height. Every laptop lands well past it — 1440x800 gives a
-   * 2.02 frame, 1366x640 gives 2.47 — and so does a landscape tablet.
-   */
-  .slide-photo img {
-    object-fit: cover;
-  }
-
-  @media (min-aspect-ratio: 3/2) {
-    .slide-photo {
-      margin: auto;
-      aspect-ratio: var(--photo-ratio);
-      max-width: 100%;
-      max-height: 100%;
-
-      /*
-       * Feathers the photograph's left and right edges into the blurred copy
-       * behind it, so the two do not meet at a hard vertical line. It has to be
-       * on this box and not on the <img>: `object-fit` moves the picture inside
-       * the element without moving the element, so a mask on the image faded the
-       * frame's edges and left the seam exactly where it was.
-       *
-       * 28px at the outermost edge, where no subject is ever placed, and it
-       * fades rather than clips. On a picture already 2:1 the fade lands on a
-       * blurred copy of the same pixels and cannot be seen.
-       */
-      -webkit-mask-image: linear-gradient(
-        to right,
-        transparent 0,
-        #000 28px,
-        #000 calc(100% - 28px),
-        transparent 100%
-      );
-      mask-image: linear-gradient(
-        to right,
-        transparent 0,
-        #000 28px,
-        #000 calc(100% - 28px),
-        transparent 100%
-      );
-    }
-
-    .slide-photo img {
-      object-fit: contain;
-    }
-  }
-</style>
 
 <script>
   import { gsap } from 'gsap';
