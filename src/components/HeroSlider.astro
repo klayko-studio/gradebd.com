@@ -22,25 +22,65 @@ const { slides, edit = {} } = Astro.props;
   aria-label="Product ranges"
 >
   {
-    slides.map((slide, i) => (
+    slides.map((slide, i) => {
+      /**
+       * The picture's own shape, handed to the stylesheet rather than applied
+       * here, because whether it is used at all depends on the shape of the
+       * window — see the note on `.slide-photo`. Guarded, because a file with no
+       * stored dimensions would otherwise produce `--photo-ratio: /`.
+       */
+      const shape =
+        slide.image.width && slide.image.height
+          ? `--photo-ratio:${slide.image.width}/${slide.image.height}`
+          : null;
+
+      return (
       <div
         class="absolute inset-0 -z-10"
         data-slide-media={i}
         aria-hidden={i === 0 ? undefined : 'true'}
         style={i === 0 ? 'opacity:1' : 'opacity:0'}
       >
+        {/*
+          Two copies of the same file, and no second download — the browser has
+          it cached by the time the second tag asks.
+
+          The frame is one viewport minus the header, which comes out near 2:1 on
+          a laptop. `object-cover` on its own therefore threw away 29-31% of the
+          height of any photograph narrower than that, which is what the client
+          saw as the slides "exceeding the viewport height": the first slide
+          happened to be a wide shot and survived, the rest were cut in half.
+
+          So the photograph is `object-contain` — all of it, never cropped — and
+          a blurred, over-scaled copy fills whatever is left either side. A shot
+          that is already 2:1 covers the frame exactly and the layer behind it is
+          never seen; a narrower one is shown whole against its own colours
+          instead of black bars. `aria-hidden` on the filler: it is the same
+          picture, and a screen reader should hear the alt text once.
+        */}
         <img
           src={slide.image.src}
-          alt={slide.image.alt}
-          width={slide.image.width}
-          height={slide.image.height}
+          alt=""
+          aria-hidden="true"
           loading={i === 0 ? 'eager' : 'lazy'}
-          fetchpriority={i === 0 ? 'high' : undefined}
-          class="h-full w-full object-cover"
-          style={i === 0 ? 'transform:scaleX(-1)' : undefined}
+          class="absolute inset-0 h-full w-full scale-110 object-cover blur-2xl"
+          style={i === 0 ? 'transform:scaleX(-1) scale(1.1)' : undefined}
         />
+        <div class="slide-photo absolute inset-0" style={shape}>
+          <img
+            src={slide.image.src}
+            alt={slide.image.alt}
+            width={slide.image.width}
+            height={slide.image.height}
+            loading={i === 0 ? 'eager' : 'lazy'}
+            fetchpriority={i === 0 ? 'high' : undefined}
+            class="h-full w-full"
+            style={i === 0 ? 'transform:scaleX(-1)' : undefined}
+          />
+        </div>
       </div>
-    ))
+      );
+    })
   }
 
   <div
@@ -150,11 +190,11 @@ const { slides, edit = {} } = Astro.props;
         type="button"
         data-slide-prev
         aria-label="Previous slide"
-        class="flex h-11 w-11 items-center justify-center rounded-sharp border border-white/60
-               bg-[color:rgb(10_82_115/0.55)] text-white backdrop-blur-[2px] transition-colors
-               hover:border-white hover:bg-[color:rgb(10_82_115/0.8)]"
+        class="flex h-14 w-14 items-center justify-center rounded-sharp border border-white/50
+               bg-[color:rgb(10_82_115/0.22)] text-white backdrop-blur-[2px] transition-colors
+               hover:border-white hover:bg-[color:rgb(10_82_115/0.5)]"
       >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
       </button>
@@ -162,17 +202,78 @@ const { slides, edit = {} } = Astro.props;
         type="button"
         data-slide-next
         aria-label="Next slide"
-        class="flex h-11 w-11 items-center justify-center rounded-sharp border border-white/60
-               bg-[color:rgb(10_82_115/0.55)] text-white backdrop-blur-[2px] transition-colors
-               hover:border-white hover:bg-[color:rgb(10_82_115/0.8)]"
+        class="flex h-14 w-14 items-center justify-center rounded-sharp border border-white/50
+               bg-[color:rgb(10_82_115/0.22)] text-white backdrop-blur-[2px] transition-colors
+               hover:border-white hover:bg-[color:rgb(10_82_115/0.5)]"
       >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
       </button>
     </div>
   </div>
 </section>
+
+<style>
+  /**
+   * Whether the photograph is shown whole or cropped depends on the shape of the
+   * window, not on the device width.
+   *
+   * On anything landscape the frame is wider than the photographs, so containing
+   * one costs a little width at the sides and keeps every bit of its height —
+   * which is the fix the client asked for. On a phone the frame is *portrait*
+   * (390x694, about 0.56:1), and a landscape photograph contained inside it fell
+   * to 41% of the height with blurred bands above and below. That is further
+   * from "fullscreen" than the crop it replaced, so a narrow window keeps
+   * `cover`.
+   *
+   * 3/2 rather than 1/1 as the threshold: at 1:1 a 2:1 photograph still only
+   * reaches half the height. Every laptop lands well past it — 1440x800 gives a
+   * 2.02 frame, 1366x640 gives 2.47 — and so does a landscape tablet.
+   */
+  .slide-photo img {
+    object-fit: cover;
+  }
+
+  @media (min-aspect-ratio: 3/2) {
+    .slide-photo {
+      margin: auto;
+      aspect-ratio: var(--photo-ratio);
+      max-width: 100%;
+      max-height: 100%;
+
+      /*
+       * Feathers the photograph's left and right edges into the blurred copy
+       * behind it, so the two do not meet at a hard vertical line. It has to be
+       * on this box and not on the <img>: `object-fit` moves the picture inside
+       * the element without moving the element, so a mask on the image faded the
+       * frame's edges and left the seam exactly where it was.
+       *
+       * 28px at the outermost edge, where no subject is ever placed, and it
+       * fades rather than clips. On a picture already 2:1 the fade lands on a
+       * blurred copy of the same pixels and cannot be seen.
+       */
+      -webkit-mask-image: linear-gradient(
+        to right,
+        transparent 0,
+        #000 28px,
+        #000 calc(100% - 28px),
+        transparent 100%
+      );
+      mask-image: linear-gradient(
+        to right,
+        transparent 0,
+        #000 28px,
+        #000 calc(100% - 28px),
+        transparent 100%
+      );
+    }
+
+    .slide-photo img {
+      object-fit: contain;
+    }
+  }
+</style>
 
 <script>
   import { gsap } from 'gsap';

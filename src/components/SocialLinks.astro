@@ -49,9 +49,10 @@ const button = TONE[tone];
 /** Every tone now draws the real logo in its own colour. */
 const glyph = (platform: string) => socialColours[platform] ?? 'currentColor';
 
-/* Bigger on both counts, on the client's instruction. */
+/* Bigger again on the Home band — the client's note is that the section has
+   "huge blank spaces", and the marks are the only thing in it besides a heading. */
 const box = isBrand ? '' : 'h-12 w-12';
-const mark = isBrand ? 34 : 24;
+const mark = isBrand ? 44 : 24;
 ---
 
 {

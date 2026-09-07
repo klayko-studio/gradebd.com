@@ -18,7 +18,14 @@ const variants: Record<string, string> = {
   primary: 'bg-brand text-[color:var(--text-on-brand)] hover:bg-brand-hover',
   secondary:
     'bg-page text-ink border border-line hover:border-line-strong hover:bg-subtle',
-  'on-dark': 'bg-page text-ink hover:bg-shell',
+  /**
+   * Hero only. See-through, on the client's instruction — 70% rather than a
+   * token, because the ink has to stay readable over whatever photograph is
+   * behind it. At 70% the worst case is a black frame, which still resolves to
+   * about 8:1 against the ink; much lower and a dark slide would swallow it.
+   */
+  'on-dark':
+    'bg-[color:rgb(255_255_255/0.7)] text-ink backdrop-blur-[3px] hover:bg-[color:rgb(255_255_255/0.88)]',
 };
 
 const arrowColour = variant === 'primary' ? 'currentColor' : 'var(--text-primary)';

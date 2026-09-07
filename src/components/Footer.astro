@@ -59,7 +59,10 @@ const footerLogo = site.logo_reversed_stationary ?? site.logo_reversed ?? null;
   </div>
 
   <div class="rail relative grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1.2fr]">
-    <div class="flex flex-col gap-5">
+    <!-- `justify-center` centres the lockup down the band, which is what the
+         client marked. It works because the grid stretches this column to the
+         full row height, so there is height to centre within. -->
+    <div class="flex flex-col justify-center gap-5">
       <!-- The client's reversed lockup, which carries "Stationary" as artwork — this
            is comment #22 delivered properly, replacing the version we set in type
            while waiting for it. The tagline is not part of the mark, so it stays as

@@ -204,6 +204,10 @@ const field =
         >
           <h2 class="t-heading-md" {...editable({ collection: 'contact', fields: 'map_heading', mode: 'popover' })}>{contact.map_heading}</h2>
           {
+            /* A `maps?q=<name>&output=embed` URL needs no API key and pins the
+               business itself rather than the building it is in, which is what
+               the client reported wrong — their listing sat a street away from
+               the pin. Verified against their own Google entry. */
             contact.map_embed_url ? (
               <iframe
                 src={contact.map_embed_url}

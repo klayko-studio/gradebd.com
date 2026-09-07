@@ -80,12 +80,18 @@ File & Folder.
 | 18 | `form_heading` | `Send us your requirement.` | **empty** | "Delete this" (p.12). |
 | 19 | `form_sub` | `Include the item, the quantity and the date you need it by — that is enough for us to quote.` | **empty** | Same annotation — the red box covers the heading and this line together. |
 | 20 | `visit_eyebrow` | `Visit or call` | **`Address`** | "Replace this with — Address" (p.13). |
-| 21 | `map_embed_url` | empty | the **`https://www.google.com/maps/embed?pb=…`** URL | "Google map incorporation" (p.13). **Blocked** — needs the URL from the client's own Google listing; anything else guesses at their pin. |
+| 21 | `map_embed_url` | pinned on the building, not the business | **`https://www.google.com/maps?q=Grade+Limited+Dhanmondi+Dhaka&output=embed`** | "Google map incorporation" (p.13), and "Grade is not properly pinned" in the 7 September deck. **No longer blocked** — see the note below. |
 
-To get item 21: open the office on Google Maps → **Share** → **Embed a map** → **Copy HTML**, then
-paste only the `src="…"` value into the field. The page already renders a real `<iframe>` as soon as
-the field has a value, and falls back to a labelled placeholder while it is empty — so nothing looks
-broken in the meantime.
+**Item 21 was blocked and is now solved.** The client reported the pin sitting on *Akram Manjil* —
+the building — rather than on their own *Grade Limited* listing, which Google holds as a separate
+entry a street away. A `maps?q=<name>&output=embed` URL needs no API key and pins the business
+itself; it was loaded in a browser inside an iframe to confirm it lands on their listing before being
+recommended, and it is now the seed default too. Paste the value in the table above verbatim.
+
+If they would rather use the official embed, it is: open **Grade Limited** on Google Maps (the
+business, not a dropped pin) → **Share** → **Embed a map** → **Copy HTML** → paste only the
+`src="…"` value. Either works; the page renders a real `<iframe>` as soon as the field has a value
+and shows a labelled placeholder while it is empty, so nothing looks broken in the meantime.
 
 `faq_heading` is already `Frequently Asked Questions` and `show_faqs` is already off, which together
 give the unclickable button the client asked for. Nothing to change.
@@ -127,5 +133,33 @@ Contact
   [ ] 21 map_embed_url            → Google embed URL      (blocked)
 ```
 
-Two of the twenty-one are blocked on the client. The other nineteen are about fifteen minutes of
-work in the admin.
+One of the twenty-one is blocked on the client (item 16, the Pen photography). The other twenty are
+about fifteen minutes of work in the admin.
+
+---
+
+## Added by the 7 September feedback
+
+Full triage in `client-feedback-2026-09-07.md`. Items 1 and 2 below are **repeats of items 3 and 4
+above** — the client is reporting them again because they have not been done yet.
+
+| # | Field | Now | Change to |
+| --- | --- | --- | --- |
+| 22 | `site.footer_note` | `Stationery · Dhanmondi, Dhaka` | **empty** (same as item 3) |
+| 23 | `site.price_note` | `price quoted on enquiry` | **empty** (same as item 4) |
+| 24 | School Stationery → sub-category `Geometry Box` | `Geometry Box` | **`Pencil Box`** |
+| 25 | School Stationery → `Grade Champ Geometry Box – Big` | that name | **`Grade Champ Pencil Box – Big`** |
+| 26 | School Stationery → `Grade Champ Geometry Box – Medium` | that name | **`Grade Champ Pencil Box – Medium`** |
+| 27 | School Stationery → those two items' `image` | current box shots | the new Pencil Box photographs — **blocked**, still in their drive |
+
+On 24–26: this repo's seed already says *Pencil Box*, so production's Directus has drifted from it.
+Nothing in the code needs changing — it is three renames in the admin.
+
+```
+  [ ] 22 site.footer_note          → empty
+  [ ] 23 site.price_note           → empty
+  [ ] 24 sub-category Geometry Box → Pencil Box
+  [ ] 25 Champ Geometry Box – Big  → Champ Pencil Box – Big
+  [ ] 26 Champ … – Medium          → Champ Pencil Box – Medium
+  [ ] 27 those two images          → from the drive        (blocked)
+```

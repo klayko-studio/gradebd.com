@@ -145,15 +145,28 @@ const packLines = [item.pack_inner, item.pack_carton].filter(Boolean);
 
       {
         packLines.length > 0 && (
-          <div class="flex flex-col gap-1 t-label-sm text-[color:var(--text-muted)]">
-            <p>
-              <span class="text-[color:var(--text-secondary)]">Pack Size — </span>
-              {packLines[0]}
+          <div class="flex flex-col gap-1.5">
+            {/*
+              Set to the client's own mock: the display serif, larger than the
+              feature bullets above it, with "Pack Size" as a label beside a list
+              of the packs rather than a run-in prefix.
+
+              The label and the list are siblings in a flex row, which is what
+              lines the dashes up under each other — the alternative, repeating
+              "Pack Size" or padding the second line with spaces, either says it
+              twice or breaks the moment the type size changes.
+            */}
+            <p class="flex items-baseline gap-2 font-display t-body-lg text-ink">
+              <span class="shrink-0">Pack Size</span>
+              <span class="flex flex-col">
+                {packLines.map((line) => (
+                  <span>- {line}</span>
+                ))}
+              </span>
             </p>
-            {packLines.slice(1).map((line) => (
-              <p>{line}</p>
-            ))}
-            {priceNote && <p>{priceNote}</p>}
+            {priceNote && (
+              <p class="t-label-sm text-[color:var(--text-muted)]">{priceNote}</p>
+            )}
           </div>
         )
       }

@@ -25,22 +25,22 @@
       "image": {
         "id": null,
         "src": "/images/products/champ-geometry-box.webp",
-        "alt": "The Champ geometry box, light blue with line-art doodles",
+        "alt": "The Champ pencil box, light blue with line-art doodles",
         "width": 1200,
         "height": 900
       },
-      "caption": "Champ geometry box",
+      "caption": "Champ pencil box",
       "tag": "School Stationery"
     },
     {
       "image": {
         "id": null,
         "src": "/images/products/neo-geometry-box.webp",
-        "alt": "The Neo geometry box in navy with a line-drawn ship",
+        "alt": "The Neo pencil box in navy with a line-drawn ship",
         "width": 1200,
         "height": 900
       },
-      "caption": "Neo geometry box",
+      "caption": "Neo pencil box",
       "tag": "School Stationery"
     },
     {
