@@ -63,10 +63,9 @@ const footerLogo = site.logo_reversed_stationary ?? site.logo_reversed ?? null;
          client marked. It works because the grid stretches this column to the
          full row height, so there is height to centre within. -->
     <div class="flex flex-col justify-center gap-5">
-      <!-- The client's reversed lockup, which carries "Stationary" as artwork — this
-           is comment #22 delivered properly, replacing the version we set in type
-           while waiting for it. The tagline is not part of the mark, so it stays as
-           a line of type beneath.
+      <!-- The client's reversed lockup. The motto is part of the artwork now, so
+           the line of type that used to sit under it is gone — see the note where
+           it was.
 
            The explicit `items-center` matters for more than the alignment the client
            asked for: this is a flex column, and the default `align-items: stretch`
@@ -76,12 +75,29 @@ const footerLogo = site.logo_reversed_stationary ?? site.logo_reversed ?? null;
       <div class="flex flex-col items-center gap-2 text-center">
         {
           footerLogo?.src ? (
+            <!--
+              Sized by width, not by height, and that is the important part.
+              Pinning the height was fine while one file was in the field, but the
+              two candidate lockups are 2.44:1 and 3.2:1 — the same 114px of
+              height gives 279px of width for one and 365px for the other, and the
+              brand column is only 333px. Whichever mark is uploaded next would
+              have had to be re-measured by hand.
+
+              Against a width the column governs instead: 280px is the client's
+              "100/200 px more" — up from 127px — and leaves ~50px of clearance at
+              the 1440 artboard. The height cap is a backstop against a squarer
+              mark opening the band up.
+
+              `width`/`height` carry the file's real proportions so the browser
+              reserves the right box before it arrives and the footer does not
+              jump.
+            -->
             <img
               src={footerLogo.src}
               alt={footerLogo.alt || site.company_name}
-              width="196"
-              height="61"
-              class="block h-[52px] w-auto self-center"
+              width={footerLogo.width || undefined}
+              height={footerLogo.height || undefined}
+              class="block h-auto w-full max-w-[280px] self-center [max-height:150px] object-contain"
               {...editable({ collection: 'site', fields: 'logo_reversed_stationary', mode: 'drawer' })}
             />
           ) : (
@@ -89,12 +105,15 @@ const footerLogo = site.logo_reversed_stationary ?? site.logo_reversed ?? null;
             <span class="t-heading-md text-[color:var(--text-inverse)]">{site.company_name}</span>
           )
         }
-        <span
-          class="t-label-xs normal-case tracking-[0.08em] text-[color:rgb(255_255_255/0.85)]"
-          {...editable({ collection: 'site', fields: 'tagline', mode: 'popover' })}
-        >
-          {site.tagline}
-        </span>
+        {/*
+          "Empowering Your Potential" was set here in type while the supplied
+          artwork carried no motto. The client is putting it into the logo itself,
+          so rendering it here too would say it twice.
+
+          `site.tagline` is not removed: it still carries the site's SEO
+          description, and it is the fallback if the mark ever has to be set in
+          type again.
+        */}
       </div>
     </div>
 
