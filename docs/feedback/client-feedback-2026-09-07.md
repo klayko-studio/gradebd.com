@@ -20,8 +20,8 @@ doodle artwork and the white lockup, and the map is embedded. So everything belo
 | 3 | Home hero | Reduce the opacity of the arrows, make them larger | Ground from 55% to **22%**, box from 44 to **56px**, glyph from 18 to **24px**. |
 | 4 | Home band | Social icons larger — "huge blank spaces" | 34 → **44px**. |
 | 5 | Footer | Lockup + motto vertically centred | `justify-center` on the brand column; measured 45px of clearance above and below, so it is centred rather than approximately so. Applies to every page, as asked. |
-| 7 | Product modal | Remove "price quoted on enquiry" | Removed from the dialog in code and from the CMS model, rather than left as a field to clear — they had asked twice, and a value that has to be cleared on every install comes back. |
 | 6 | Product modal | Pack Size and Ctn styling, per their mock | Now `Pack Size  - 12 Pcs Paper Box` with `- 1728 Pcs Ctn.` beneath it, dashes aligned, in the display serif at 18px. |
+| 7 | Product modal | Remove "price quoted on enquiry" | Removed from the dialog in code and from the CMS model, rather than left as a field to clear — they had asked twice, and a value that has to be cleared on every install comes back. |
 
 ### On the hero, one thing worth passing back
 
