@@ -167,7 +167,6 @@ export async function seedContent(client, { force = false } = {}) {
     footer_contact_heading: site.footer_contact_heading ?? '',
     footer_note: site.footer_note ?? '',
     footer_rights: site.footer_rights ?? '',
-    price_note: site.price_note ?? '',
     doodle_image: await files.id(site.doodle_image?.src, site.doodle_image?.alt),
     background_image: await files.id(site.background_image?.src, site.background_image?.alt),
     footer_pattern: await files.id(site.footer_pattern?.src, site.footer_pattern?.alt),

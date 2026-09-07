@@ -75,7 +75,6 @@ export const siteSchema = z.object({
   footer_note: z.string().default(''),
   footer_rights: z.string().default(''),
   /** Follows the pack sizes in a product's detail pop-up. */
-  price_note: z.string().default(''),
   /** The illustration in the band that closes the home page. */
   doodle_image: imageSchema.nullable().default(null),
   /** The watercolour behind every page. */

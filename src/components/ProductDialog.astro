@@ -13,14 +13,12 @@ import type { Item } from '../lib/schema';
  */
 interface Props {
   item: Item;
-  /** From the site record — follows the pack sizes. */
-  priceNote?: string;
   /** The range's accent, so the dialog is recognisable as part of that category. */
   accent: string;
   /** Category name for the eyebrow. Empty renders no eyebrow at all. */
   categoryName?: string;
 }
-const { item, accent, categoryName, priceNote = '' } = Astro.props;
+const { item, accent, categoryName } = Astro.props;
 
 /** Card image first, then any extra views the CMS carries. */
 const views = [item.image, ...item.images];
@@ -164,9 +162,6 @@ const packLines = [item.pack_inner, item.pack_carton].filter(Boolean);
                 ))}
               </span>
             </p>
-            {priceNote && (
-              <p class="t-label-sm text-[color:var(--text-muted)]">{priceNote}</p>
-            )}
           </div>
         )
       }

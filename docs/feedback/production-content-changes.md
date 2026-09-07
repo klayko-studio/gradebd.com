@@ -151,6 +151,7 @@ above** — the client is reporting them again because they have not been done y
 | 25 | School Stationery → `Grade Champ Geometry Box – Big` | that name | **`Grade Champ Pencil Box – Big`** |
 | 26 | School Stationery → `Grade Champ Geometry Box – Medium` | that name | **`Grade Champ Pencil Box – Medium`** |
 | 27 | School Stationery → those two items' `image` | current box shots | the new Pencil Box photographs — **blocked**, still in their drive |
+| 28 | Gallery → the two box plates | captions `Champ geometry box` / `Neo geometry box` | **`Champ pencil box`** / **`Neo pencil box`** |
 
 On 24–26: this repo's seed already says *Pencil Box*, so production's Directus has drifted from it.
 Nothing in the code needs changing — it is three renames in the admin.
@@ -162,4 +163,15 @@ Nothing in the code needs changing — it is three renames in the admin.
   [ ] 25 Champ Geometry Box – Big  → Champ Pencil Box – Big
   [ ] 26 Champ … – Medium          → Champ Pencil Box – Medium
   [ ] 27 those two images          → from the drive        (blocked)
+  [ ] 28 gallery captions          → "pencil box"
 ```
+
+**`price_note` no longer exists.** The client asked twice for "price quoted on enquiry" to go, so it
+is now removed from the product dialog in code rather than left as a field to clear. An installation
+that already has the column keeps it as an unused leftover — harmless, and safe to delete in the
+admin if you want the tidiness.
+
+**Worth a separate look: 63 of 67 files in the CMS have no alt text.** The seed carries a written
+description for every picture; the running instance does not, so the site is shipping images with
+empty `alt`. That is not from this feedback round and is not fixed here, but it is a real
+accessibility gap and worth scheduling.

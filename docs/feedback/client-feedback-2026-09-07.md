@@ -20,6 +20,7 @@ doodle artwork and the white lockup, and the map is embedded. So everything belo
 | 3 | Home hero | Reduce the opacity of the arrows, make them larger | Ground from 55% to **22%**, box from 44 to **56px**, glyph from 18 to **24px**. |
 | 4 | Home band | Social icons larger — "huge blank spaces" | 34 → **44px**. |
 | 5 | Footer | Lockup + motto vertically centred | `justify-center` on the brand column; measured 45px of clearance above and below, so it is centred rather than approximately so. Applies to every page, as asked. |
+| 7 | Product modal | Remove "price quoted on enquiry" | Removed from the dialog in code and from the CMS model, rather than left as a field to clear — they had asked twice, and a value that has to be cleared on every install comes back. |
 | 6 | Product modal | Pack Size and Ctn styling, per their mock | Now `Pack Size  - 12 Pcs Paper Box` with `- 1728 Pcs Ctn.` beneath it, dashes aligned, in the display serif at 18px. |
 
 ### On the hero, one thing worth passing back
@@ -40,7 +41,7 @@ the client is reporting them again. Both are one field each.
 | # | Field | Now | Change to | Note |
 | --- | --- | --- | --- | --- |
 | 1 | `site.footer_note` | `Stationery · Dhanmondi, Dhaka` | **empty** | **Repeat** — item 3 on the August list. |
-| 2 | `site.price_note` | `price quoted on enquiry` | **empty** | **Repeat** — item 4 on the August list. The pack block is restyled in code; this is the leftover line under it. |
+| 2 | ~~`site.price_note`~~ | — | — | **Done in code instead.** Asked for twice, so the dialog no longer renders it and the field is gone from the model. Nothing to change in the admin; an existing install keeps an unused column it can delete at leisure. |
 | 3 | `contact.map_embed_url` | whatever is set now | **`https://www.google.com/maps?q=Grade+Limited+Dhanmondi+Dhaka&output=embed`** | Was blocked; **now solved**. See below. |
 | 4 | School Stationery → sub-category `Geometry Box` | `Geometry Box` | **`Pencil Box`** | Production only — the seed in this repo already says Pencil Box, so their Directus has drifted. |
 | 5 | School Stationery → the two box items | `Grade Champ Geometry Box – Big` / `– Medium` | **`… Pencil Box – Big` / `– Medium`** | Same drift. |

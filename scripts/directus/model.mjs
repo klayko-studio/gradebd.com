@@ -184,7 +184,6 @@ export const COLLECTIONS = [
       F.string('footer_contact_heading', { note: 'The heading over the footer address block.' }),
       F.string('footer_note', { note: 'The right-hand line in the bottom bar.' }),
       F.string('footer_rights', { note: 'Follows "© <year> <company>." in the bottom bar.' }),
-      F.string('price_note', { note: 'Follows the pack sizes in a product’s detail pop-up.' }),
       F.file('doodle_image', 'The illustration in the band that closes the home page.'),
       F.file('background_image', 'The watercolour behind every page. Replacing it changes the whole site.'),
       F.file('footer_pattern', 'The line-art texture on the footer. Tiles, so any size works.'),

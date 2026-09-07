@@ -137,7 +137,6 @@ export async function backfillContent(client, { dryRun = false } = {}) {
     footer_contact_heading: site.footer_contact_heading,
     footer_note: site.footer_note,
     footer_rights: site.footer_rights,
-    price_note: site.price_note,
     doodle_image: await upload(site.doodle_image?.src, site.doodle_image?.alt),
     background_image: await upload(site.background_image?.src, site.background_image?.alt),
     footer_pattern: await upload(site.footer_pattern?.src, site.footer_pattern?.alt),

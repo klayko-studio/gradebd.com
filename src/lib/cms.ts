@@ -348,7 +348,6 @@ export const getSite = (): Promise<Site> =>
         footer_contact_heading: text(row.footer_contact_heading),
         footer_note: text(row.footer_note),
         footer_rights: text(row.footer_rights),
-        price_note: text(row.price_note),
         doodle_image: row.doodle_image ? img(row.doodle_image) : null,
         background_image: row.background_image ? img(row.background_image) : null,
         footer_pattern: row.footer_pattern ? img(row.footer_pattern) : null,
