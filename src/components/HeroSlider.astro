@@ -55,6 +55,21 @@ const { slides, edit = {} } = Astro.props;
     ))
   }
 
+  <!-- The scrim the headline sits on. Dark at the left where the copy is, clear
+       at the right so the photograph is not dimmed for nothing. Its darkest stop
+       came down from 0.93 to 0.72 on the client's "reduce the opacity" note.
+
+       It lives between the photographs and the copy on purpose, and it was lost
+       once in a careless revert that replaced the block it sat inside — which
+       dropped the headline's contrast to about 1.4:1. If it disappears again,
+       that is where it went. -->
+  <div
+    aria-hidden="true"
+    class="absolute inset-0 -z-10"
+    style="background:linear-gradient(90deg,rgb(10 82 115 / 0.72) 0%,rgb(10 82 115 / 0.44) 45%,rgb(10 82 115 / 0.12) 78%,rgb(10 82 115 / 0) 100%)"
+  >
+  </div>
+
   <!--
     Header + hero add up to exactly one viewport, so the whole slide is visible
     without scrolling.

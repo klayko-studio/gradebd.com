@@ -43,67 +43,21 @@ They already have the shots; it is a re-crop, not a re-shoot.
 
 ### One thing to fix whichever way that goes
 
-With `cover` restored, the headline sits directly on bright photography and the contrast is bad.
-Sampled off the rendered page, white type against the ground behind it:
+The headline's scrim was accidentally deleted in the revert and has been put back — earlier contrast
+figures in this file were measured without it and were wrong. With it restored, white type against
+the ground behind it, sampled across three slides:
 
-| | contrast |
-| --- | --- |
-| eyebrow row | **1.9:1** average, 1.04:1 at its lightest |
-| headline, three lines | **1.4–1.5:1** average, 1.0:1 at its lightest |
+| | average | lightest 5% |
+| --- | --- | --- |
+| eyebrow | 3.0–4.2:1 | 1.0–3.0:1 |
+| headline | 2.9–3.1:1 | 1.0:1 |
 
-AA wants 3:1 for large text and 4.5:1 for body. The eyebrow is small text at 1.9:1 and effectively
-invisible in places. This is not a regression from the revert on its own — the scrim was also
-lightened from 0.93 to 0.72 on their earlier "reduce the opacity" note, and the two together are
-what did it. Options, cheapest first: put the scrim back up on the left third only, so the
-photograph stays bright where it is not carrying type; or keep it light and give the copy block its
-own panel. Worth settling in the same conversation as the crop.
+AA wants 3:1 for large text and 4.5:1 for small. The headline is borderline on average and fails
+outright wherever a pale part of the photograph runs behind it; the eyebrow is small text and misses
+on two of the three slides. The scrim was lightened from 0.93 to 0.72 on the client's own "reduce
+the opacity" note, so this is the cost of that.
 
----
-
-## Content — for production
-
-Two of these are repeats: they were on the 29 August list and have not been done yet, which is why
-the client is reporting them again. Both are one field each.
-
-| # | Field | Now | Change to | Note |
-| --- | --- | --- | --- | --- |
-| 1 | `site.footer_note` | `Stationery · Dhanmondi, Dhaka` | **empty** | **Repeat** — item 3 on the August list. |
-| 2 | ~~`site.price_note`~~ | — | — | **Done in code instead.** Asked for twice, so the dialog no longer renders it and the field is gone from the model. Nothing to change in the admin; an existing install keeps an unused column it can delete at leisure. |
-| 3 | `contact.map_embed_url` | whatever is set now | **`https://www.google.com/maps?q=Grade+Limited+Dhanmondi+Dhaka&output=embed`** | Was blocked; **now solved**. See below. |
-| 4 | School Stationery → sub-category `Geometry Box` | `Geometry Box` | **`Pencil Box`** | Production only — the seed in this repo already says Pencil Box, so their Directus has drifted. |
-| 5 | School Stationery → the two box items | `Grade Champ Geometry Box – Big` / `– Medium` | **`… Pencil Box – Big` / `– Medium`** | Same drift. |
-
-The seed is updated for 1 and 2 as well, so a fresh install never carries either line — but the seed
-does not touch a running Directus, so production still needs the two fields cleared by hand.
-
-### The map pin is solved, with a verified URL
-
-They reported "Grade is not properly pinned in google map", and their screenshot shows why: the pin
-sat on **Akram Manjil**, the building, while their own listing — *Grade Limited* — is a separate
-entry a street away.
-
-A `maps?q=<name>&output=embed` URL needs no API key and pins the **business**, not the address.
-Loaded it in a browser inside an iframe to check before recommending it: it lands on Grade Limited
-and opens their own listing card. That URL is now the seed default and is item 3 above for production.
-
-**Worth asking them:** their Google listing gives the postcode as **Dhaka 1207**. Every document
-they have sent, and the site, says **Dhaka 1205**. One of the two is wrong.
-
----
-
-## Blocked
-
-**The new logo has not arrived.** Item 5 on their page 1 says "Client has provided a new Grade
-Stationary Logo with Motto. That needs to be converted to white". Nothing new is in
-`docs/client/references/SVG/`, `docs/logos/` or `docs/client/brands/` — the only files there are the
-ones from August. The *vertical centring* half of that item is done; the new artwork cannot be until
-the file is sent. Preferably as a vector, and preferably one whose motto is part of the file rather
-than set in type beside it.
-
-**Pencil Box photography** — "Images are provided in google drive." The drive link still has not
-reached this repo, same as the four Pen shots from the August round.
-
-Note the retired name lives on in two image *filenames*
-(`/images/products/champ-geometry-box.webp`, `neo-geometry-box.webp`) and nowhere a visitor can see
-it. Renaming files would mean re-uploading and re-pointing every reference for no visible gain, so
-they are left alone; the Gallery captions that did read "geometry box" are changed to "pencil box".
+Options, cheapest first: hold the scrim's left third at its old 0.93 and let it fall away faster, so
+the photograph stays bright everywhere it is not carrying type; or keep it light and give the copy
+block its own panel. Worth settling alongside the 2400×1200 crop question — a darker photograph on
+the left of frame would fix both at once.
