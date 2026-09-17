@@ -88,12 +88,13 @@ function createUploader(client) {
 export async function backfillContent(client, { dryRun = false } = {}) {
   console.log(`\nBackfill${dryRun ? ' (dry run — nothing will be written)' : ''}`);
 
-  const [site, home, about, contact, notFound] = await Promise.all([
+  const [site, home, about, contact, notFound, allProducts] = await Promise.all([
     readJson('site.json'),
     readJson('home.json'),
     readJson('about.json'),
     readJson('contact.json'),
     readJson('not-found.json'),
+    readJson('all-products.json'),
   ]);
 
   const upload = createUploader(client);
@@ -137,6 +138,8 @@ export async function backfillContent(client, { dryRun = false } = {}) {
     footer_contact_heading: site.footer_contact_heading,
     footer_note: site.footer_note,
     footer_rights: site.footer_rights,
+    footer_cta_label: site.footer_cta_label,
+    footer_cta_href: site.footer_cta_href,
     doodle_image: await upload(site.doodle_image?.src, site.doodle_image?.alt),
     background_image: await upload(site.background_image?.src, site.background_image?.alt),
     footer_pattern: await upload(site.footer_pattern?.src, site.footer_pattern?.alt),
@@ -177,6 +180,16 @@ export async function backfillContent(client, { dryRun = false } = {}) {
     office_heading: contact.office_heading,
     map_heading: contact.map_heading,
     faq_heading: contact.faq_heading,
+  });
+
+  await fill('all_products', {
+    seo_title: allProducts.seo?.title,
+    seo_description: allProducts.seo?.description,
+    banner_eyebrow: allProducts.banner?.eyebrow,
+    banner_title: allProducts.banner?.title,
+    banner_sub: allProducts.banner?.sub,
+    banner_lines: lines(allProducts.banner?.lines),
+    banner_image: await upload(allProducts.banner?.image?.src, allProducts.banner?.image?.alt),
   });
 
   await fill('not_found', {

@@ -114,9 +114,15 @@ const index = categories.flatMap((category) =>
     height: 100%;
     max-height: 100%;
   }
+  /* The same backdrop as the product dialog — deep blue at 55% over a 2px blur —
+     so the two full-screen overlays on the site read as one treatment rather
+     than two. It is lighter than the near-black this used to carry, which is the
+     point: the page stays legible behind the search instead of being blacked
+     out. Kept here rather than lifted into a shared rule because each dialog
+     styles its own backdrop; if a third arrives, that is the time to share it. */
   .search-dialog::backdrop {
-    background: rgb(6 20 28 / 0.86);
-    backdrop-filter: blur(3px);
+    background: rgb(10 82 115 / 0.55);
+    backdrop-filter: blur(2px);
   }
   .search-dialog[open] {
     animation: search-in 160ms var(--ease-standard);

@@ -74,6 +74,14 @@ export const siteSchema = z.object({
   footer_contact_heading: z.string().default(''),
   footer_note: z.string().default(''),
   footer_rights: z.string().default(''),
+  /**
+   * The Home footer's call to action. Two fields rather than one, because the
+   * client asked for a customizable label *and* link — and both have to be set
+   * for anything to render, so an empty pair leaves the footer exactly as it was
+   * rather than showing a button that goes nowhere.
+   */
+  footer_cta_label: z.string().default(''),
+  footer_cta_href: z.string().default(''),
   /** Follows the pack sizes in a product's detail pop-up. */
   /** The illustration in the band that closes the home page. */
   doodle_image: imageSchema.nullable().default(null),
@@ -183,6 +191,19 @@ export const aboutSchema = z.object({
   story: z.object({ eyebrow: z.string(), heading: z.string(), body: z.array(z.string()).min(1) }),
 });
 export type About = z.infer<typeof aboutSchema>;
+
+/**
+ * The All Products page — the client's "See All" destination, sketched on paper
+ * as a fixed template: banner, every range as a tab, that range's sub-categories
+ * under it, then the grid. It owns nothing but its own banner copy; the products
+ * themselves come from the same `categories` the range pages read, so there is
+ * one catalogue and no second place to keep it in step.
+ */
+export const allProductsSchema = z.object({
+  seo: seoSchema,
+  banner: bannerSchema,
+});
+export type AllProducts = z.infer<typeof allProductsSchema>;
 
 export const gallerySchema = z.object({
   seo: seoSchema,

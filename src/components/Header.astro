@@ -19,7 +19,10 @@ const { site, categories, active } = Astro.props;
 const HREF: Record<string, string> = {
   home: '/',
   about: '/about/',
-  categories: `/${categories[0]?.slug ?? ''}/`,
+  // The client's "See All / Product Categories should redirect to a new page".
+  // It used to point at whichever range came first, which put the menu's most
+  // general item on the site's most specific page.
+  categories: '/products/',
   gallery: '/gallery/',
   contact: '/contact/',
 };

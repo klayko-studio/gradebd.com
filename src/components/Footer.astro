@@ -1,6 +1,7 @@
 ---
 import { editable } from '../lib/cms';
 import SocialLinks from './SocialLinks.astro';
+import Button from './Button.astro';
 import { socialPaths } from '../lib/social-icons';
 import type { Category, Site } from '../lib/schema';
 
@@ -122,8 +123,42 @@ const footerLogo = site.logo_reversed_stationary ?? site.logo_reversed ?? null;
          in it — centred between the logo and the address, where the client marked
          it. The container is rendered even when the icons are not (Home), or the
          two columns beside it would close up. -->
+    {/*
+      On the inner pages this holds the social icons. On Home the icons are
+      suppressed (comment #9) and the cell was left standing empty so the columns
+      either side would not close up — which is the hole the client marked and
+      asked to fill with "a button with customizable label and link".
+
+      So the same switch now picks between the two rather than leaving a gap:
+      icons where there are icons, the button where there are not. Both fields
+      have to be filled, or nothing renders and the footer is exactly as it was —
+      a button with no destination is worse than an empty cell.
+    */}
     <div class="flex items-center justify-center md:col-span-2">
-      {showSocials && <SocialLinks socials={site.socials} tone="on-dark" />}
+      {showSocials ? (
+        <SocialLinks socials={site.socials} tone="on-dark" />
+      ) : (
+        site.footer_cta_label &&
+        site.footer_cta_href && (
+          /*
+            The hero slider's glass button, tinted red for this band — see the
+            `on-red` variant. Both fields are on the button itself, so a moderator
+            clicks it in the visual editor and gets the label and the destination
+            in one popover.
+          */
+          <Button
+            href={site.footer_cta_href}
+            variant="on-red"
+            {...editable({
+              collection: 'site',
+              fields: ['footer_cta_label', 'footer_cta_href'],
+              mode: 'popover',
+            })}
+          >
+            {site.footer_cta_label}
+          </Button>
+        )
+      )}
     </div>
 
     <div class="flex flex-col gap-4">
@@ -227,10 +262,20 @@ const footerLogo = site.logo_reversed_stationary ?? site.logo_reversed ?? null;
     transition:
       opacity 220ms var(--ease-standard),
       transform 220ms var(--ease-standard);
+    /*
+      `opacity: 0` hides paint, not hit-testing — so without this the button was
+      an invisible but fully live 56px link at the bottom-right of every page
+      until the footer scrolled into view. On Home that is exactly where the
+      hero's next arrow sits, so the arrow was unclickable and the status bar
+      showed a wa.me URL; the client reported it from that symptom. `visibility`
+      would also work but cannot be transitioned in step with the fade.
+    */
+    pointer-events: none;
   }
   .whatsapp-fab.is-visible {
     opacity: 1;
     transform: none;
+    pointer-events: auto;
   }
   .whatsapp-fab:hover {
     filter: brightness(1.06);

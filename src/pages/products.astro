@@ -1,0 +1,301 @@
+---
+import Base from '../layouts/Base.astro';
+import PageBanner from '../components/PageBanner.astro';
+import ProductCard from '../components/ProductCard.astro';
+import ProductDialog from '../components/ProductDialog.astro';
+import ImageLightbox from '../components/ImageLightbox.astro';
+import { getAllProducts, getCategories, editable } from '../lib/cms';
+
+/**
+ * All Products — the destination the client drew on paper for "See All" and for
+ * the Product Categories menu item. Both used to jump to whichever range
+ * happened to be first, which meant the menu's most general-sounding item landed
+ * on the most specific page on the site.
+ *
+ * It is deliberately the category template with one axis added rather than a new
+ * design: the same banner, the same sub-category tabs, the same card grid and
+ * the same detail dialogs. The client wrote "Fixed template" across their sketch,
+ * and a second layout for the same 38 products would be a second thing to keep
+ * in step for no gain.
+ *
+ * The range row is the new part. It comes from the same `categories` the range
+ * pages read, so a sixth range added in Directus appears here with no code
+ * change, exactly as it does in the menu and the sitemap.
+ */
+const [allProducts, categories] = await Promise.all([getAllProducts(), getCategories()]);
+
+/**
+ * Both filters live in the URL rather than only in JavaScript.
+ *
+ * The page renders per request, so the server can do the filtering — which means
+ * the rows work with no JavaScript at all, the right group is painted on the
+ * first frame instead of flashing the whole catalogue and then narrowing, and a
+ * link to one group is a link someone can send. The script below upgrades it to
+ * switching in place, the same way the range pages already do.
+ */
+const requestedRange = Astro.url.searchParams.get('range');
+const activeRange =
+  categories.find((entry) => entry.slug === requestedRange) ?? categories[0] ?? null;
+
+/* A range can switch its sub-category row off — File & Folder does, on the
+   client's instruction — and when it is off every card in that range renders. */
+const subcategories = activeRange?.hide_subcategory_tabs ? [] : (activeRange?.subcategories ?? []);
+const requestedSub = Astro.url.searchParams.get('sub');
+const activeSub =
+  subcategories.find((entry) => entry.slug === requestedSub)?.slug ?? subcategories[0]?.slug ?? null;
+
+const items = activeRange?.items ?? [];
+const shown = items.filter((item) => !activeSub || item.subcategory === activeSub);
+---
+
+<Base seo={allProducts.seo} active="categories">
+  <PageBanner
+    eyebrow={allProducts.banner.eyebrow}
+    title={allProducts.banner.title}
+    sub={allProducts.banner.sub}
+    lines={allProducts.banner.lines}
+    image={allProducts.banner.image}
+    edit={editable({
+      collection: 'all_products',
+      fields: ['banner_eyebrow', 'banner_title', 'banner_sub', 'banner_lines'],
+      mode: 'drawer',
+    })}
+    editImage={editable({
+      collection: 'all_products',
+      fields: 'banner_image',
+      mode: 'drawer',
+    })}
+  />
+
+  <section class="section">
+    <div class="rail flex flex-col gap-8">
+      {/*
+        The range row, drawn on the sketch as the first line of labels. Each one
+        carries its own accent so the row reads as the five ranges rather than as
+        five words, and `?range=` is a real link — no JavaScript required.
+      */}
+      <nav class="flex flex-wrap gap-x-8 gap-y-3" aria-label="Product ranges">
+        {
+          categories.map((category) => (
+            <a
+              href={`?range=${category.slug}`}
+              class="range-tab"
+              data-range-tab={category.slug}
+              aria-current={category.slug === activeRange?.slug ? 'true' : undefined}
+              style={`--tab-accent:${category.accent}`}
+            >
+              {category.name}
+              <span aria-hidden="true" class="range-tab-rule" />
+            </a>
+          ))
+        }
+      </nav>
+
+      {
+        subcategories.length > 0 && (
+          <nav
+            class="flex flex-wrap gap-x-8 gap-y-3"
+            aria-label={`${activeRange?.name} sub-categories`}
+          >
+            {subcategories.map((sub) => (
+              <a
+                href={`?range=${activeRange?.slug}&sub=${sub.slug}`}
+                class="sub-tab"
+                data-sub-tab={sub.slug}
+                aria-current={sub.slug === activeSub ? 'true' : undefined}
+                style={`--tab-accent:${activeRange?.accent}`}
+              >
+                {sub.name}
+                <span aria-hidden="true" class="sub-tab-rule" />
+              </a>
+            ))}
+          </nav>
+        )
+      }
+
+      <p class="t-label-sm text-[color:var(--text-muted)]" aria-live="polite" data-count>
+        {shown.length} {shown.length === 1 ? 'product' : 'products'}
+      </p>
+
+      {/*
+        Every item in the range is rendered and the inactive ones are hidden,
+        not filtered out — which is what lets the sub-category row switch in
+        place with no round trip. Rendering only the active group looked tidier
+        and broke exactly that: the first version of this page showed "0
+        products" the moment anyone changed tab, because the cards for the other
+        groups had never been sent.
+      */}
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-reveal-group data-item-grid>
+        {
+          items.map((item) => (
+            <ProductCard
+              name={item.name}
+              meta={item.meta}
+              image={item.image}
+              accent={activeRange?.accent}
+              action="View product details"
+              dialogId={`dlg-${item.id}`}
+              edit={editable({
+                collection: 'items',
+                item: item.directus_id ?? undefined,
+                fields: ['name', 'meta', 'image', 'features', 'pack_inner', 'pack_carton'],
+                mode: 'drawer',
+              })}
+              subcategory={item.subcategory}
+              class={item.subcategory === activeSub || !activeSub ? '' : 'hidden'}
+            />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {/*
+    Only the visible range's dialogs are rendered. The category pages render
+    every item in their own range, which is 4–11; rendering all 38 here — each
+    with a thumbnail strip — would put the whole catalogue in the markup of one
+    page. Switching range is a navigation, so the next set arrives with it.
+  */}
+  {
+    items.map((item) => (
+      <ProductDialog item={item} accent={activeRange?.accent} categoryName={activeRange?.name} />
+    ))
+  }
+
+  <ImageLightbox id="product-lightbox" label="Product images" captions={false} />
+</Base>
+
+<style>
+  /* Both rows are the range pages' own tab treatment, so the two pages look like
+     one template — which is what "fixed template" on the sketch asks for. The
+     range row sits a step larger, because it governs the row beneath it. */
+  .range-tab,
+  .sub-tab {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    color: var(--text-muted);
+    transition: color 160ms var(--ease-standard);
+  }
+  .range-tab {
+    font-size: 1.0625rem;
+  }
+  .sub-tab {
+    font-size: 0.9375rem;
+  }
+  .range-tab:hover,
+  .sub-tab:hover {
+    color: var(--text-primary);
+  }
+  .range-tab[aria-current='true'],
+  .sub-tab[aria-current='true'] {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+  .range-tab-rule,
+  .sub-tab-rule {
+    height: 3px;
+    width: 100%;
+    border-radius: 999px;
+    background: transparent;
+    transition: background-color 160ms var(--ease-standard);
+  }
+  .range-tab[aria-current='true'] .range-tab-rule,
+  .sub-tab[aria-current='true'] .sub-tab-rule {
+    background: var(--tab-accent);
+  }
+</style>
+
+<script>
+  import { mountLightbox } from '../scripts/lightbox';
+
+  /**
+   * The sub-category row switches in place; the range row does not.
+   *
+   * Sub-categories are all in the markup already, so hiding and showing is
+   * instant and honest. Changing range needs a different set of products *and*
+   * a different set of detail dialogs, so it is left as a real navigation rather
+   * than faked — a client-side swap would either ship all 38 dialogs up front or
+   * open a dialog that is not there.
+   */
+  const grid = document.querySelector<HTMLElement>('[data-item-grid]');
+  const count = document.querySelector<HTMLElement>('[data-count]');
+  const subTabs = [...document.querySelectorAll<HTMLAnchorElement>('[data-sub-tab]')];
+
+  if (grid && subTabs.length > 0) {
+    subTabs.forEach((tab) => {
+      tab.addEventListener('click', (event) => {
+        event.preventDefault();
+        const group = tab.dataset.subTab;
+
+        subTabs.forEach((other) => {
+          if (other === tab) other.setAttribute('aria-current', 'true');
+          else other.removeAttribute('aria-current');
+        });
+
+        let visible = 0;
+        grid.querySelectorAll<HTMLElement>('[data-sub]').forEach((card) => {
+          const match = card.dataset.sub === group;
+          card.classList.toggle('hidden', !match);
+          if (match) visible += 1;
+        });
+        if (count) count.textContent = `${visible} ${visible === 1 ? 'product' : 'products'}`;
+
+        // The URL keeps up so the tab can be linked to and the back button is
+        // not filled with entries for a filter change.
+        history.replaceState(null, '', tab.href);
+      });
+    });
+  }
+
+  // ---- product detail dialogs, the same wiring the range pages use
+  const viewer = mountLightbox('product-lightbox');
+
+  document.querySelectorAll<HTMLElement>('[data-dialog-open]').forEach((trigger) => {
+    trigger.addEventListener('click', () => {
+      const id = trigger.dataset.dialogOpen;
+      const dialog = id ? document.getElementById(id) : null;
+      if (dialog instanceof HTMLDialogElement) dialog.showModal();
+    });
+  });
+
+  document.querySelectorAll<HTMLDialogElement>('dialog.product-dialog').forEach((dialog) => {
+    dialog.querySelector('[data-dialog-close]')?.addEventListener('click', () => dialog.close());
+
+    // A click whose target is the dialog element itself landed on the backdrop.
+    // Comparing pointer coordinates instead breaks keyboard activation, which
+    // fires a click at 0,0 — outside a centred panel. See the range page.
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+
+    const main = dialog.querySelector<HTMLImageElement>('[data-dialog-main]');
+    const zoom = dialog.querySelector<HTMLButtonElement>('[data-dialog-zoom]');
+    const thumbs = dialog.querySelectorAll<HTMLButtonElement>('[data-dialog-thumb]');
+    const accent = dialog.dataset.dialogAccent ?? 'currentColor';
+
+    if (viewer && zoom) {
+      const views = JSON.parse(dialog.dataset.views ?? '[]') as { src: string; alt: string }[];
+      zoom.addEventListener('click', () => {
+        // `getAttribute`, not `.src`: the property resolves to an absolute URL
+        // and would never match the list.
+        const showing = main?.getAttribute('src');
+        const at = views.findIndex((view) => view.src === showing);
+        viewer.open(views, at < 0 ? 0 : at, zoom);
+      });
+    }
+
+    thumbs.forEach((thumb) => {
+      thumb.addEventListener('click', () => {
+        const src = thumb.dataset.dialogThumb;
+        if (!src || !main) return;
+        main.src = src;
+        thumbs.forEach((other) => {
+          const on = other === thumb;
+          other.style.borderColor = on ? accent : 'transparent';
+          other.setAttribute('aria-current', on ? 'true' : 'false');
+        });
+      });
+    });
+  });
+</script>

@@ -12,6 +12,19 @@ interface Props {
   edit?: Record<string, string>;
 }
 const { slides, edit = {} } = Astro.props;
+
+/**
+ * Slides are siblings in one flex column with all but the current one `hidden`,
+ * so only the visible slide is in flow and the block is centred on its own
+ * height. A slide without a button is therefore shorter than one with it, and
+ * the copy jumps between slides — worst on a short viewport, where the missing
+ * 60-odd pixels read as a reflow rather than a nudge.
+ *
+ * Every slide that has no button gets an invisible one holding the space, so
+ * the copy block is the same height on all six whatever a moderator switches
+ * on or off. Unconditional on purpose: the reserved row is part of the hero's
+ * height budget, so it cannot appear and disappear with the content either.
+ */
 ---
 
 <section
@@ -80,7 +93,19 @@ const { slides, edit = {} } = Astro.props;
     every screen size. That is the client's "still need to scroll down to see the
     full image". Now the copy takes the space that is left after the controls.
   -->
-  <div class="rail flex min-h-0 flex-1 flex-col justify-center py-16">
+  {/*
+    The vertical padding is measured against the viewport's HEIGHT, which is the
+    whole point. It was a flat `py-16` — 128px of it — and that is what pushed
+    the next/prev row below the fold on a short screen: the hero's height is
+    `100svh - header`, but everything inside it was sized against the viewport's
+    width, so at 1280x600 the content came to 550px inside a 514px box.
+
+    `clamp(1rem, 7svh, 4rem)` keeps the full 4rem on a normal laptop and gives it
+    back as the window gets short. Combined with the reserved button row above,
+    all six slides are the same height AND all six fit — the two instructions
+    that looked like they pulled against each other.
+  */}
+  <div class="rail flex min-h-0 flex-1 flex-col justify-center py-[clamp(1rem,7svh,4rem)]">
     {
       slides.map((slide, i) => (
         <div
@@ -99,7 +124,7 @@ const { slides, edit = {} } = Astro.props;
           {slide.lines.length > 0 ? (
             // The client's slide copy is a three-line phrase — "Every Tool / Every
             // Dream / Endless Potential". Tight leading keeps it reading as one unit.
-            <h1 class="t-display-2xl text-[color:var(--text-inverse)] leading-[0.98] tracking-[-0.01em]">
+            <h1 class="hero-headline t-display-2xl text-[color:var(--text-inverse)] leading-[0.98] tracking-[-0.01em]">
               {slide.lines.map((line) => (
                 // Each line sits in its own clipping box so the motion layer can slide
                 // it up from behind its own edge rather than fading it in place.
@@ -112,7 +137,7 @@ const { slides, edit = {} } = Astro.props;
             </h1>
           ) : (
             <>
-              <h1 class="t-display-2xl text-[color:var(--text-inverse)]">{slide.headline}</h1>
+              <h1 class="hero-headline t-display-2xl text-[color:var(--text-inverse)]">{slide.headline}</h1>
               <p class="t-body-lg max-w-[54ch] text-[color:var(--text-inverse-muted)]">{slide.body}</p>
             </>
           )}
@@ -123,7 +148,7 @@ const { slides, edit = {} } = Astro.props;
             than something only a developer can change. The range link is
             separate and still follows range_slug.
           */}
-          {(slide.show_cta || slide.range_slug) && (
+          {slide.show_cta || slide.range_slug ? (
             <div class="mt-2 flex flex-wrap items-center gap-4">
               {slide.show_cta && (
                 <Button href="/contact/" variant="primary">
@@ -135,6 +160,17 @@ const { slides, edit = {} } = Astro.props;
                   View the range
                 </Button>
               )}
+            </div>
+          ) : (
+            /*
+              A real button rather than a fixed height, so the space matches
+              whatever the button actually measures — at any breakpoint, and
+              after any change to its padding or type. `visibility: hidden`
+              keeps it in flow while taking it out of the tab order and out of
+              the accessibility tree, which `opacity: 0` would not.
+            */
+            <div class="mt-2 flex flex-wrap items-center gap-4 invisible" aria-hidden="true">
+              <Button variant="on-dark">View the range</Button>
             </div>
           )}
         </div>
@@ -263,11 +299,13 @@ const { slides, edit = {} } = Astro.props;
      * the timer would otherwise queue up transitions to replay all at once on
      * return.
      *
-     * 6.5s rather than the 3.5s the logo strip uses. That row is a strip of marks
-     * to glance at; this one is three lines of display type and a button, and it
-     * has to be readable at a normal reading pace before it moves.
+     * 3s, on the client's instruction. It was 6.5s, on the reasoning that this
+     * is three lines of display type and a button rather than a strip of marks
+     * to glance at, so it should be readable at a normal reading pace before it
+     * moves. They want it faster; that is their call and this is the one number
+     * to change if it turns out to be too quick to read.
      */
-    const DELAY = 6500;
+    const DELAY = 3000;
     let timer: number | undefined;
     let onScreen = true;
 
@@ -318,3 +356,26 @@ const { slides, edit = {} } = Astro.props;
     start();
   }
 </script>
+
+<style>
+  /**
+   * The headline is the last thing in the hero still sized purely against the
+   * viewport's WIDTH — `t-display-2xl` is `clamp(2.75rem, 5.4vw, 4.5rem)`. On a
+   * short, wide window that is three lines of 69px type inside a 474px box, and
+   * it is what was left pushing the controls under the fold once the padding
+   * had been dealt with.
+   *
+   * `min(5.4vw, 9svh)` caps it by height as well. The numbers are chosen so
+   * nothing changes where nothing was wrong: at 1440x800 and above the cap is
+   * already the binding one, and the 2.75rem floor is untouched, so every phone
+   * — where 5.4vw is tiny and the floor governs — renders exactly as before.
+   * Only a short desktop window moves.
+   *
+   * Scoped here rather than changed in `global.css` because this is the hero's
+   * problem: a page banner using the same token sits in a box that grows with
+   * its content and has no fold to fall under.
+   */
+  .hero-headline {
+    font-size: clamp(2.75rem, min(5.4vw, 9svh), 4.5rem);
+  }
+</style>

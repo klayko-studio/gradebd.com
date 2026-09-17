@@ -6,6 +6,7 @@ import {
   gallerySchema,
   homeSchema,
   notFoundSchema,
+  allProductsSchema,
   reviewSchema,
   siteSchema,
   type About,
@@ -16,6 +17,7 @@ import {
   type Home,
   type Image,
   type NotFound,
+  type AllProducts,
   type Review,
   type Site,
 } from './schema';
@@ -29,6 +31,7 @@ import categoriesSeed from '../content/categories.json';
 import clientsSeed from '../content/clients.json';
 import reviewsSeed from '../content/reviews.json';
 import notFoundSeed from '../content/not-found.json';
+import allProductsSeed from '../content/all-products.json';
 
 /**
  * The only module that knows where content comes from.
@@ -516,6 +519,23 @@ export const getContact = (): Promise<Contact> =>
       };
     },
     () => contactSeed,
+  );
+
+export const getAllProducts = (): Promise<AllProducts> =>
+  read(
+    'all_products',
+    allProductsSchema,
+    async () => {
+      const row = await api<Record<string, any>>(
+        `items/all_products?fields=*,${file('banner_image')}`,
+      );
+      singletonIds.set('all_products', row.id);
+      return {
+        seo: seo(row, { title: 'All Products', description: '' }),
+        banner: banner(row),
+      };
+    },
+    () => allProductsSeed,
   );
 
 export const getNotFound = (): Promise<NotFound> =>

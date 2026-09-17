@@ -35,6 +35,8 @@
   "footer_contact_heading": "Get in touch",
   "footer_note": "",
   "footer_rights": "All rights reserved.",
+  "footer_cta_label": "Talk to us",
+  "footer_cta_href": "/contact/",
   "doodle_image": {
     "id": null,
     "src": "/images/brand/doodles.png",

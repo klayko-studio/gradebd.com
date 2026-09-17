@@ -181,19 +181,29 @@ const field =
             <span class="text-ink">{site.company_name}</span>
             {site.address_lines.map((line) => <span>{line}</span>)}
           </address>
+          {/* Labelled to match the footer, which is what the client screenshotted
+              as the target. The label sits outside the link for the same reason it
+              does there: "Phone:" is not a phone number, and inside the anchor a
+              screen reader would read it as part of the destination. */}
           <div class="flex flex-col gap-1.5">
-            <a
-              href={site.phone_href}
-              class="t-body-md text-ink hover:text-[color:var(--text-brand-strong)]"
-            >
-              {site.phone}
-            </a>
-            <a
-              href={`mailto:${site.email}`}
-              class="t-body-md text-ink hover:text-[color:var(--text-brand-strong)]"
-            >
-              {site.email}
-            </a>
+            <span class="flex flex-wrap items-baseline gap-x-1.5 t-body-md">
+              <span class="shrink-0 text-[color:var(--text-muted)]">Phone:</span>
+              <a
+                href={site.phone_href}
+                class="text-ink hover:text-[color:var(--text-brand-strong)]"
+              >
+                {site.phone}
+              </a>
+            </span>
+            <span class="flex flex-wrap items-baseline gap-x-1.5 t-body-md">
+              <span class="shrink-0 text-[color:var(--text-muted)]">Email:</span>
+              <a
+                href={`mailto:${site.email}`}
+                class="text-ink hover:text-[color:var(--text-brand-strong)]"
+              >
+                {site.email}
+              </a>
+            </span>
             <p class="t-body-sm text-[color:var(--text-muted)]">{site.opening_hours}</p>
           </div>
         </div>

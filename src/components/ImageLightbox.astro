@@ -61,13 +61,24 @@ const { id, label, captions = true } = Astro.props;
         </svg>
       </button>
 
-      <img
-        src=""
-        alt=""
-        class="min-h-0 w-full flex-1 rounded-sharp object-contain"
+      {/*
+        The picture sits in a stage of its own so a zoomed image is clipped to
+        the frame instead of spilling over the prev/next controls beside it.
+        The stage keeps the height cap the image used to carry, so the layout is
+        unchanged at rest.
+      */}
+      <div
+        class="relative flex min-h-0 w-full flex-1 items-center justify-center overflow-hidden"
         style="max-height:calc(100dvh - 12rem)"
-        data-lightbox-image
-      />
+        data-lightbox-stage
+      >
+        <img
+          src=""
+          alt=""
+          class="h-full w-full rounded-sharp object-contain"
+          data-lightbox-image
+        />
+      </div>
 
       <button
         type="button"
@@ -113,6 +124,27 @@ const { id, label, captions = true } = Astro.props;
   }
   .lightbox::backdrop {
     background: rgb(6 20 28 / 0.92);
+  }
+
+  /**
+   * Zoom state, driven by the script.
+   *
+   * `touch-action: none` only once zoomed, so a plain swipe on a phone still
+   * belongs to the browser while the picture is at its resting size.
+   */
+  [data-lightbox-stage] {
+    cursor: zoom-in;
+  }
+  [data-lightbox-stage].is-zoomed {
+    cursor: grab;
+    touch-action: none;
+  }
+  [data-lightbox-stage].is-panning {
+    cursor: grabbing;
+  }
+  [data-lightbox-image] {
+    transform-origin: center center;
+    will-change: transform;
   }
   .lightbox[open] {
     animation: lightbox-in 160ms var(--ease-standard);

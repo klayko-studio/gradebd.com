@@ -1,14 +1,28 @@
 ---
 interface Props {
   href?: string;
-  variant?: 'primary' | 'secondary' | 'on-dark';
+  variant?: 'primary' | 'secondary' | 'on-dark' | 'on-red';
   type?: 'button' | 'submit';
   class?: string;
   /** Trailing arrow advances on hover, matching the Figma button. */
   arrow?: boolean;
 }
 
-const { href, variant = 'primary', type = 'button', class: className = '', arrow = true } = Astro.props;
+/**
+ * Anything else passed in lands on the rendered tag. That is what lets a caller
+ * attach Directus' `editable()` attributes to the button itself rather than to a
+ * wrapper around it — the visual editor draws its hit area from the element that
+ * carries them, so on a wrapper the overlay is a box around the button instead
+ * of the button.
+ */
+const {
+  href,
+  variant = 'primary',
+  type = 'button',
+  class: className = '',
+  arrow = true,
+  ...rest
+} = Astro.props;
 
 const base =
   'group inline-flex items-center gap-3 rounded-sharp px-6 py-4 t-button transition-colors duration-200 ' +
@@ -19,21 +33,35 @@ const variants: Record<string, string> = {
   secondary:
     'bg-page text-ink border border-line hover:border-line-strong hover:bg-subtle',
   /**
-   * Hero only. See-through, on the client's instruction — 70% rather than a
-   * token, because the ink has to stay readable over whatever photograph is
-   * behind it. At 70% the worst case is a black frame, which still resolves to
-   * about 8:1 against the ink; much lower and a dark slide would swallow it.
+   * Hero only, and deliberately identical to the slider's prev/next controls —
+   * the client approved those and asked for this to follow them. Same deep-blue
+   * ground at 22%, same hairline white border, same 2px blur, so the three
+   * controls in the hero read as one set rather than a white pill beside two
+   * glass circles. White ink, because a 22% ground is far too see-through to
+   * carry dark type.
    */
   'on-dark':
-    'bg-[color:rgb(255_255_255/0.7)] text-ink backdrop-blur-[3px] hover:bg-[color:rgb(255_255_255/0.88)]',
+    'border border-white/50 bg-[color:rgb(10_82_115/0.22)] text-white backdrop-blur-[2px] ' +
+    'hover:border-white hover:bg-[color:rgb(10_82_115/0.5)]',
+  /**
+   * The same glass treatment as `on-dark`, tinted red instead of blue — for the
+   * footer, which is a red band rather than a photograph. The tint is red/900,
+   * the deepest step of the same ramp the footer itself is a shade of, so it
+   * reads as the band going darker rather than as a second colour laid over it.
+   * Exactly the relationship `on-dark` has with the deep blue.
+   */
+  'on-red':
+    'border border-white/50 bg-[color:rgb(125_13_20/0.32)] text-white backdrop-blur-[2px] ' +
+    'hover:border-white hover:bg-[color:rgb(125_13_20/0.62)]',
 };
 
-const arrowColour = variant === 'primary' ? 'currentColor' : 'var(--text-primary)';
+const arrowColour = variant === 'secondary' ? 'var(--text-primary)' : 'currentColor';
 const Tag = href ? 'a' : 'button';
 ---
 
 <Tag
   {...href ? { href } : { type }}
+  {...rest}
   class:list={[base, variants[variant], className]}
 >
   <span><slot /></span>

@@ -55,7 +55,17 @@ const control = dialogId
 ---
 
 <!-- The client's wireframes put the name ABOVE the photograph, which is also
-     how their packaging reads. No image scaling on hover — deliberately. -->
+     how their packaging reads.
+
+     The photograph scales on hover, on the client's instruction.
+
+     It started at the product dialog's 1.03 to match it exactly, and the client
+     came back with "too tiny to notice" — rightly, because the two are not the
+     same size. The dialog's image is roughly 600px wide, so 1.03 moves its edge
+     about 9px; a card in a three-up grid is nearer 400px, where the same ratio
+     moves 6px and is spread over a smaller frame. Matching the *number* made the
+     two look different. 1.08 on a card is about the same amount of visible
+     movement as 1.03 on the dialog, which is what matching should have meant. -->
 <Tag
   {...control}
   {...edit}
@@ -81,8 +91,11 @@ const control = dialogId
   <div
     class:list={[
       'relative mt-2 w-full overflow-hidden rounded-sharp border border-line-subtle bg-muted-surface',
-      'transition-[border-color,box-shadow] duration-200 ease-[var(--ease-standard)]',
-      'group-hover:border-line-brand group-hover:shadow-[var(--shadow-ambient)]',
+      'transition-shadow duration-200 ease-[var(--ease-standard)]',
+      // The red hover border is gone on the client's instruction — the zoom
+      // replaces it rather than joining it. The resting hairline stays: it is
+      // what gives a pack shot on a pale ground an edge to sit against.
+      'group-hover:shadow-[var(--shadow-ambient)]',
       ratio,
     ]}
   >
@@ -93,7 +106,9 @@ const control = dialogId
       height={image.height}
       loading="lazy"
       decoding="async"
-      class="h-full w-full object-cover"
+      class="h-full w-full object-cover transition-transform duration-[450ms]
+             ease-[var(--ease-standard)] group-hover:scale-[1.08]
+             motion-reduce:transition-none motion-reduce:group-hover:scale-100"
     />
     <span
       aria-hidden="true"

@@ -184,6 +184,10 @@ export const COLLECTIONS = [
       F.string('footer_contact_heading', { note: 'The heading over the footer address block.' }),
       F.string('footer_note', { note: 'The right-hand line in the bottom bar.' }),
       F.string('footer_rights', { note: 'Follows "© <year> <company>." in the bottom bar.' }),
+      F.string('footer_cta_label', {
+        note: 'Button in the middle of the HOME footer. Both this and the link must be filled for it to appear.',
+      }),
+      F.string('footer_cta_href', { note: 'Where that button goes, e.g. /contact/ or a full URL.' }),
       F.file('doodle_image', 'The illustration in the band that closes the home page.'),
       F.file('background_image', 'The watercolour behind every page. Replacing it changes the whole site.'),
       F.file('footer_pattern', 'The line-art texture on the footer. Tiles, so any size works.'),
@@ -349,6 +353,13 @@ export const COLLECTIONS = [
   }),
 
   /* ── gallery ───────────────────────────────────────────────────────────── */
+  collection('all_products', {
+    icon: 'grid_view',
+    singleton: true,
+    note: 'The All Products page — banner copy only; the products come from Categories.',
+    fields: [F.pk(), ...SEO, ...BANNER],
+  }),
+
   collection('gallery', {
     icon: 'photo_library',
     singleton: true,
@@ -594,6 +605,7 @@ export const FILE_FIELDS = [
   ['site', 'doodle_image'],
   ['site', 'background_image'],
   ['site', 'footer_pattern'],
+  ['all_products', 'banner_image'],
   ['site', 'logo_reversed'],
   ['site', 'logo_reversed_stationary'],
   ['site', 'favicon'],

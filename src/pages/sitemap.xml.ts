@@ -18,6 +18,7 @@ export const GET: APIRoute = async ({ site }) => {
   const paths = [
     { path: '/', priority: '1.0' },
     { path: '/about/', priority: '0.7' },
+    { path: '/products/', priority: '0.9' },
     ...categories.map((category) => ({ path: `/${category.slug}/`, priority: '0.8' })),
     { path: '/gallery/', priority: '0.6' },
     { path: '/contact/', priority: '0.7' },

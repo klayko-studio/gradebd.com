@@ -1,0 +1,23 @@
+{
+  "seo": {
+    "title": "All Products — Grade Limited stationery",
+    "description": "The full Grade Limited catalogue: pens, exercise books, school and office stationery, files and folders, supplied across Bangladesh from Dhanmondi, Dhaka."
+  },
+  "banner": {
+    "eyebrow": "All Products",
+    "title": "Every Range",
+    "sub": "Every Tool Every Dream",
+    "image": {
+      "id": null,
+      "src": "/images/hero/all-items.jpg",
+      "alt": "Stationery arranged on a deep navy surface",
+      "width": 2000,
+      "height": 1200
+    },
+    "lines": [
+      "Every Range",
+      "Every Tool",
+      "Every Dream"
+    ]
+  }
+}
