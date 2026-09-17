@@ -129,15 +129,17 @@ const { id, label, captions = true } = Astro.props;
   /**
    * Zoom state, driven by the script.
    *
-   * `touch-action: none` only once zoomed, so a plain swipe on a phone still
-   * belongs to the browser while the picture is at its resting size.
+   * `touch-action: none` unconditionally, and that is load-bearing: a pinch
+   * only reaches the script if the browser is not handling it first. Scoped to
+   * the picture, so the rest of the viewer still scrolls and the page behind the
+   * dialog is untouched.
    */
   [data-lightbox-stage] {
     cursor: zoom-in;
+    touch-action: none;
   }
   [data-lightbox-stage].is-zoomed {
     cursor: grab;
-    touch-action: none;
   }
   [data-lightbox-stage].is-panning {
     cursor: grabbing;

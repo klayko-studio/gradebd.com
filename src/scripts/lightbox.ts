@@ -136,37 +136,125 @@ export function mountLightbox(id: string): Lightbox | null {
       { passive: false },
     );
 
-    // Drag to pan, pointer events so mouse and touch share one path.
-    let dragging = false;
-    let lastX = 0;
-    let lastY = 0;
+    /**
+     * One pointer pans, two pinch. Pointer events rather than touch events, so a
+     * mouse drag and a finger drag are the same code path and a trackpad's
+     * two-finger gesture — which arrives as a wheel event with ctrlKey — is
+     * already covered by the handler above.
+     *
+     * A wheel does not exist on a phone, so without this the zoom the client
+     * asked for is desktop-only: you could open a pack shot on a phone and have
+     * no way to look closer at it, which is where looking closer matters most.
+     */
+    const points = new Map<number, { x: number; y: number }>();
+    let pinchDistance = 0;
+    let pinchZoom = 1;
+
+    const spread = () => {
+      const [a, b] = [...points.values()];
+      return Math.hypot(a.x - b.x, a.y - b.y);
+    };
+    const midpoint = () => {
+      const [a, b] = [...points.values()];
+      return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+    };
 
     stage.addEventListener('pointerdown', (event) => {
-      if (zoom === 1) return;
-      dragging = true;
-      lastX = event.clientX;
-      lastY = event.clientY;
-      stage.classList.add('is-panning');
-      stage.setPointerCapture(event.pointerId);
+      points.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+      if (points.size === 2) {
+        // Freeze the scale this gesture started from, so the whole pinch is
+        // measured against one baseline rather than accumulating rounding from
+        // every move event.
+        pinchDistance = spread();
+        pinchZoom = zoom;
+        stage.classList.remove('is-panning');
+        return;
+      }
+      if (points.size === 1 && zoom > 1) {
+        stage.classList.add('is-panning');
+        stage.setPointerCapture(event.pointerId);
+      }
     });
 
     stage.addEventListener('pointermove', (event) => {
-      if (!dragging) return;
-      panX += event.clientX - lastX;
-      panY += event.clientY - lastY;
-      lastX = event.clientX;
-      lastY = event.clientY;
-      applyZoom();
+      const last = points.get(event.pointerId);
+      if (!last) return;
+      const dx = event.clientX - last.x;
+      const dy = event.clientY - last.y;
+      points.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+      if (points.size >= 2) {
+        if (pinchDistance === 0) return;
+        const centre = midpoint();
+        // The ratio against the gesture's own baseline, applied to the scale it
+        // began at — `zoomAt` takes a factor relative to the current zoom, so
+        // this is the target over where we are now.
+        const target = Math.min(MAX_ZOOM, Math.max(1, (pinchZoom * spread()) / pinchDistance));
+        zoomAt(target / zoom, centre.x, centre.y);
+        return;
+      }
+
+      if (stage.classList.contains('is-panning')) {
+        panX += dx;
+        panY += dy;
+        applyZoom();
+      }
     });
 
-    const endDrag = (event: PointerEvent) => {
-      if (!dragging) return;
-      dragging = false;
-      stage.classList.remove('is-panning');
+    /**
+     * Double-tap to zoom, the gesture every phone photo viewer has, and on a
+     * touch screen the easiest way back out.
+     *
+     * The guards are not decoration. Lifting two fingers from a pinch fires two
+     * `pointerup` events milliseconds apart, and a naive handler reads that as a
+     * double-tap and throws the pinch away the instant it finishes — which is
+     * exactly what happened here, and it looked like pinch was not working at
+     * all rather than working and being undone. So a tap only counts when the
+     * gesture used one finger, that finger barely moved, and it was brief.
+     */
+    const TAP_SLOP = 10;
+    const TAP_TIME = 250;
+    let maxPointers = 0;
+    let downAt = 0;
+    let downX = 0;
+    let downY = 0;
+    let lastTap = 0;
+
+    stage.addEventListener('pointerdown', (event) => {
+      maxPointers = Math.max(maxPointers, points.size);
+      if (points.size === 1) {
+        downAt = Date.now();
+        downX = event.clientX;
+        downY = event.clientY;
+      }
+    });
+
+    const endPointer = (event: PointerEvent) => {
+      const wasSingle = maxPointers === 1;
+      points.delete(event.pointerId);
+      if (points.size < 2) pinchDistance = 0;
+      if (points.size === 0) {
+        stage.classList.remove('is-panning');
+        maxPointers = 0;
+      }
       if (stage.hasPointerCapture(event.pointerId)) stage.releasePointerCapture(event.pointerId);
+
+      if (event.pointerType === 'mouse' || !wasSingle) return;
+      const moved = Math.hypot(event.clientX - downX, event.clientY - downY);
+      if (moved > TAP_SLOP || Date.now() - downAt > TAP_TIME) return;
+
+      const now = Date.now();
+      if (now - lastTap < 300) {
+        if (zoom > 1) resetZoom();
+        else zoomAt(2.5, event.clientX, event.clientY);
+        lastTap = 0;
+        return;
+      }
+      lastTap = now;
     };
-    stage.addEventListener('pointerup', endDrag);
-    stage.addEventListener('pointercancel', endDrag);
+    stage.addEventListener('pointerup', endPointer);
+    stage.addEventListener('pointercancel', endPointer);
   }
 
   /** Warm the neighbours so stepping through does not flash an empty frame. */
