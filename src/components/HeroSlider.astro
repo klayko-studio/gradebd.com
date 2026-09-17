@@ -179,7 +179,15 @@ const { slides, edit = {} } = Astro.props;
   </div>
 
   <!-- controls -->
-  <div class="rail relative z-10 flex shrink-0 flex-wrap items-center gap-5 pb-8">
+  {/*
+    `gap-3` until `sm`, and the arrows are smaller there too. At 320px wide —
+    an iPhone SE — the dots and the arrows came to 304px inside 280px of rail
+    and the row wrapped onto two lines, which pushed the whole hero 47px past
+    the fold. That was a regression from widening the dots' hit areas: before
+    them the row was 248px and had room to spare. Both engines did it, so it is
+    arithmetic rather than a browser quirk.
+  */}
+  <div class="rail relative z-10 flex shrink-0 flex-wrap items-center gap-3 pb-8 sm:gap-5">
     <!-- "01 / 06 — ALL ITEMS" is gone, on the client's instruction. The dots stay:
          they are the control, not a caption, and they are the only thing that
          says how many slides there are. -->
@@ -228,7 +236,7 @@ const { slides, edit = {} } = Astro.props;
         type="button"
         data-slide-prev
         aria-label="Previous slide"
-        class="flex h-14 w-14 items-center justify-center rounded-sharp border border-white/50
+        class="flex h-11 w-11 items-center justify-center rounded-sharp border border-white/50 sm:h-14 sm:w-14
                bg-[color:rgb(10_82_115/0.22)] text-white backdrop-blur-[2px] transition-colors
                hover:border-white hover:bg-[color:rgb(10_82_115/0.5)]"
       >
@@ -240,7 +248,7 @@ const { slides, edit = {} } = Astro.props;
         type="button"
         data-slide-next
         aria-label="Next slide"
-        class="flex h-14 w-14 items-center justify-center rounded-sharp border border-white/50
+        class="flex h-11 w-11 items-center justify-center rounded-sharp border border-white/50 sm:h-14 sm:w-14
                bg-[color:rgb(10_82_115/0.22)] text-white backdrop-blur-[2px] transition-colors
                hover:border-white hover:bg-[color:rgb(10_82_115/0.5)]"
       >
