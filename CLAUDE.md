@@ -642,7 +642,7 @@ To check for others: build, then grep the generated CSS in `dist/client/_astro/*
 `bg-`/`text-`/`border-` class used in `src/`. Two phantoms out of thirty utilities, both in the one
 component nobody had opened in dark mode.
 
-## Adding a CMS field is two steps on a live install, not one
+## Adding a CMS field is three steps, not one
 
 `ensureField` is create-only and `seedContent` bails out once content exists, so
 `--schema-only` leaves a live Directus holding new columns with nothing in them. The site then
@@ -650,6 +650,12 @@ renders the new markup against nulls and the section comes out as an empty shape
 shipped: Home's social band went to production with no heading, no artwork and the pre-change two
 icons, while the same commit looked correct locally. Reproduced by blanking those fields in a local
 Directus, which reproduced the production screenshot exactly.
+
+**And the seed alone does not reach it.** `backfill.mjs` carries an explicit per-collection
+allowlist of the keys it offers — `await fill('site', { company_name, tagline, … })` — so a field
+added to `schema.ts`, `model.mjs` and `src/content/*.json` still reports `site: nothing empty` and
+stays null forever. The column exists, the seed has a value, and nothing connects them. Add the key
+to that object too; this cost a debugging round on `footer_cta_label`.
 
 `npm run directus:bootstrap -- --fill-empty` (`--dry-run` to look first) fills only fields whose
 current value is empty, so it cannot overwrite a moderator's edit; `--force` would, and is the wrong
