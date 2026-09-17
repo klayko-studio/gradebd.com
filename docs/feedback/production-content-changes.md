@@ -175,3 +175,29 @@ admin if you want the tidiness.
 description for every picture; the running instance does not, so the site is shipping images with
 empty `alt`. That is not from this feedback round and is not fixed here, but it is a real
 accessibility gap and worth scheduling.
+
+---
+
+## Added 17 September — one tick the backfill cannot do
+
+`seo_noindex` is a new switch on every page's SEO group. **All Products** is the
+one page that needs it on: it repeats all five category pages' catalogue in a single
+document, and left indexable it would compete with the focused category pages for
+the queries those pages are written for. `follow` is implied, so the ranking it
+receives still passes through to the pages it links to.
+
+`--fill-empty` cannot set it. The field is created with a default of `false`, and
+`false` is a real stored value rather than an empty one — the same rule that keeps
+the backfill away from `socials.confirmed`. So it is a tick in the admin, once.
+
+| # | Where | Field | Change to |
+| --- | --- | --- | --- |
+| 29 | `Content → All Products` | `seo_noindex` | **on** |
+
+```
+  [ ] 29 all_products.seo_noindex → on
+```
+
+Leave it off everywhere else. `/products/` is also deliberately absent from
+`sitemap.xml` for the same reason — listing a noindexed URL asks a crawler to come
+and be told to go away.

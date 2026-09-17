@@ -141,6 +141,10 @@ const collection = (name, { icon, note, singleton = false, template, fields, sor
 const SEO = [
   F.string('seo_title', { note: 'Browser tab and search result title.' }),
   F.text('seo_description', { note: 'The search-result snippet. Around 155 characters.' }),
+  F.boolean('seo_noindex', {
+    default: false,
+    note: 'Keep this page out of search results. Links on it are still followed, so it passes ranking on to the pages it links to. Used on All Products, which repeats the whole catalogue.',
+  }),
 ];
 
 const BANNER = [

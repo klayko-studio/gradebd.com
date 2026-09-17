@@ -290,6 +290,9 @@ const toLines = (value: unknown): string[] =>
 const seo = (row: Record<string, unknown>, fallback: { title: string; description: string }) => ({
   title: (row.seo_title as string) || fallback.title,
   description: (row.seo_description as string) || fallback.description,
+  /* `noindex` has been in the schema since the start and nothing ever read it,
+     so `Base.astro`'s robots tag could never fire. It can now. */
+  noindex: Boolean(row.seo_noindex),
 });
 
 const banner = (row: Record<string, unknown>) => ({

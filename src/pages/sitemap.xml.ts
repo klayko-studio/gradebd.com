@@ -18,7 +18,12 @@ export const GET: APIRoute = async ({ site }) => {
   const paths = [
     { path: '/', priority: '1.0' },
     { path: '/about/', priority: '0.7' },
-    { path: '/products/', priority: '0.9' },
+    /* /products/ is deliberately absent. It carries `noindex, follow` because it
+       repeats all five category pages' catalogue in one document, and listing a
+       noindexed URL in a sitemap is a contradictory signal — it asks a crawler to
+       come and be told to go away. It is still reachable from the menu, and
+       `follow` means the ranking it receives passes through to the category
+       pages it links to. */
     ...categories.map((category) => ({ path: `/${category.slug}/`, priority: '0.8' })),
     { path: '/gallery/', priority: '0.6' },
     { path: '/contact/', priority: '0.7' },

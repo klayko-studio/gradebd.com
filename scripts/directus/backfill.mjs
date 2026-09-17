@@ -185,6 +185,7 @@ export async function backfillContent(client, { dryRun = false } = {}) {
   await fill('all_products', {
     seo_title: allProducts.seo?.title,
     seo_description: allProducts.seo?.description,
+    seo_noindex: allProducts.seo?.noindex,
     banner_eyebrow: allProducts.banner?.eyebrow,
     banner_title: allProducts.banner?.title,
     banner_sub: allProducts.banner?.sub,
