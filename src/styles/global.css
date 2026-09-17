@@ -254,10 +254,33 @@
     letter-spacing: 0.01em;
   }
 
-  /* Content rail: 1200px column inside 120px gutters, collapsing on smaller screens. */
+  /**
+   * Content rail: the margin is the whole rule, ceiling 120px — the artboard's
+   * own gutter, and the value the client chose.
+   *
+   * It used to cap at 1200 + two gutters and centre itself, so content grew with
+   * the window up to 1440px and then stopped — every pixel past that went into
+   * the margins. At 1920 the logo sat 336px from the edge and at 2560 it sat
+   * 680px in, which is the client's "contents move toward center when the screen
+   * size is increased".
+   *
+   * Removing the cap leaves the existing clamp doing all the work: the margin is
+   * 5vw until it reaches 120px at 2400 wide and is flat from there. So it drifts
+   * 72px → 120px across the whole 1440–2400 range instead of 72px → 560px, and
+   * every width at or below 1440 — which is everything the client has approved —
+   * renders exactly as before. Pinning it at a hard 120px everywhere was the
+   * alternative and was rejected: it would have narrowed the 1440 artboard from
+   * 1296px of content to 1200px, changing a layout nobody complained about.
+   *
+   * It applies to the whole page rather than only to the header and hero the
+   * client marked, because the logo, the hero headline and the first section
+   * heading all share one left edge — fixing two of the three would have left a
+   * 216px step at 1920 and read as a mistake. Long prose keeps a reading-width
+   * cap of its own (`max-w-[58ch]` and friends); a paragraph set 2300px wide is
+   * unreadable however well it aligns.
+   */
   .rail {
     width: 100%;
-    max-width: calc(var(--layout-content-max) + var(--layout-gutter) * 2);
     margin-inline: auto;
     padding-inline: clamp(1.25rem, 5vw, var(--layout-gutter));
   }
