@@ -44,8 +44,34 @@ const requestedSub = Astro.url.searchParams.get('sub');
 const activeSub =
   subcategories.find((entry) => entry.slug === requestedSub)?.slug ?? subcategories[0]?.slug ?? null;
 
-const items = activeRange?.items ?? [];
-const shown = items.filter((item) => !activeSub || item.subcategory === activeSub);
+/**
+ * Every range's items and dialogs are rendered, not just the active one's.
+ *
+ * The first version navigated when the range changed, on the reasoning that a
+ * new range needs a different set of detail dialogs and faking it would mean
+ * either shipping all 38 up front or opening a dialog that is not there. The
+ * client does not want the reload, so it ships all 38 — which is the honest
+ * version of "instant". The cards' images are `loading="lazy"`, so a hidden
+ * range costs markup and not bandwidth until someone looks at it.
+ */
+const everyItem = categories.flatMap((category) =>
+  category.items.map((item) => ({ item, category })),
+);
+
+/** What each range opens on, so the script can switch without a round trip. */
+const firstSub = Object.fromEntries(
+  categories.map((category) => [
+    category.slug,
+    category.hide_subcategory_tabs ? null : (category.subcategories[0]?.slug ?? null),
+  ]),
+);
+
+const visible = (item: { subcategory?: string | null }, categorySlug: string, sub: string | null) =>
+  categorySlug === activeRange?.slug && (!sub || item.subcategory === sub);
+
+const shownCount = (activeRange?.items ?? []).filter(
+  (item) => !activeSub || item.subcategory === activeSub,
+).length;
 ---
 
 <Base seo={allProducts.seo} active="categories">
@@ -91,30 +117,45 @@ const shown = items.filter((item) => !activeSub || item.subcategory === activeSu
         }
       </nav>
 
+      {/*
+        One row per range, all in the markup, only the active one shown. The
+        row has to change with the range and it cannot be rebuilt from nothing
+        client-side without duplicating the sub-category list in script.
+      */}
       {
-        subcategories.length > 0 && (
-          <nav
-            class="flex flex-wrap gap-x-8 gap-y-3"
-            aria-label={`${activeRange?.name} sub-categories`}
-          >
-            {subcategories.map((sub) => (
-              <a
-                href={`?range=${activeRange?.slug}&sub=${sub.slug}`}
-                class="sub-tab"
-                data-sub-tab={sub.slug}
-                aria-current={sub.slug === activeSub ? 'true' : undefined}
-                style={`--tab-accent:${activeRange?.accent}`}
-              >
-                {sub.name}
-                <span aria-hidden="true" class="sub-tab-rule" />
-              </a>
-            ))}
-          </nav>
+        categories.map((category) =>
+          category.hide_subcategory_tabs || category.subcategories.length === 0 ? null : (
+            <nav
+              class:list={[
+                'flex flex-wrap gap-x-8 gap-y-3',
+                category.slug === activeRange?.slug ? '' : 'hidden',
+              ]}
+              data-sub-row={category.slug}
+              aria-label={`${category.name} sub-categories`}
+            >
+              {category.subcategories.map((sub) => (
+                <a
+                  href={`?range=${category.slug}&sub=${sub.slug}`}
+                  class="sub-tab"
+                  data-sub-tab={sub.slug}
+                  aria-current={
+                    category.slug === activeRange?.slug && sub.slug === activeSub
+                      ? 'true'
+                      : undefined
+                  }
+                  style={`--tab-accent:${category.accent}`}
+                >
+                  {sub.name}
+                  <span aria-hidden="true" class="sub-tab-rule" />
+                </a>
+              ))}
+            </nav>
+          ),
         )
       }
 
       <p class="t-label-sm text-[color:var(--text-muted)]" aria-live="polite" data-count>
-        {shown.length} {shown.length === 1 ? 'product' : 'products'}
+        {shownCount} {shownCount === 1 ? 'product' : 'products'}
       </p>
 
       {/*
@@ -127,12 +168,12 @@ const shown = items.filter((item) => !activeSub || item.subcategory === activeSu
       */}
       <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-reveal-group data-item-grid>
         {
-          items.map((item) => (
+          everyItem.map(({ item, category }) => (
             <ProductCard
               name={item.name}
               meta={item.meta}
               image={item.image}
-              accent={activeRange?.accent}
+              accent={category.accent}
               action="View product details"
               dialogId={`dlg-${item.id}`}
               edit={editable({
@@ -142,7 +183,8 @@ const shown = items.filter((item) => !activeSub || item.subcategory === activeSu
                 mode: 'drawer',
               })}
               subcategory={item.subcategory}
-              class={item.subcategory === activeSub || !activeSub ? '' : 'hidden'}
+              range={category.slug}
+              class={visible(item, category.slug, activeSub) ? '' : 'hidden'}
             />
           ))
         }
@@ -157,12 +199,15 @@ const shown = items.filter((item) => !activeSub || item.subcategory === activeSu
     page. Switching range is a navigation, so the next set arrives with it.
   */}
   {
-    items.map((item) => (
-      <ProductDialog item={item} accent={activeRange?.accent} categoryName={activeRange?.name} />
+    everyItem.map(({ item, category }) => (
+      <ProductDialog item={item} accent={category.accent} categoryName={category.name} />
     ))
   }
 
   <ImageLightbox id="product-lightbox" label="Product images" captions={false} />
+
+  {/* Data, not code — which range opens on which sub-category. */}
+  <script is:inline type="application/json" data-first-sub set:html={JSON.stringify(firstSub)} />
 </Base>
 
 <style>
@@ -215,40 +260,76 @@ const shown = items.filter((item) => !activeSub || item.subcategory === activeSu
   import { mountLightbox } from '../scripts/lightbox';
 
   /**
-   * The sub-category row switches in place; the range row does not.
+   * Both rows switch in place. Nothing here navigates.
    *
-   * Sub-categories are all in the markup already, so hiding and showing is
-   * instant and honest. Changing range needs a different set of products *and*
-   * a different set of detail dialogs, so it is left as a real navigation rather
-   * than faked — a client-side swap would either ship all 38 dialogs up front or
-   * open a dialog that is not there.
+   * The range row used to be a real navigation, because a different range needs
+   * a different set of detail dialogs and the alternative was shipping all 38.
+   * The client did not want the reload, so all 38 are shipped and this is pure
+   * filtering — the same thing the sub-category row was already doing.
+   *
+   * The anchors keep their real `href`, so without JavaScript every tab is still
+   * a working link the server answers; this only takes over the click.
    */
   const grid = document.querySelector<HTMLElement>('[data-item-grid]');
   const count = document.querySelector<HTMLElement>('[data-count]');
-  const subTabs = [...document.querySelectorAll<HTMLAnchorElement>('[data-sub-tab]')];
+  const rangeTabs = [...document.querySelectorAll<HTMLAnchorElement>('[data-range-tab]')];
+  const subRows = [...document.querySelectorAll<HTMLElement>('[data-sub-row]')];
+  const raw = document.querySelector<HTMLScriptElement>('[data-first-sub]');
+  const firstSub: Record<string, string | null> = JSON.parse(raw?.textContent || '{}');
 
-  if (grid && subTabs.length > 0) {
-    subTabs.forEach((tab) => {
+  if (grid) {
+    let range = rangeTabs.find((t) => t.hasAttribute('aria-current'))?.dataset.rangeTab ?? '';
+    let sub = document.querySelector<HTMLElement>('[data-sub-tab][aria-current]')?.dataset.subTab ?? null;
+
+    const mark = (tabs: HTMLElement[], on: HTMLElement | null) => {
+      tabs.forEach((tab) => {
+        if (tab === on) tab.setAttribute('aria-current', 'true');
+        else tab.removeAttribute('aria-current');
+      });
+    };
+
+    const apply = () => {
+      // Only the active range's sub-row is on screen; the others stay in the
+      // markup so switching back does not have to rebuild them.
+      subRows.forEach((row) => row.classList.toggle('hidden', row.dataset.subRow !== range));
+
+      const row = subRows.find((r) => r.dataset.subRow === range);
+      const tabs = row ? [...row.querySelectorAll<HTMLElement>('[data-sub-tab]')] : [];
+      mark(tabs, tabs.find((t) => t.dataset.subTab === sub) ?? null);
+
+      let visible = 0;
+      grid.querySelectorAll<HTMLElement>('[data-range]').forEach((card) => {
+        const show = card.dataset.range === range && (!sub || card.dataset.sub === sub);
+        card.classList.toggle('hidden', !show);
+        if (show) visible += 1;
+      });
+      if (count) count.textContent = `${visible} ${visible === 1 ? 'product' : 'products'}`;
+
+      const url = sub ? `?range=${range}&sub=${sub}` : `?range=${range}`;
+      // replaceState, not pushState: a filter change is not a place in history,
+      // and Back should leave the page rather than walk the tabs.
+      history.replaceState(null, '', url);
+    };
+
+    rangeTabs.forEach((tab) => {
       tab.addEventListener('click', (event) => {
         event.preventDefault();
-        const group = tab.dataset.subTab;
+        range = tab.dataset.rangeTab ?? range;
+        // A range opens on its own first group, not on whatever the last one
+        // happened to be — the two ranges rarely share a sub-category name.
+        sub = firstSub[range] ?? null;
+        mark(rangeTabs, tab);
+        apply();
+      });
+    });
 
-        subTabs.forEach((other) => {
-          if (other === tab) other.setAttribute('aria-current', 'true');
-          else other.removeAttribute('aria-current');
+    subRows.forEach((row) => {
+      row.querySelectorAll<HTMLElement>('[data-sub-tab]').forEach((tab) => {
+        tab.addEventListener('click', (event) => {
+          event.preventDefault();
+          sub = tab.dataset.subTab ?? null;
+          apply();
         });
-
-        let visible = 0;
-        grid.querySelectorAll<HTMLElement>('[data-sub]').forEach((card) => {
-          const match = card.dataset.sub === group;
-          card.classList.toggle('hidden', !match);
-          if (match) visible += 1;
-        });
-        if (count) count.textContent = `${visible} ${visible === 1 ? 'product' : 'products'}`;
-
-        // The URL keeps up so the tab can be linked to and the back button is
-        // not filled with entries for a filter change.
-        history.replaceState(null, '', tab.href);
       });
     });
   }

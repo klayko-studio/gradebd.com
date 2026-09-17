@@ -27,6 +27,12 @@ interface Props {
   class?: string;
   /** Which sub-category this card belongs to, for the tab filter. */
   subcategory?: string | null;
+  /**
+   * Which range this card belongs to. Only the All Products page sets it: that
+   * page holds every range at once and filters on both axes, where a category
+   * page holds one range and filters on sub-category alone.
+   */
+  range?: string | null;
 }
 
 const {
@@ -41,6 +47,7 @@ const {
   edit = {},
   class: className = '',
   subcategory,
+  range,
 } = Astro.props;
 const ratio = imageHeight === 'short' ? 'aspect-[16/10]' : 'aspect-[4/3]';
 
@@ -70,6 +77,7 @@ const control = dialogId
   {...control}
   {...edit}
   data-sub={subcategory ?? undefined}
+  data-range={range ?? undefined}
   data-reveal
   aria-label={`${name} — ${action}`}
   class:list={['group flex flex-col gap-1.5 text-left', className]}
