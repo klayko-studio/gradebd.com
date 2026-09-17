@@ -53,12 +53,12 @@ The label on item 2 belongs outside the anchor, for the same reason as in the fo
 not a phone number, and putting it inside the link makes a screen reader announce it as part of the
 destination.
 
-### Batch 2 — items 4 and 6 done, 17 September. Item 5 on hold.
+### Batch 2 — done, 17 September
 
 | # | Item | Where | Change |
 | --- | --- | --- | --- |
 | 4 | **Hero exceeds the viewport on short screens, pushing next/prev out** | `HeroSlider.astro` | ✅ `py-16` → `py-[clamp(1rem,7svh,4rem)]`, plus a height-aware cap on the headline. All six slides fit at 1280x560 and up; phones unchanged. |
-| 5 | Header and hero should keep fixed side margins on wide screens — **on hold, awaiting the margin value** | `global.css` `.rail`, `Header.astro`, `HeroSlider.astro` | A variant rail that does not cap its width. |
+| 5 | Header and hero should keep fixed side margins on wide screens | `global.css` `.rail` | ✅ The `max-width` cap is gone; the margin is 5vw to a 120px ceiling, the value the client chose. 1440 and below unchanged; 1920 goes 336px → 96px and 2560 goes 680px → 120px. |
 | 6 | Full-screen image viewer should zoom on mouse scroll | `src/scripts/lightbox.ts` | ✅ Wheel zoom 1–4x about the cursor, drag to pan, clamped to the picture, `+`/`-`/`0` on the keyboard, reset on slide change and close. |
 
 **Item 4 is the one that collides with a same-day instruction, so read this before starting it.**
@@ -91,9 +91,18 @@ and check the phone breakpoint has not moved.
 **Item 5** is a real change of rule, not a tweak. `.rail` is
 `max-width: calc(1200px + 2 × gutter); margin-inline: auto`, so past about 1416px the content stops
 moving outward and the side gap keeps growing — which is the "moves toward center" they describe.
-They want a constant margin instead. **On hold for the margin value** — see question 3 below. The
-scope is settled: the whole page follows, not just the two elements they marked, for the reason set
-out under question 4.
+They want a constant margin instead. The client chose **120px**, the artboard's own gutter, and it is
+applied as a ceiling rather than as a hard value everywhere: pinning it would have narrowed the 1440
+artboard from 1296px of content to 1200px, changing a layout nobody complained about and which they
+have approved in every screenshot so far. As a ceiling, nothing at or below 1440 moves at all.
+
+Measured at eight widths from 390 to 2560 — the logo, the hero headline and the first section
+heading share one left edge at every one of them, body copy holds at 568px, and nothing scrolls
+horizontally.
+
+**Show them 1440 / 1920 / 2560 before calling it signed off.** At 2560 the five-up client logo row
+gives each mark a very wide cell and the six pending placeholders read as long empty bars. Airy
+rather than broken, but it is a different page from the one they have been approving.
 
 **Item 6** — the screenshot is the full-screen `ImageLightbox`, not the product dialog. Wheel to
 zoom about the cursor, a reset on close and on changing slide, and drag to pan once zoomed past 1.
@@ -162,7 +171,7 @@ This is the one genuine build in the round; the other seven are edits. Do it las
 | --- | --- | --- |
 | 1 | Red border on product cards — keep or drop? | **Drop.** The zoom replaces it. Done. |
 | 2 | Footer button — Home only or every page? | **Home only**, where they marked it. The inner pages keep the social row in that slot. |
-| 3 | How wide is the fixed margin? | **Later** — they will supply it. Item 5 is on hold for the value; nothing else waits on it. |
+| 3 | How wide is the fixed margin? | **120px** — the artboard gutter. Applied as a ceiling; see item 5. |
 | 4 | Does the rest of the site follow the header and hero out of the 1200 column? | **Our call.** Decided below. |
 
 ### On question 4 — the whole page follows, with one exception
