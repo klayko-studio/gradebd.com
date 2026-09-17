@@ -228,9 +228,13 @@
     font-size: 0.75rem;
     line-height: 1.34;
   }
+  /* 12px, up from 11. It is the smallest type on the site and it carries the
+     corporate client names in white on the navy band — the lowest-contrast text
+     there is. Uppercase at 600 with 0.1em tracking still reads as a label at
+     this size, so nothing about the style changes. */
   .t-label-xs {
     font-weight: 600;
-    font-size: 0.6875rem;
+    font-size: 0.75rem;
     line-height: 1.28;
     letter-spacing: 0.1em;
     text-transform: uppercase;

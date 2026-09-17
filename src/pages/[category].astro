@@ -128,10 +128,15 @@ const activeSub =
 
 <style>
   /* Text tabs with the range's accent under the active one, as drawn. */
+  /* `padding-block` takes the tab from 36px to 44px without moving anything by
+     eye: the gap between the label and its rule is set by `gap`, so the padding
+     only grows the box. On a phone this row is the main control on the page and
+     36px was under the touch-target floor. */
   .sub-tab {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    padding-block: 0.25rem;
     font-size: 0.9375rem;
     color: var(--text-muted);
     transition: color 160ms var(--ease-standard);

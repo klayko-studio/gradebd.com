@@ -169,11 +169,16 @@ const shown = items.filter((item) => !activeSub || item.subcategory === activeSu
   /* Both rows are the range pages' own tab treatment, so the two pages look like
      one template — which is what "fixed template" on the sketch asks for. The
      range row sits a step larger, because it governs the row beneath it. */
+  /* `padding-block` takes the tab from 36px to 44px without moving anything by
+     eye: the gap between the label and its rule is set by `gap`, so the padding
+     only grows the box. On a phone this row is the main control on the page and
+     36px was under the touch-target floor. */
   .range-tab,
   .sub-tab {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    padding-block: 0.25rem;
     color: var(--text-muted);
     transition: color 160ms var(--ease-standard);
   }

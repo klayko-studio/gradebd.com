@@ -183,7 +183,23 @@ const { slides, edit = {} } = Astro.props;
     <!-- "01 / 06 — ALL ITEMS" is gone, on the client's instruction. The dots stay:
          they are the control, not a caption, and they are the only thing that
          says how many slides there are. -->
-    <div class="flex items-center gap-2" role="tablist" aria-label="Choose slide">
+    {/*
+      No gap: each dot's own padding separates it now, and doubling up would push
+      the row into the arrows on a phone.
+    */}
+    <div class="flex items-center" role="tablist" aria-label="Choose slide">
+      {/*
+        The rule people see is 3px tall; the thing they tap is the button around
+        it. As one element it measured 28x3 and 8x3 — visually right, and on a
+        touch screen effectively unhittable. Now 24x43, which clears WCAG 2.5.8's
+        24x24 floor.
+
+        The padding is transparent, but it is not free: it replaced the row's
+        8px gap, so the dots sit 16px apart rather than 8. `px-2` is the least
+        that still clears the floor, which keeps that change as small as it can
+        be — anything tighter buys back a few pixels of spacing and gives up the
+        target again.
+      */}
       {
         slides.map((slide, i) => (
           <button
@@ -192,11 +208,17 @@ const { slides, edit = {} } = Astro.props;
             data-slide-dot={i}
             aria-selected={i === 0 ? 'true' : 'false'}
             aria-label={slide.label}
-            class:list={[
-              'h-[3px] rounded-full transition-all duration-300',
-              i === 0 ? 'w-7 bg-brand' : 'w-2 bg-white/35 hover:bg-white/60',
-            ]}
-          ></button>
+            class="group flex items-center px-2 py-5"
+          >
+            <span
+              aria-hidden="true"
+              data-slide-rule
+              class:list={[
+                'block h-[3px] rounded-full transition-all duration-300',
+                i === 0 ? 'w-7 bg-brand' : 'w-2 bg-white/35 group-hover:bg-white/60',
+              ]}
+            />
+          </button>
         ))
       }
     </div>
@@ -275,10 +297,13 @@ const { slides, edit = {} } = Astro.props;
       dots.forEach((dot, i) => {
         const active = i === next;
         dot.setAttribute('aria-selected', String(active));
-        dot.classList.toggle('w-7', active);
-        dot.classList.toggle('bg-brand', active);
-        dot.classList.toggle('w-2', !active);
-        dot.classList.toggle('bg-white/35', !active);
+        // The width and colour live on the rule inside the button now, because
+        // the button itself is the (much larger) hit area.
+        const rule = dot.querySelector('[data-slide-rule]');
+        rule?.classList.toggle('w-7', active);
+        rule?.classList.toggle('bg-brand', active);
+        rule?.classList.toggle('w-2', !active);
+        rule?.classList.toggle('bg-white/35', !active);
       });
 
       // Let the motion layer re-run the line reveal for the slide now on screen.
