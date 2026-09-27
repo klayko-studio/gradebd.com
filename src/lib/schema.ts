@@ -25,6 +25,20 @@ export const imageSchema = z.object({
 });
 export type Image = z.infer<typeof imageSchema>;
 
+/**
+ * A video file. Directus hands back the same shape for any file it holds, so
+ * this is `imageSchema` under a name that says what is in it: `alt` is the
+ * video's accessible name, `mime` is what the <source> declares, and
+ * `width`/`height` are the frame size where Directus could read them.
+ *
+ * The client asked for video alongside the photographs on products and in the
+ * Gallery. Nothing is seeded — no footage has been supplied — so every one of
+ * these is empty until a moderator uploads one, and every component that reads
+ * them renders exactly as it does today while they are.
+ */
+export const videoSchema = imageSchema;
+export type Video = Image;
+
 export const seoSchema = z.object({
   title: z.string().min(1),
   description: z.string().min(1),
@@ -209,7 +223,19 @@ export const gallerySchema = z.object({
   seo: seoSchema,
   banner: bannerSchema,
   images: z
-    .array(z.object({ image: imageSchema, caption: z.string(), tag: z.string() }))
+    .array(
+      z.object({
+        image: imageSchema,
+        caption: z.string(),
+        tag: z.string(),
+        /**
+         * Optional footage for this plate. `image` stays the poster either way,
+         * which is what keeps the grid looking the same and stops a video plate
+         * opening as a black rectangle while the first frame loads.
+         */
+        video: videoSchema.nullable().default(null),
+      }),
+    )
     .min(1),
 });
 export type Gallery = z.infer<typeof gallerySchema>;
@@ -287,6 +313,12 @@ export const itemSchema = z.object({
    * single card image. The thumbnail strip appears as soon as a second view exists.
    */
   images: z.array(imageSchema).default([]),
+  /**
+   * Product footage, shown in the detail pop-up after the stills. They share one
+   * thumbnail strip and one viewer, so a video is just another view of the
+   * product rather than a second gallery to build and keep in step.
+   */
+  videos: z.array(videoSchema).default([]),
 });
 export type Item = z.infer<typeof itemSchema>;
 

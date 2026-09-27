@@ -1,10 +1,15 @@
 ---
 /**
- * Full-screen image viewer — markup only; `src/scripts/lightbox.ts` drives it.
+ * Full-screen media viewer — markup only; `src/scripts/lightbox.ts` drives it.
  *
  * One dialog per page rather than one per picture: the images are large, and
  * thirty copies of the same markup to show one at a time is thirty times the DOM
  * for no gain. Whoever opens it hands it the list.
+ *
+ * It shows videos as well as stills. A slide carrying `type: 'video'` swaps the
+ * <img> for the <video> below and takes the zoom controls off the bar — a video
+ * element has its own controls and scaling one by transform would move its
+ * native UI off screen with it.
  */
 interface Props {
   id: string;
@@ -13,6 +18,11 @@ interface Props {
   captions?: boolean;
 }
 const { id, label, captions = true } = Astro.props;
+
+const roundButton =
+  'grid place-items-center rounded-full bg-[color:rgb(255_255_255/0.16)] text-white ' +
+  'transition-colors hover:bg-[color:rgb(255_255_255/0.3)] ' +
+  'disabled:pointer-events-none disabled:opacity-35';
 ---
 
 <dialog {id} class="lightbox border-0 bg-transparent p-0" aria-label={label}>
@@ -20,16 +30,70 @@ const { id, label, captions = true } = Astro.props;
     class="relative flex h-full w-full flex-col items-center justify-center gap-4 p-4 md:p-8"
     data-lightbox-backdrop
   >
-    <!-- The close and step controls sit above the picture on every size, so they
-         never end up over the image on a narrow screen. -->
-    <div class="flex w-full max-w-[1200px] shrink-0 items-center justify-between gap-4">
-      <p class="t-label-sm text-[color:rgb(255_255_255/0.9)]" data-lightbox-counter>
+    <!-- The close and zoom controls sit above the picture on every size, so they
+         never end up over the image on a narrow screen.
+
+         A three-column grid rather than `justify-between`: the counter and the
+         zoom group are each hidden in some states (a single image, a video), and
+         a grid keeps the remaining controls where they were instead of letting
+         them slide across the bar.
+
+         Each one names its own column, which is the part that actually makes
+         that true. A `display: none` item is removed from the grid rather than
+         leaving its cell empty, so with auto-placement the close button simply
+         moved up into the gap — on a video it ended up in the middle of the
+         bar. -->
+    <div
+      class="grid w-full max-w-[1200px] shrink-0 grid-cols-[1fr_auto_1fr] items-center gap-3"
+    >
+      <p class="col-start-1 t-label-sm text-[color:rgb(255_255_255/0.9)]" data-lightbox-counter>
         <span data-lightbox-index>1</span> / <span data-lightbox-total>1</span>
       </p>
+
+      <!-- Zoom, on the client's "add one click to Zoom In & one click to Zoom
+           Out". The wheel and the pinch were already there; what was missing was
+           a control you can see, which is also the only way in on a machine with
+           no wheel and no touch screen. -->
+      <div
+        class="col-start-2 flex items-center gap-1 rounded-full bg-[color:rgb(255_255_255/0.12)] p-1"
+        data-lightbox-zoom-controls
+      >
+        <button type="button" class={`${roundButton} size-9`} data-lightbox-zoom-out aria-label="Zoom out">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"></circle>
+            <path d="M8 11h6M20 20l-3.8-3.8" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+          </svg>
+        </button>
+
+        <!-- A button, not a label: it reads as the current zoom and pressing it
+             puts the picture back to fit, which is the one action a reader who
+             has zoomed too far actually wants. -->
+        <button
+          type="button"
+          class="min-w-[4.5rem] rounded-full px-2 py-1.5 t-label-sm text-[color:rgb(255_255_255/0.9)]
+                 transition-colors hover:bg-[color:rgb(255_255_255/0.18)]
+                 disabled:pointer-events-none disabled:opacity-60"
+          data-lightbox-zoom-reset
+          aria-label="Reset zoom to fit"
+        >
+          <span data-lightbox-zoom-level>100%</span>
+        </button>
+
+        <button type="button" class={`${roundButton} size-9`} data-lightbox-zoom-in aria-label="Zoom in">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"></circle>
+            <path
+              d="M11 8v6M8 11h6M20 20l-3.8-3.8"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"></path>
+          </svg>
+        </button>
+      </div>
+
       <button
         type="button"
-        class="ms-auto grid size-11 place-items-center rounded-full bg-[color:rgb(255_255_255/0.16)]
-               text-white transition-colors hover:bg-[color:rgb(255_255_255/0.3)]"
+        class={`${roundButton} col-start-3 size-11 justify-self-end`}
         data-lightbox-close
         aria-label="Close viewer"
       >
@@ -46,8 +110,7 @@ const { id, label, captions = true } = Astro.props;
     <div class="flex min-h-0 w-full max-w-[1200px] flex-1 items-center gap-3 md:gap-5">
       <button
         type="button"
-        class="grid size-11 shrink-0 place-items-center rounded-full bg-[color:rgb(255_255_255/0.16)]
-               text-white transition-colors hover:bg-[color:rgb(255_255_255/0.3)] md:size-14"
+        class={`${roundButton} size-11 shrink-0 md:size-14`}
         data-lightbox-prev
         aria-label="Previous image"
       >
@@ -78,12 +141,39 @@ const { id, label, captions = true } = Astro.props;
           class="h-full w-full rounded-sharp object-contain"
           data-lightbox-image
         />
+
+        {/*
+          The video half of the stage. `playsinline` so a phone plays it in the
+          frame rather than handing it to the OS player, `preload="metadata"` so
+          the poster and duration arrive without pulling the whole file down for
+          a viewer who never presses play.
+        */}
+        <video
+          class="hidden h-full w-full rounded-sharp object-contain"
+          data-lightbox-video
+          controls
+          playsinline
+          preload="metadata"></video>
+
+        {/*
+          The drag hint. The panning has always worked, but nothing on screen
+          said so — the client zoomed in and asked for a way to reach the rest of
+          the picture. It only appears once there is something to drag to.
+        */}
+        <p
+          class="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full
+                 bg-[color:rgb(6_20_28/0.66)] px-3 py-1.5 t-label-xs whitespace-nowrap
+                 text-[color:rgb(255_255_255/0.92)] opacity-0 transition-opacity duration-200"
+          data-lightbox-hint
+          aria-hidden="true"
+        >
+          Drag to move around
+        </p>
       </div>
 
       <button
         type="button"
-        class="grid size-11 shrink-0 place-items-center rounded-full bg-[color:rgb(255_255_255/0.16)]
-               text-white transition-colors hover:bg-[color:rgb(255_255_255/0.3)] md:size-14"
+        class={`${roundButton} size-11 shrink-0 md:size-14`}
         data-lightbox-next
         aria-label="Next image"
       >
@@ -129,9 +219,9 @@ const { id, label, captions = true } = Astro.props;
   /**
    * Zoom state, driven by the script.
    *
-   * `touch-action: none` unconditionally, and that is load-bearing: a pinch
-   * only reaches the script if the browser is not handling it first. Scoped to
-   * the picture, so the rest of the viewer still scrolls and the page behind the
+   * `touch-action: none` on a still, and that is load-bearing: a pinch only
+   * reaches the script if the browser is not handling it first. Scoped to the
+   * picture, so the rest of the viewer still scrolls and the page behind the
    * dialog is untouched.
    */
   [data-lightbox-stage] {
@@ -143,6 +233,22 @@ const { id, label, captions = true } = Astro.props;
   }
   [data-lightbox-stage].is-panning {
     cursor: grabbing;
+  }
+  /* The hint is a teaching aid, not chrome. It shows when there is first
+     something to drag to and retires itself — on a phone it sits over a third
+     of the picture, which is a poor trade for a sentence nobody needs twice. */
+  [data-lightbox-stage].is-zoomed [data-lightbox-hint] {
+    opacity: 1;
+  }
+  [data-lightbox-stage].is-panning [data-lightbox-hint],
+  [data-lightbox-stage].hint-done [data-lightbox-hint] {
+    opacity: 0;
+  }
+  /* A video owns its own gestures — scrubbing the timeline is a drag, and
+     suppressing touch here would make the native controls unusable on a phone. */
+  [data-lightbox-stage].is-video {
+    cursor: default;
+    touch-action: auto;
   }
   [data-lightbox-image] {
     transform-origin: center center;
@@ -159,6 +265,9 @@ const { id, label, captions = true } = Astro.props;
   @media (prefers-reduced-motion: reduce) {
     .lightbox[open] {
       animation: none;
+    }
+    [data-lightbox-hint] {
+      transition: none;
     }
   }
 </style>

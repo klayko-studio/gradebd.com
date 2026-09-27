@@ -38,29 +38,61 @@ const gallery = await getGallery();
             */}
             <button
               type="button"
-              class="cursor-zoom-in overflow-hidden rounded-sharp border border-line-subtle bg-muted-surface
-                     transition-[transform,box-shadow,border-color] duration-300 ease-[var(--ease-standard)]
-                     group-hover:-translate-y-1 group-hover:border-line-brand
-                     group-hover:shadow-[var(--shadow-raised)]"
+              class:list={[
+                `overflow-hidden rounded-sharp border border-line-subtle bg-muted-surface
+                 transition-[transform,box-shadow,border-color] duration-300 ease-[var(--ease-standard)]
+                 group-hover:-translate-y-1 group-hover:border-line-brand
+                 group-hover:shadow-[var(--shadow-raised)]`,
+                plate.video ? 'cursor-pointer' : 'cursor-zoom-in',
+              ]}
               data-plate
-              data-plate-src={plate.image.src}
+              data-plate-src={plate.video?.src ?? plate.image.src}
+              data-plate-type={plate.video ? 'video' : 'image'}
+              data-plate-poster={plate.image.src}
               data-plate-alt={plate.image.alt}
               data-plate-caption={plate.caption}
               data-plate-tag={plate.tag}
-              aria-label={`${plate.caption} — open image ${i + 1} of ${gallery.images.length}`}
+              aria-label={`${plate.caption} — ${plate.video ? 'play video' : 'open image'} ${i + 1} of ${gallery.images.length}`}
             >
               {/* Comment #32: a slight pop on hover. The plate lifts and the image
                   scales inside its own clip, so nothing shifts around it. */}
-              <img
-                src={plate.image.src}
-                alt={plate.image.alt}
-                width={plate.image.width}
-                height={plate.image.height}
-                loading="lazy"
-                decoding="async"
-                class="aspect-[5/3] w-full object-cover transition-transform duration-500
-                       ease-[var(--ease-standard)] group-hover:scale-[1.04]"
-              />
+              <span class="relative block">
+                <img
+                  src={plate.image.src}
+                  alt={plate.image.alt}
+                  width={plate.image.width}
+                  height={plate.image.height}
+                  loading="lazy"
+                  decoding="async"
+                  class="aspect-[5/3] w-full object-cover transition-transform duration-500
+                         ease-[var(--ease-standard)] group-hover:scale-[1.04]"
+                />
+
+                {/*
+                  A video plate keeps its photograph as the cover and says what
+                  it is with a play mark — the alternative, a <video> in the
+                  grid, would have twelve files downloading their metadata on
+                  first paint to show twelve first frames.
+                */}
+                {plate.video && (
+                  <span
+                    aria-hidden="true"
+                    class="absolute inset-0 grid place-items-center bg-[color:rgb(6_20_28/0.18)]
+                           transition-colors duration-300 group-hover:bg-[color:rgb(6_20_28/0.3)]"
+                  >
+                    <span
+                      class="grid size-14 place-items-center rounded-full bg-[color:rgb(255_255_255/0.92)]
+                             text-[color:var(--text-primary)] shadow-[0_6px_20px_rgb(4_10_16/0.28)]
+                             transition-transform duration-300 ease-[var(--ease-standard)]
+                             group-hover:scale-110"
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5.2v13.6a.6.6 0 0 0 .91.51l11.2-6.8a.6.6 0 0 0 0-1.02L8.91 4.69A.6.6 0 0 0 8 5.2Z" />
+                      </svg>
+                    </span>
+                  </span>
+                )}
+              </span>
             </button>
             <figcaption class="flex flex-wrap items-center justify-between gap-2">
               <span class="t-label-md text-[color:var(--text-primary)]">{plate.caption}</span>
@@ -89,6 +121,10 @@ const gallery = await getGallery();
       alt: plate.dataset.plateAlt ?? '',
       caption: plate.dataset.plateCaption ?? '',
       tag: plate.dataset.plateTag ?? '',
+      type: plate.dataset.plateType === 'video' ? ('video' as const) : ('image' as const),
+      // The plate's own photograph, so the viewer opens on the frame the reader
+      // just pressed rather than on black while the file starts arriving.
+      poster: plate.dataset.platePoster ?? '',
     }));
 
     plates.forEach((plate, index) => {

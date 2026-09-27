@@ -161,7 +161,7 @@ const activeSub =
 </style>
 
 <script>
-  import { mountLightbox } from '../scripts/lightbox';
+  import { mountProductDialogs } from '../scripts/product-dialogs';
 
   /**
    * Sub-category tabs.
@@ -199,8 +199,8 @@ const activeSub =
     }
   }
 
-  // ---- product detail dialogs
-  const viewer = mountLightbox('product-lightbox');
+  // ---- product detail dialogs, shared with All Products
+  mountProductDialogs('product-lightbox');
 
   /**
    * `?item=<sku>` opens that product on arrival. It is how search hands a result
@@ -226,67 +226,6 @@ const activeSub =
     }
     dialog.showModal();
   }
-
-  document.querySelectorAll<HTMLElement>('[data-dialog-open]').forEach((trigger) => {
-    trigger.addEventListener('click', () => {
-      const id = trigger.dataset.dialogOpen;
-      const dialog = id ? document.getElementById(id) : null;
-      if (dialog instanceof HTMLDialogElement) dialog.showModal();
-    });
-  });
-
-  document.querySelectorAll<HTMLDialogElement>('dialog.product-dialog').forEach((dialog) => {
-    dialog.querySelector('[data-dialog-close]')?.addEventListener('click', () => dialog.close());
-
-    /**
-     * Clicking the backdrop closes. A click whose target is the dialog element
-     * itself landed on the backdrop, because everything visible is inside the
-     * panel and the dialog carries no padding of its own.
-     *
-     * This used to compare the pointer's coordinates against the panel's box
-     * instead, which closed the dialog whenever anyone activated a control inside
-     * it from the keyboard: an Enter or Space press fires a click with clientX and
-     * clientY both 0, and 0,0 is outside a centred panel. Pressing Enter on a
-     * thumbnail shut the whole dialog.
-     */
-    dialog.addEventListener('click', (event) => {
-      if (event.target === dialog) dialog.close();
-    });
-
-    const main = dialog.querySelector<HTMLImageElement>('[data-dialog-main]');
-    const accent = dialog.dataset.dialogAccent ?? 'currentColor';
-    const thumbs = dialog.querySelectorAll<HTMLButtonElement>('[data-dialog-thumb]');
-
-    /**
-     * Pressing the main image opens the full-screen viewer over this dialog with
-     * every photograph of this SKU.
-     *
-     * It opens on whichever view is showing rather than always on the first, and
-     * that is worked out by matching `src` back against the list — the thumbnails
-     * swap the image in place, so the attribute is the only record of which one
-     * the reader is actually looking at. `getAttribute` and not `.src`, because
-     * the property resolves to an absolute URL and would never match.
-     */
-    const zoom = dialog.querySelector<HTMLButtonElement>('[data-dialog-zoom]');
-    if (viewer && zoom) {
-      const views = JSON.parse(dialog.dataset.views ?? '[]') as { src: string; alt: string }[];
-      zoom.addEventListener('click', () => {
-        const showing = main?.getAttribute('src');
-        const at = views.findIndex((view) => view.src === showing);
-        viewer.open(views, at < 0 ? 0 : at, zoom);
-      });
-    }
-    thumbs.forEach((thumb) => {
-      thumb.addEventListener('click', () => {
-        if (!main) return;
-        main.src = thumb.dataset.dialogThumb ?? main.src;
-        main.alt = thumb.dataset.dialogThumbAlt ?? main.alt;
-        thumbs.forEach((other) => {
-          other.style.borderColor = other === thumb ? accent : 'transparent';
-        });
-      });
-    });
-  });
 
   openRequestedItem();
 </script>

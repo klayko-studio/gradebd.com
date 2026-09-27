@@ -472,7 +472,7 @@ export const getGallery = (): Promise<Gallery> =>
     gallerySchema,
     async () => {
       const row = await api<Record<string, any>>(
-        `items/gallery?fields=*,images.*,${file('banner_image')},${file('images.image')}`,
+        `items/gallery?fields=*,images.*,${file('banner_image')},${file('images.image')},${file('images.video')}`,
       );
       singletonIds.set('gallery', row.id);
       return {
@@ -480,11 +480,17 @@ export const getGallery = (): Promise<Gallery> =>
         banner: banner(row),
         images: (row.images ?? [])
           .sort((a: any, b: any) => (a.sort ?? 0) - (b.sort ?? 0))
-          .map((entry: any) => ({
-            image: img(entry.image, entry.caption ?? ''),
-            caption: entry.caption ?? '',
-            tag: entry.tag ?? '',
-          })),
+          .map((entry: any) => {
+            const video = img(entry.video, entry.caption ?? '');
+            return {
+              image: img(entry.image, entry.caption ?? ''),
+              caption: entry.caption ?? '',
+              tag: entry.tag ?? '',
+              // `img` returns an empty `src` for a column nobody has filled, and
+              // an empty src would render a plate that plays nothing.
+              video: video.src ? video : null,
+            };
+          }),
       };
     },
     () => gallerySeed,
@@ -595,7 +601,12 @@ export const getCategories = (): Promise<Category[]> =>
           ',subcategories.slug,subcategories.name,subcategories.sort' +
           ',sub_brands.slug,sub_brands.name,sub_brands.sort' +
           ',items.*,items.subcategory.slug,items.sub_brand.name,' +
-          [file('image'), file('items.image'), file('items.images.directus_files_id')].join(','),
+          [
+            file('image'),
+            file('items.image'),
+            file('items.images.directus_files_id'),
+            file('items.videos.directus_files_id'),
+          ].join(','),
       );
       const bySort = (a: any, b: any) => (a.sort ?? 0) - (b.sort ?? 0);
 
@@ -629,6 +640,9 @@ export const getCategories = (): Promise<Category[]> =>
           images: (item.images ?? [])
             .map((entry: any) => img(entry.directus_files_id, item.name))
             .filter((image: Image) => image.src),
+          videos: (item.videos ?? [])
+            .map((entry: any) => img(entry.directus_files_id, item.name))
+            .filter((video: Image) => video.src),
         })),
         sort: row.sort ?? index,
         accent: row.accent || 'var(--bg-brand)',

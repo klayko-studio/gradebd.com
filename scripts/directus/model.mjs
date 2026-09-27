@@ -95,6 +95,14 @@ export const F = {
   file: (name, note) =>
     field(name, 'uuid', { interface: 'file-image', special: ['file'], note }, { is_nullable: true }),
 
+  /**
+   * A single video. Same column and same relation as `file`; the difference is
+   * the interface — `file-image` filters the picker to images, so a moderator
+   * uploading an MP4 through it is told the file is the wrong type.
+   */
+  video: (name, note) =>
+    field(name, 'uuid', { interface: 'file', special: ['file'], note }, { is_nullable: true }),
+
   /** The parent side of a one-to-many. The child's m2o field carries the relation. */
   o2m: (name, note) =>
     field(name, 'alias', { interface: 'list-o2m', special: ['o2m'], note, options: { enableSelect: false } }),
@@ -378,6 +386,10 @@ export const COLLECTIONS = [
       F.pk(),
       F.m2o('gallery', 'gallery', { hidden: true }),
       F.file('image'),
+      F.video(
+        'video',
+        'Optional. With a video here the plate plays instead of opening as a still — the picture above stays as its cover frame, so leave it set.',
+      ),
       F.string('caption'),
       F.string('tag', { width: 'half', note: 'The small label over the picture.' }),
       F.sort(),
@@ -506,6 +518,7 @@ export const COLLECTIONS = [
       F.string('pack_carton', { width: 'half', note: 'e.g. "1728 Pcs Ctn.".' }),
       F.file('image', 'The card image.'),
       F.files('images', 'Extra views. A thumbnail strip appears in the detail pop-up from the second image on.'),
+      F.files('videos', 'Product footage. Shown in the detail pop-up after the photographs, in the same thumbnail strip.'),
       F.sort(),
     ],
   }),
@@ -619,6 +632,7 @@ export const FILE_FIELDS = [
   ['about', 'banner_image'],
   ['gallery', 'banner_image'],
   ['gallery_images', 'image'],
+  ['gallery_images', 'video'],
   ['contact', 'banner_image'],
   ['categories', 'image'],
   ['items', 'image'],
@@ -626,7 +640,10 @@ export const FILE_FIELDS = [
 ];
 
 /** `[collection, aliasField, junctionCollection]` — ordered many-files. */
-export const M2M_FILES = [['items', 'images', 'items_files']];
+export const M2M_FILES = [
+  ['items', 'images', 'items_files'],
+  ['items', 'videos', 'items_videos'],
+];
 
 /**
  * Collections the website's read-only token needs. Enquiries is create-only.

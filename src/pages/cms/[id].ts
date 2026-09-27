@@ -13,6 +13,11 @@ export const prerender = false;
  *
  * Directus' own image transforms are passed through, so `?width=800&format=webp`
  * works exactly as it does against `/assets`.
+ *
+ * It also proxies video, which is why `Range` is forwarded and a 206 is passed
+ * back untouched. Without that a browser cannot seek — and Safari refuses to
+ * play a video at all when the response has no `Accept-Ranges`, so this is the
+ * difference between video working and video appearing broken on every iPhone.
  */
 
 /** Runtime, not build-time — see the note in src/lib/cms.ts. */
@@ -55,6 +60,8 @@ export const GET: APIRoute = async ({ params, request }) => {
     `${DIRECTUS_URL.replace(/\/$/, '')}/assets/${id}` +
     (forwarded.size ? `?${forwarded.toString()}` : '');
 
+  const range = request.headers.get('range');
+
   let upstream: Response;
   try {
     upstream = await fetch(target, {
@@ -65,10 +72,13 @@ export const GET: APIRoute = async ({ params, request }) => {
         ...(request.headers.get('if-none-match')
           ? { 'If-None-Match': request.headers.get('if-none-match')! }
           : {}),
+        // A player asks for one slice at a time; forwarding it is what makes
+        // scrubbing a video cost a few hundred KB instead of the whole file.
+        ...(range ? { Range: range } : {}),
       },
     });
   } catch {
-    return new Response('The image library is unavailable.', { status: 502 });
+    return new Response('The media library is unavailable.', { status: 502 });
   }
 
   if (upstream.status === 304) {
@@ -78,13 +88,30 @@ export const GET: APIRoute = async ({ params, request }) => {
     return new Response('Not found.', { status: upstream.status === 403 ? 404 : upstream.status });
   }
 
-  return new Response(upstream.body, {
-    status: 200,
-    headers: {
-      'Content-Type': upstream.headers.get('content-type') ?? 'application/octet-stream',
-      ...Object.fromEntries(cacheHeaders(upstream)),
-    },
+  /*
+    A 206 is a success, not an error, and it must reach the browser as a 206 with
+    its `Content-Range` intact — rewritten to 200 the player would take the slice
+    for the whole file and the video would end after the first chunk.
+  */
+  const headers = new Headers({
+    'Content-Type': upstream.headers.get('content-type') ?? 'application/octet-stream',
+    ...Object.fromEntries(cacheHeaders(upstream)),
   });
+  const contentRange = upstream.headers.get('content-range');
+  if (contentRange) headers.set('Content-Range', contentRange);
+  // Advertised on every response, not only the partial ones: a player reads this
+  // from the first request to decide whether the file is seekable at all.
+  headers.set('Accept-Ranges', upstream.headers.get('accept-ranges') ?? 'bytes');
+  /*
+    These responses carry a long `s-maxage`, and a shared cache keyed on the URL
+    alone could hand one reader's byte slice to the next reader as the whole
+    file. Saying what the response varied on is the fix, and it is set only when
+    a range was actually asked for — on the images, which is nearly every request
+    through here, it would only fragment the cache for nothing.
+  */
+  if (range) headers.set('Vary', 'Range');
+
+  return new Response(upstream.body, { status: upstream.status === 206 ? 206 : 200, headers });
 };
 
 /**

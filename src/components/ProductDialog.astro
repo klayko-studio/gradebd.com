@@ -20,8 +20,18 @@ interface Props {
 }
 const { item, accent, categoryName } = Astro.props;
 
-/** Card image first, then any extra views the CMS carries. */
-const views = [item.image, ...item.images];
+/**
+ * Card image first, then any extra stills, then any footage.
+ *
+ * Videos go last on purpose: a reader opening a product wants to see the thing
+ * before they watch it, and the dialog opens on whatever is first. Both kinds
+ * share one strip and one viewer, so a video is another view of the product
+ * rather than a second gallery to build and keep in step.
+ */
+const views = [
+  ...[item.image, ...item.images].map((view) => ({ ...view, kind: 'image' as const })),
+  ...item.videos.map((view) => ({ ...view, kind: 'video' as const })),
+];
 
 /**
  * "Pack Size — 12 Pcs Paper Box" with the carton quantity on its own line
@@ -38,7 +48,16 @@ const packLines = [item.pack_inner, item.pack_carton].filter(Boolean);
          text-ink backdrop:bg-[rgb(10_82_115_/_0.55)]"
   aria-labelledby={`dlg-${item.id}-title`}
   data-dialog-accent={accent}
-  data-views={JSON.stringify(views.map((view) => ({ src: view.src, alt: view.alt })))}
+  data-views={JSON.stringify(
+    views.map((view) => ({
+      src: view.src,
+      alt: view.alt,
+      type: view.kind,
+      // A video opens on the card photograph rather than on black, which is what
+      // the frame shows until enough of the file has arrived to decode one.
+      ...(view.kind === 'video' ? { poster: item.image.src } : {}),
+    })),
+  )}
 >
   <div class="grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)]">
     <!-- gallery: thumbnails in a column down the left of the main image, the way
@@ -48,16 +67,43 @@ const packLines = [item.pack_inner, item.pack_carton].filter(Boolean);
       {
         views.length > 1 && (
           <div class="flex w-[58px] shrink-0 flex-col gap-2.5 md:w-[68px]">
+            {/*
+              A video thumbnail shows the card photograph, not a frame of the
+              file: a <video> here would have every product's footage fetching
+              its metadata on first paint just to draw a first frame, across
+              every dialog on the page.
+            */}
             {views.map((view, i) => (
               <button
                 type="button"
-                class="aspect-square w-full overflow-hidden rounded-lg border-2 bg-page transition-colors"
+                class="relative aspect-square w-full overflow-hidden rounded-lg border-2 bg-page transition-colors"
                 style={`border-color:${i === 0 ? accent : 'transparent'}`}
-                data-dialog-thumb={view.src}
-                data-dialog-thumb-alt={view.alt}
-                aria-label={`View ${i + 1} of ${views.length}`}
+                data-dialog-thumb
+                data-dialog-view={i}
+                aria-label={
+                  view.kind === 'video'
+                    ? `Play video ${i + 1} of ${views.length}`
+                    : `View ${i + 1} of ${views.length}`
+                }
               >
-                <img src={view.src} alt="" class="h-full w-full object-cover" loading="lazy" />
+                <img
+                  src={view.kind === 'video' ? item.image.src : view.src}
+                  alt=""
+                  class="h-full w-full object-cover"
+                  loading="lazy"
+                />
+                {view.kind === 'video' && (
+                  <span
+                    aria-hidden="true"
+                    class="absolute inset-0 grid place-items-center bg-[color:rgb(6_20_28/0.28)]"
+                  >
+                    <span class="grid size-6 place-items-center rounded-full bg-[color:rgb(255_255_255/0.94)] text-[color:var(--text-primary)]">
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5.2v13.6a.6.6 0 0 0 .91.51l11.2-6.8a.6.6 0 0 0 0-1.02L8.91 4.69A.6.6 0 0 0 8 5.2Z" />
+                      </svg>
+                    </span>
+                  </span>
+                )}
               </button>
             ))}
           </div>
@@ -84,7 +130,7 @@ const packLines = [item.pack_inner, item.pack_carton].filter(Boolean);
         />
         <span
           aria-hidden="true"
-          class="absolute bottom-3 right-3 grid size-9 translate-y-1 place-items-center rounded-full
+          class="zoom-badge absolute bottom-3 right-3 grid size-9 translate-y-1 place-items-center rounded-full
                  bg-[color:rgb(10_82_115/0.72)] text-white opacity-0 transition-[opacity,transform]
                  duration-200 ease-[var(--ease-standard)] group-hover:translate-y-0
                  group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100"
@@ -93,6 +139,27 @@ const packLines = [item.pack_inner, item.pack_carton].filter(Boolean);
             <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" />
             <path d="M11 8v6M8 11h6M20 20l-3.8-3.8" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
           </svg>
+        </span>
+
+        {/*
+          Shown only while a video is the selected view. It replaces the
+          magnifier rather than joining it — pressing the frame then plays the
+          footage instead of enlarging a still, and two different promises on one
+          control is one too many.
+        */}
+        <span
+          aria-hidden="true"
+          class="play-badge absolute inset-0 place-items-center bg-[color:rgb(6_20_28/0.22)]"
+        >
+          <span
+            class="grid size-14 place-items-center rounded-full bg-[color:rgb(255_255_255/0.94)]
+                   text-[color:var(--text-primary)] shadow-[0_6px_20px_rgb(4_10_16/0.28)]
+                   transition-transform duration-300 ease-[var(--ease-standard)] group-hover:scale-110"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5.2v13.6a.6.6 0 0 0 .91.51l11.2-6.8a.6.6 0 0 0 0-1.02L8.91 4.69A.6.6 0 0 0 8 5.2Z" />
+            </svg>
+          </span>
         </span>
       </button>
     </div>
@@ -171,6 +238,26 @@ const packLines = [item.pack_inner, item.pack_carton].filter(Boolean);
 </dialog>
 
 <style>
+  /**
+   * The play overlay is off until the script selects a video view.
+   *
+   * A `hidden` attribute would not have done it: `[hidden]` sets `display: none`
+   * at the lowest possible weight and any display utility on the same element
+   * beats it, so the badge would have sat over every product photograph.
+   */
+  .play-badge {
+    display: none;
+  }
+  .play-badge.is-on {
+    display: grid;
+  }
+  /* One promise per control: with the play badge up, the magnifier goes. The
+     script toggles this, because the magnifier is the earlier sibling and CSS
+     has no way to look backwards from the badge that supersedes it. */
+  .zoom-badge.is-off {
+    display: none;
+  }
+
   /**
    * A native <dialog> centres itself with `margin: auto`, which the CSS reset
    * zeroes out — without this the panel pins to the top-left corner.
