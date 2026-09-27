@@ -599,6 +599,65 @@ Nine instructions, all applied. The ones that change what a future session shoul
   There is still no search page for it to open — it navigated to Contact — so off is the honest
   default. A null reads as off.
 
+## Seventh round of client changes — video, zoom controls, and the two filter rows
+
+Five bullets, transcribed with the reasoning in `docs/feedback/client-feedback-2026-09-27.md`;
+the Directus side is `docs/feedback/production-deploy-2026-09-27.md`. Two of the five were
+questions asking for *ideas* rather than instructions, and were answered with something built.
+
+- **The site takes video.** `gallery_images.video` is one optional file per plate;
+  `items.videos` is an ordered list per product, through a new `items_videos` junction. Both are
+  empty — no footage has been supplied — and every page renders exactly as before while they are.
+  A gallery plate keeps its photograph as the cover and gains a play mark; a product's videos sit
+  **after** its photographs in the detail pop-up's existing thumbnail strip. Nothing preloads: a
+  plate shows its picture, not a `<video>`, and a video thumbnail shows the product's pack shot,
+  because twelve `<video>` elements fetching metadata on first paint to draw twelve first frames
+  is a real cost for a page nobody has asked to watch.
+- **The `/cms/<id>` proxy forwards `Range` and passes a 206 back untouched.** This is what makes
+  video work at all rather than a nicety: a player cannot seek without it, and **Safari refuses to
+  play a video whose response does not advertise `Accept-Ranges`** — so without it video is
+  broken on every iPhone and fine everywhere else, which is the worst way for a thing to fail.
+  A 206 must also reach the browser *as* a 206: rewritten to 200 the player reads the first slice
+  as the whole file and the video ends after a few seconds.
+- **The lightbox has visible zoom controls** — `−`, the current percentage, `+` — with the
+  percentage itself a button that returns to fit. Panning was already implemented and already
+  worked; it was verified by dragging before anything was touched. What was missing was any sign
+  on screen that it could be dragged, so a **drag hint** now appears the first time a picture is
+  big enough to drag and retires after ~2.6s or on the first drag. It is tracked with a boolean
+  per slide, not by reading the class back — panning calls `applyZoom` on every move event, and a
+  class check has the hint reappearing under the reader's own finger.
+- **A `display: none` grid item is removed from the grid, not left in its cell.** The viewer's top
+  bar is a three-column grid and the close button auto-placed into whatever gap the hidden
+  controls left — on a video, where both the counter and the zoom group are hidden, it landed in
+  the middle of the bar. Every control in that bar names its own column now.
+- **The two filter rows on All Products are told apart by shape, ground and a label** — pills on
+  white under `RANGE`, text tabs on a tinted band under `TYPE`, both inside one bordered panel.
+  The band hides with its rows on File & Folder. **Colour is deliberately not one of the three:**
+  filling the chosen pill with the range's accent was the obvious design and white text sits at
+  about 2.4:1 on the cyan, the orange and the green. `accent` is a CMS field, so no fixed text
+  colour is safe against whatever a moderator puts in it — the active pill is `bg-inverse` (white
+  at 8.5:1) and the accent rides along as a dot, which has no text on it to fail.
+- **The enquiry form sits on a card, capped at 980px,** with `site.response_promise` and the phone
+  number under the Send button. That field has been on the site record since the first build and
+  nothing ever rendered it, so its wording — "bulk enquiries", the trade-supply voice removed
+  everywhere else — was invisible until now. The seed is reworded; **a live Directus still holds
+  the old text and `--fill-empty` will not touch it**, because the field is not empty. The labels
+  stay inside the fields: that is what the client drew and it is not what they asked about.
+- **A floating "back to top" on every page** (`ScrollTop.astro`, mounted by `Base.astro`). It sits
+  *above* the WhatsApp button rather than beside it — both are bottom-right and the only state
+  where neither shows is the top of the page, so equal heights would overlap through the whole
+  footer. Same two rules as that button: a sibling of `<footer>`, because the footer is
+  `overflow-hidden` and a `fixed` child of such an ancestor is at the mercy of the containing
+  block; and `pointer-events: none` while faded, because `opacity: 0` stops the paint but not the
+  hit-testing. `<main>` gained `tabindex="-1"` so the arrow and the skip link can both move focus
+  to it.
+- **The two product pages' dialog wiring is one module** — `src/scripts/product-dialogs.ts`, used
+  by `products.astro` and `[category].astro`, which had eighty near-identical lines each and had
+  already drifted. It tracks the selected view as an **index**, not by matching the main image's
+  `src` back against the list: a video's frame shows the product's own card photograph as its
+  poster, so its `src` is the first view's and matching would open the viewer on the still every
+  time.
+
 ## Everything visible is CMS content now
 
 The remaining hardcoded copy moved into Directus in one pass. What was left, and where it went:
