@@ -96,63 +96,91 @@ const shownCount = (activeRange?.items ?? []).filter(
   <section class="section">
     <div class="rail flex flex-col gap-8">
       {/*
-        The range row, drawn on the sketch as the first line of labels. Each one
-        carries its own accent so the row reads as the five ranges rather than as
-        five words, and `?range=` is a real link — no JavaScript required.
-      */}
-      <nav class="flex flex-wrap gap-x-8 gap-y-3" aria-label="Product ranges">
-        {
-          categories.map((category) => (
-            <a
-              href={`?range=${category.slug}`}
-              class="range-tab"
-              data-range-tab={category.slug}
-              aria-current={category.slug === activeRange?.slug ? 'true' : undefined}
-              style={`--tab-accent:${category.accent}`}
-            >
-              {category.name}
-              <span aria-hidden="true" class="range-tab-rule" />
-            </a>
-          ))
-        }
-      </nav>
+        The two filter rows, as one control with two levels.
 
-      {/*
-        One row per range, all in the markup, only the active one shown. The
-        row has to change with the range and it cannot be rebuilt from nothing
-        client-side without duplicating the sub-category list in script.
+        The client's note was that they "look the same", and they did: both were
+        a line of words with an accent rule under the chosen one, separated only
+        by two points of type size. Which of them governed the other was
+        impossible to see, so the page read as ten loose words.
+
+        They are told apart three ways now — the shape of the control (pressable
+        pills against plain text), the ground they sit on (white against the
+        tinted band), and a word naming each axis. Colour is deliberately NOT one
+        of them: see the note on `.range-pill[aria-current]` below.
       */}
-      {
-        categories.map((category) =>
-          category.hide_subcategory_tabs || category.subcategories.length === 0 ? null : (
-            <nav
-              class:list={[
-                'flex flex-wrap gap-x-8 gap-y-3',
-                category.slug === activeRange?.slug ? '' : 'hidden',
-              ]}
-              data-sub-row={category.slug}
-              aria-label={`${category.name} sub-categories`}
-            >
-              {category.subcategories.map((sub) => (
+      <div class="overflow-hidden rounded-sharp border border-line-subtle bg-page">
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-3 px-4 py-4 sm:px-6">
+          <span class="shrink-0 t-label-xs text-[color:var(--text-muted)]">Range</span>
+          <nav class="flex flex-wrap gap-2" aria-label="Product ranges">
+            {
+              categories.map((category) => (
                 <a
-                  href={`?range=${category.slug}&sub=${sub.slug}`}
-                  class="sub-tab"
-                  data-sub-tab={sub.slug}
-                  aria-current={
-                    category.slug === activeRange?.slug && sub.slug === activeSub
-                      ? 'true'
-                      : undefined
-                  }
+                  href={`?range=${category.slug}`}
+                  class="range-pill"
+                  data-range-tab={category.slug}
+                  aria-current={category.slug === activeRange?.slug ? 'true' : undefined}
                   style={`--tab-accent:${category.accent}`}
                 >
-                  {sub.name}
-                  <span aria-hidden="true" class="sub-tab-rule" />
+                  <span aria-hidden="true" class="range-pill-dot" />
+                  {category.name}
                 </a>
-              ))}
-            </nav>
-          ),
-        )
-      }
+              ))
+            }
+          </nav>
+        </div>
+
+        {/*
+          One row per range, all in the markup, only the active one shown. The
+          row has to change with the range and it cannot be rebuilt from nothing
+          client-side without duplicating the sub-category list in script.
+
+          The band itself hides with them: File & Folder is switched to one page
+          with no sub-categories, and an empty tinted strip with the word "Type"
+          on it is worse than no strip.
+        */}
+        <div
+          class:list={[
+            'border-t border-line-subtle bg-subtle px-4 py-3.5 sm:px-6',
+            subcategories.length === 0 ? 'hidden' : '',
+          ]}
+          data-sub-band
+        >
+          <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <span class="shrink-0 t-label-xs text-[color:var(--text-muted)]">Type</span>
+            {
+              categories.map((category) =>
+                category.hide_subcategory_tabs || category.subcategories.length === 0 ? null : (
+                  <nav
+                    class:list={[
+                      'flex flex-wrap gap-x-6 gap-y-2',
+                      category.slug === activeRange?.slug ? '' : 'hidden',
+                    ]}
+                    data-sub-row={category.slug}
+                    aria-label={`${category.name} sub-categories`}
+                  >
+                    {category.subcategories.map((sub) => (
+                      <a
+                        href={`?range=${category.slug}&sub=${sub.slug}`}
+                        class="sub-tab"
+                        data-sub-tab={sub.slug}
+                        aria-current={
+                          category.slug === activeRange?.slug && sub.slug === activeSub
+                            ? 'true'
+                            : undefined
+                        }
+                        style={`--tab-accent:${category.accent}`}
+                      >
+                        {sub.name}
+                        <span aria-hidden="true" class="sub-tab-rule" />
+                      </a>
+                    ))}
+                  </nav>
+                ),
+              )
+            }
+          </div>
+        </div>
+      </div>
 
       <p class="t-label-sm text-[color:var(--text-muted)]" aria-live="polite" data-count>
         {shownCount} {shownCount === 1 ? 'product' : 'products'}
@@ -211,38 +239,89 @@ const shownCount = (activeRange?.items ?? []).filter(
 </Base>
 
 <style>
-  /* Both rows are the range pages' own tab treatment, so the two pages look like
-     one template — which is what "fixed template" on the sketch asks for. The
-     range row sits a step larger, because it governs the row beneath it. */
-  /* `padding-block` takes the tab from 36px to 44px without moving anything by
-     eye: the gap between the label and its rule is set by `gap`, so the padding
-     only grows the box. On a phone this row is the main control on the page and
-     36px was under the touch-target floor. */
-  .range-tab,
+  /**
+   * The range row: pressable pills.
+   *
+   * `min-height: 2.75rem` rather than padding alone, so the target clears 44px
+   * whatever the label does — on a phone this row is the main control on the
+   * page, and the previous 36px text tabs were under the floor.
+   */
+  .range-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding-inline: 0.9rem;
+    border: 1px solid var(--border-subtle);
+    border-radius: 999px;
+    background: var(--bg-page);
+    color: var(--text-secondary);
+    font-size: 0.9375rem;
+    line-height: 1.3;
+    transition:
+      background-color 160ms var(--ease-standard),
+      border-color 160ms var(--ease-standard),
+      color 160ms var(--ease-standard);
+  }
+  .range-pill:hover {
+    border-color: var(--tab-accent);
+    color: var(--text-primary);
+  }
+
+  /**
+   * The chosen range is a deep-blue pill, and the accent is a dot rather than
+   * the fill.
+   *
+   * Filling it with the range's own colour was the obvious design and it is not
+   * usable: white clears 4.5:1 on the purple and only just on the pink, but sits
+   * at about 2.4:1 on the cyan, the orange and the green — three of the five.
+   * The accent is a CMS field, so a moderator can put any colour in it and no
+   * fixed text colour is safe against all of them. `bg-inverse` is a known
+   * quantity (white at 8.5:1) and the dot keeps the range's colour on screen
+   * without asking it to carry text.
+   */
+  .range-pill[aria-current='true'] {
+    background: var(--bg-inverse);
+    border-color: var(--bg-inverse);
+    color: var(--text-inverse);
+    font-weight: 600;
+  }
+  .range-pill-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 999px;
+    background: var(--tab-accent);
+    flex-shrink: 0;
+  }
+  /* On the deep blue the accent dot would be the one thing that has to work
+     against an arbitrary colour, so it stops trying. */
+  .range-pill[aria-current='true'] .range-pill-dot {
+    background: var(--text-inverse);
+  }
+
+  /**
+   * The sub-category row keeps the range pages' own text-tab treatment, so the
+   * two pages still read as one template — which is what "fixed template" on the
+   * client's sketch asks for. It is now the quieter of the two rows on purpose:
+   * it is the axis the row above governs.
+   */
   .sub-tab {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    padding-block: 0.25rem;
+    gap: 0.4rem;
+    min-height: 2.25rem;
+    justify-content: center;
     color: var(--text-muted);
+    font-size: 0.9375rem;
     transition: color 160ms var(--ease-standard);
   }
-  .range-tab {
-    font-size: 1.0625rem;
-  }
-  .sub-tab {
-    font-size: 0.9375rem;
-  }
-  .range-tab:hover,
   .sub-tab:hover {
     color: var(--text-primary);
   }
-  .range-tab[aria-current='true'],
   .sub-tab[aria-current='true'] {
     color: var(--text-primary);
     font-weight: 600;
   }
-  .range-tab-rule,
   .sub-tab-rule {
     height: 3px;
     width: 100%;
@@ -250,14 +329,13 @@ const shownCount = (activeRange?.items ?? []).filter(
     background: transparent;
     transition: background-color 160ms var(--ease-standard);
   }
-  .range-tab[aria-current='true'] .range-tab-rule,
   .sub-tab[aria-current='true'] .sub-tab-rule {
     background: var(--tab-accent);
   }
 </style>
 
 <script>
-  import { mountLightbox } from '../scripts/lightbox';
+  import { mountProductDialogs } from '../scripts/product-dialogs';
 
   /**
    * Both rows switch in place. Nothing here navigates.
@@ -274,6 +352,7 @@ const shownCount = (activeRange?.items ?? []).filter(
   const count = document.querySelector<HTMLElement>('[data-count]');
   const rangeTabs = [...document.querySelectorAll<HTMLAnchorElement>('[data-range-tab]')];
   const subRows = [...document.querySelectorAll<HTMLElement>('[data-sub-row]')];
+  const subBand = document.querySelector<HTMLElement>('[data-sub-band]');
   const raw = document.querySelector<HTMLScriptElement>('[data-first-sub]');
   const firstSub: Record<string, string | null> = JSON.parse(raw?.textContent || '{}');
 
@@ -294,6 +373,9 @@ const shownCount = (activeRange?.items ?? []).filter(
       subRows.forEach((row) => row.classList.toggle('hidden', row.dataset.subRow !== range));
 
       const row = subRows.find((r) => r.dataset.subRow === range);
+      // File & Folder has no sub-categories, so the whole tinted band goes with
+      // them — otherwise switching to it leaves an empty strip saying "Type".
+      subBand?.classList.toggle('hidden', !row);
       const tabs = row ? [...row.querySelectorAll<HTMLElement>('[data-sub-tab]')] : [];
       mark(tabs, tabs.find((t) => t.dataset.subTab === sub) ?? null);
 
@@ -334,54 +416,6 @@ const shownCount = (activeRange?.items ?? []).filter(
     });
   }
 
-  // ---- product detail dialogs, the same wiring the range pages use
-  const viewer = mountLightbox('product-lightbox');
-
-  document.querySelectorAll<HTMLElement>('[data-dialog-open]').forEach((trigger) => {
-    trigger.addEventListener('click', () => {
-      const id = trigger.dataset.dialogOpen;
-      const dialog = id ? document.getElementById(id) : null;
-      if (dialog instanceof HTMLDialogElement) dialog.showModal();
-    });
-  });
-
-  document.querySelectorAll<HTMLDialogElement>('dialog.product-dialog').forEach((dialog) => {
-    dialog.querySelector('[data-dialog-close]')?.addEventListener('click', () => dialog.close());
-
-    // A click whose target is the dialog element itself landed on the backdrop.
-    // Comparing pointer coordinates instead breaks keyboard activation, which
-    // fires a click at 0,0 — outside a centred panel. See the range page.
-    dialog.addEventListener('click', (event) => {
-      if (event.target === dialog) dialog.close();
-    });
-
-    const main = dialog.querySelector<HTMLImageElement>('[data-dialog-main]');
-    const zoom = dialog.querySelector<HTMLButtonElement>('[data-dialog-zoom]');
-    const thumbs = dialog.querySelectorAll<HTMLButtonElement>('[data-dialog-thumb]');
-    const accent = dialog.dataset.dialogAccent ?? 'currentColor';
-
-    if (viewer && zoom) {
-      const views = JSON.parse(dialog.dataset.views ?? '[]') as { src: string; alt: string }[];
-      zoom.addEventListener('click', () => {
-        // `getAttribute`, not `.src`: the property resolves to an absolute URL
-        // and would never match the list.
-        const showing = main?.getAttribute('src');
-        const at = views.findIndex((view) => view.src === showing);
-        viewer.open(views, at < 0 ? 0 : at, zoom);
-      });
-    }
-
-    thumbs.forEach((thumb) => {
-      thumb.addEventListener('click', () => {
-        const src = thumb.dataset.dialogThumb;
-        if (!src || !main) return;
-        main.src = src;
-        thumbs.forEach((other) => {
-          const on = other === thumb;
-          other.style.borderColor = on ? accent : 'transparent';
-          other.setAttribute('aria-current', on ? 'true' : 'false');
-        });
-      });
-    });
-  });
+  // ---- product detail dialogs, shared with the range pages
+  mountProductDialogs('product-lightbox');
 </script>
