@@ -135,9 +135,14 @@ const roundButton =
         style="max-height:calc(100dvh - 12rem)"
         data-lightbox-stage
       >
+        {/*
+          `draggable="false"` is not decoration — it is what makes panning work
+          at all with a mouse. See the note in the stylesheet below.
+        */}
         <img
           src=""
           alt=""
+          draggable="false"
           class="h-full w-full rounded-sharp object-contain"
           data-lightbox-image
         />
@@ -224,9 +229,34 @@ const roundButton =
    * picture, so the rest of the viewer still scrolls and the page behind the
    * dialog is untouched.
    */
+  /**
+   * `touch-action: none` handles the finger. This handles the mouse, and it is
+   * the whole reason dragging a zoomed picture works.
+   *
+   * An <img> is natively draggable. Press one with a mouse and move, and the
+   * browser starts its own drag-and-drop — the ghost image — which fires
+   * `pointercancel` and takes the pointer stream away from the script. The pan
+   * therefore died on the first pixel of movement, on every browser, for every
+   * mouse user; the client reported it as "after zooming, user should be able
+   * to move cursor to view different part of the image", which is what that
+   * looks like from the outside.
+   *
+   * It survived a test because synthetic pointer events do not start a native
+   * drag. Only a real mouse does.
+   *
+   * Three guards because the mechanisms differ: the `draggable="false"`
+   * attribute in the markup is the standard one, `-webkit-user-drag` is what
+   * WebKit reads, and the `dragstart` handler in the script is the backstop
+   * that does not depend on either being honoured.
+   */
   [data-lightbox-stage] {
     cursor: zoom-in;
     touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  [data-lightbox-image] {
+    -webkit-user-drag: none;
   }
   [data-lightbox-stage].is-zoomed {
     cursor: grab;

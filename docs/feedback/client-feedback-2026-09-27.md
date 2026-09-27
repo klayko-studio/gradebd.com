@@ -14,13 +14,22 @@ that a mock they can look at is worth more than a description, and reverting one
 > * Scroll to zoom is working. Additionally add one click to **Zoom In** & one click to **Zoom Out**
 > * After zooming, user should be able to move cursor to view different part of the image
 
-**Done — and the second half needs a note.** Panning was already implemented and was already
-working: the viewer was tested by dragging a zoomed picture before anything was changed, and the
-transform moved exactly as it should. What was missing was any sign on screen that it *could* be
-dragged, so the client zoomed in and reasonably concluded there was no way to reach the rest of
-the picture.
+**Done. The second point was a real bug, and the first attempt at it got the diagnosis wrong** —
+worth recording, because the wrong diagnosis was reached by testing and the test was the problem.
 
-So the fix is two things:
+Panning *was* implemented, and an automated drag of a zoomed picture moved it exactly as it
+should. That was taken as proof the feature worked and the client had simply not discovered it.
+It was not proof of anything: **synthetic pointer events do not start a native drag, and a real
+mouse does.** An `<img>` is draggable by default, so pressing one and moving starts the browser's
+own drag-and-drop — the ghost image — which fires `pointercancel`, and `pointercancel` is where
+the viewer gives the gesture up. The pan therefore died on the first pixel of movement, in every
+browser, for every mouse user. Which is exactly what the client described.
+
+It is fixed with three guards, because the mechanisms differ between browsers: `draggable="false"`
+on the image, `-webkit-user-drag: none` for WebKit, and a `dragstart` handler that calls
+`preventDefault()` and does not depend on either of the other two being honoured.
+
+The discoverability half was real too, and is also fixed:
 
 - **A zoom control that you can see** — minus, the current percentage, plus — in the viewer's top
   bar. The percentage is itself a button and pressing it returns the picture to fit, which is the
@@ -31,6 +40,10 @@ So the fix is two things:
   to drag, and takes itself off after a couple of seconds or the moment the reader starts
   dragging, whichever comes first. It is a teaching aid, not permanent furniture; on a phone it
   covers a third of the frame, which is a poor trade for a sentence nobody needs twice.
+
+**The lesson worth keeping:** a browser automation drag is not a mouse drag. Anything that depends
+on the pointer stream surviving — panning, drawing, drag-to-reorder — has to be tried by hand
+before it is called working.
 
 Double-click to zoom was added for the mouse at the same time. The double-*tap* gesture had always
 been there but deliberately skipped a mouse, so a desktop reader had every way in except the one

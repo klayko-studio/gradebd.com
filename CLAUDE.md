@@ -620,12 +620,21 @@ questions asking for *ideas* rather than instructions, and were answered with so
   A 206 must also reach the browser *as* a 206: rewritten to 200 the player reads the first slice
   as the whole file and the video ends after a few seconds.
 - **The lightbox has visible zoom controls** — `−`, the current percentage, `+` — with the
-  percentage itself a button that returns to fit. Panning was already implemented and already
-  worked; it was verified by dragging before anything was touched. What was missing was any sign
-  on screen that it could be dragged, so a **drag hint** now appears the first time a picture is
-  big enough to drag and retires after ~2.6s or on the first drag. It is tracked with a boolean
-  per slide, not by reading the class back — panning calls `applyZoom` on every move event, and a
-  class check has the hint reappearing under the reader's own finger.
+  percentage itself a button that returns to fit. A **drag hint** appears the first time a picture
+  is big enough to drag and retires after ~2.6s or on the first drag; it is tracked with a boolean
+  per slide, not by reading the class back, because panning calls `applyZoom` on every move event
+  and a class check has the hint reappearing under the reader's own finger.
+- **An `<img>` is draggable by default, and that silently killed panning.** Press one with a real
+  mouse and move: the browser starts its own drag-and-drop, which fires `pointercancel`, which is
+  where the viewer gives the gesture up. The pan died on the first pixel of movement for every
+  mouse user. Fixed with three guards, because browsers honour different ones — `draggable="false"`
+  in the markup, `-webkit-user-drag: none` in CSS, and a `dragstart` handler calling
+  `preventDefault()`.
+  **The test that missed it is the part worth keeping:** an automated `left_click_drag` dispatches
+  synthetic pointer events, which do **not** start a native drag, so the pan appeared to work
+  perfectly and the client's report was written off as a discoverability problem. Anything that
+  depends on the pointer stream surviving — panning, drawing, drag-to-reorder — has to be tried by
+  hand before it is called working.
 - **A `display: none` grid item is removed from the grid, not left in its cell.** The viewer's top
   bar is a three-column grid and the close button auto-placed into whatever gap the hidden
   controls left — on a video, where both the counter and the zoom group are hidden, it landed in

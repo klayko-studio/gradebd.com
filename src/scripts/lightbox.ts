@@ -247,11 +247,25 @@ export function mountLightbox(id: string): Lightbox | null {
         return;
       }
       if (points.size === 1 && zoom > 1) {
+        // Stops the press turning into a text selection or a native image drag,
+        // either of which ends with `pointercancel` and kills the pan.
+        event.preventDefault();
         stage.classList.add('is-panning');
         stage.setPointerCapture(event.pointerId);
         retireHint();
       }
     });
+
+    /**
+     * The backstop for the same thing, and the one that does not rely on the
+     * browser honouring `draggable="false"` or `-webkit-user-drag`.
+     *
+     * A native image drag fires `pointercancel`, and `pointercancel` is where
+     * this module gives the gesture up — so without this the pan ends on the
+     * first pixel of movement for every mouse user. The long version is in the
+     * component's stylesheet.
+     */
+    stage.addEventListener('dragstart', (event) => event.preventDefault());
 
     stage.addEventListener('pointermove', (event) => {
       const last = points.get(event.pointerId);
