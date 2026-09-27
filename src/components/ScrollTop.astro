@@ -1,0 +1,101 @@
+---
+/**
+ * "Back to top" — the floating arrow the client asked for on every page.
+ *
+ * Mounted once by `Base.astro` as a sibling of <main> and <footer>, for the same
+ * reason the WhatsApp button is a sibling rather than a child: the footer is
+ * `relative overflow-hidden`, and a `fixed` element inside an ancestor like that
+ * is at the mercy of how the browser resolves its containing block.
+ *
+ * It sits directly above the WhatsApp button's slot rather than beside it. Both
+ * are bottom-right, and the only page state where neither is showing is the top
+ * of the page — so any layout that put them at the same height would have them
+ * overlap the moment a reader reached the footer, which is most of the time the
+ * arrow is on screen. The offsets below are WhatsApp's own (1.25rem / 2rem) plus
+ * its 3.5rem button and a 0.75rem gap.
+ */
+---
+
+<button
+  type="button"
+  class="scroll-top fixed right-5 bottom-[5.5rem] z-40 grid size-12 place-items-center rounded-full
+         bg-inverse text-[color:var(--text-inverse)] shadow-[0_10px_28px_rgb(4_10_16/0.28)]
+         md:right-8 md:bottom-[7rem] md:size-14"
+  data-scroll-top
+  aria-label="Back to top"
+  hidden
+>
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path
+      d="M12 19V5M5 12l7-7 7 7"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"></path>
+  </svg>
+</button>
+
+<style>
+  /*
+    Hidden until the reader is a screen or so down the page. `hidden` in the
+    markup is what the script removes, so with no JavaScript the button never
+    appears at all rather than sitting there unable to do anything.
+
+    `pointer-events: none` while faded out is load-bearing, not tidiness:
+    `opacity: 0` stops the paint but not the hit-testing, and an invisible but
+    live 48px button in the bottom-right corner is exactly the bug the WhatsApp
+    FAB shipped with — it swallowed the hero's next arrow on Home.
+  */
+  .scroll-top {
+    opacity: 0;
+    transform: translateY(12px) scale(0.9);
+    pointer-events: none;
+    transition:
+      opacity 220ms var(--ease-standard),
+      transform 220ms var(--ease-standard),
+      background-color 160ms var(--ease-standard);
+  }
+  .scroll-top.is-visible {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+  .scroll-top:hover {
+    background: var(--bg-inverse-elevated);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-top {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const button = document.querySelector<HTMLElement>('[data-scroll-top]');
+
+  if (button) {
+    button.hidden = false;
+
+    /*
+      One screen of scrolling before it appears. Any less and it shows up while
+      the hero is still on screen, where "back to top" means nothing.
+    */
+    const show = () =>
+      button.classList.toggle('is-visible', window.scrollY > window.innerHeight * 0.75);
+
+    show();
+    // Passive: this only reads scrollY, and a non-passive scroll listener makes
+    // the browser wait for it before it can scroll.
+    window.addEventListener('scroll', show, { passive: true });
+
+    button.addEventListener('click', () => {
+      // Matching the rest of the motion layer: a reader who has asked for less
+      // movement gets the jump, not a smooth 4000px ride.
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
+      // Scrolling does not move focus, so a keyboard reader would be left at the
+      // bottom of the document with the page showing the top of it.
+      document.getElementById('main')?.focus({ preventScroll: true });
+    });
+  }
+</script>
