@@ -58,7 +58,25 @@ const field =
         )
       }
 
-      <form id="enquiry" class="mt-4 flex flex-col gap-5" novalidate>
+      {/*
+        The form sits on a card.
+
+        The client asked what could be done with this section, and the answer was
+        mostly that it had no edges: white fields on the near-white watercolour
+        wash, with nothing to say where the form began or ended, so it read as
+        four boxes adrift on the page rather than as one thing to fill in. A
+        surface, a hairline and a soft shadow are the whole fix.
+
+        Capped at 980px rather than running the full 1200 rail. A "Name" field
+        600px wide looks like a mistake, and a form the eye has to travel the
+        width of the screen to read is slower to fill in — the message box keeps
+        the space it actually uses.
+      */}
+      <form id="enquiry" class="mt-4 flex w-full max-w-[980px] flex-col" novalidate>
+        <div
+          class="flex flex-col gap-5 rounded-sharp border border-line-subtle bg-page p-6
+                 shadow-[var(--shadow-card)] sm:p-8 lg:p-10"
+        >
         <div class="grid gap-5 lg:grid-cols-2">
           <div class="flex flex-col gap-5">
             <div class="flex flex-col gap-2">
@@ -128,7 +146,7 @@ const field =
           <input id="honeypot" name="honeypot" type="text" tabindex="-1" autocomplete="off" />
         </div>
 
-        <div class="mt-4 flex justify-center">
+        <div class="mt-2 flex flex-col items-center gap-3">
           <button
             type="submit"
             class="group inline-flex w-full max-w-[420px] items-center justify-center gap-4 rounded-sharp
@@ -153,6 +171,37 @@ const field =
                 stroke-linejoin="round"></path>
             </svg>
           </button>
+
+          {/*
+            `response_promise` has been on the site record since the start and
+            nothing ever rendered it. Under the Send button is where it answers
+            the question a reader actually has at the moment they press it, and
+            the phone number beside it is for the ones who would rather not wait
+            — it is one line, not a second copy of the contact block further
+            down the page.
+          */}
+          {
+            (site.response_promise || site.phone) && (
+              <p class="t-body-sm text-center text-[color:var(--text-muted)]">
+                <span {...editable({ collection: 'site', fields: 'response_promise', mode: 'popover' })}>
+                  {site.response_promise}
+                </span>
+                {site.phone && (
+                  <>
+                    {' '}
+                    Or call{' '}
+                    <a
+                      href={site.phone_href ?? `tel:${site.phone}`}
+                      class="text-[color:var(--text-brand-strong)] underline underline-offset-2"
+                    >
+                      {site.phone}
+                    </a>
+                    .
+                  </>
+                )}
+              </p>
+            )
+          }
         </div>
 
         <p
@@ -163,6 +212,7 @@ const field =
           hidden
         >
         </p>
+        </div>
       </form>
     </div>
   </section>

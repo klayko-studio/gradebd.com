@@ -135,6 +135,11 @@ export async function backfillContent(client, { dryRun = false } = {}) {
     phone: site.phone,
     phone_href: site.phone_href,
     email: site.email,
+    /* Rendered under the enquiry form's Send button since this round. It was
+       seeded at bootstrap and nothing has read it until now, so on a live
+       install it already holds a value and `--fill-empty` will leave it alone —
+       its wording has to be changed in Directus by hand. */
+    response_promise: site.response_promise,
     footer_contact_heading: site.footer_contact_heading,
     footer_note: site.footer_note,
     footer_rights: site.footer_rights,
