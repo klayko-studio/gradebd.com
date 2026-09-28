@@ -635,6 +635,21 @@ questions asking for *ideas* rather than instructions, and were answered with so
   perfectly and the client's report was written off as a discoverability problem. Anything that
   depends on the pointer stream surviving — panning, drawing, drag-to-reorder — has to be tried by
   hand before it is called working.
+- **A video slide needs to announce itself, and a borrowed poster stops it.** Reported from
+  production: a product with one photograph and one video showed *the photograph again* when the
+  reader pressed next, then started playing when they clicked it, with no visible play control.
+  Three causes at once — the video's `poster` was `item.image.src`, which is the **first view in
+  the same list**, so the slide was pixel-identical to the one before it; nothing in the chrome
+  said "video"; and clicking a `<video>` body toggles playback in Chrome, so it appeared to start
+  by itself. A poster is right when it belongs to that piece of media (a Gallery plate's own
+  photograph, which is what the reader clicked) and wrong when it is lifted from a sibling slide,
+  so products pass none and `preload="metadata"` supplies the video's own first frame. There is
+  now a **play disc of the viewer's own** and a `VIDEO` pill beside the counter.
+  **The disc must not be a full-bleed button.** Spanning the stage puts a transparent button over
+  the native control bar and swallows the timeline, so the box is `pointer-events: none` and only
+  the disc is `auto`. It is driven by the `<video>`'s own `play`/`pause`/`ended` events, never by
+  whoever last pressed something — the native bar, a click on the frame and the disc can all change
+  playback, and the element's own state is the only reading that is always right.
 - **A `display: none` grid item is removed from the grid, not left in its cell.** The viewer's top
   bar is a three-column grid and the close button auto-placed into whatever gap the hidden
   controls left — on a video, where both the counter and the zoom group are hidden, it landed in

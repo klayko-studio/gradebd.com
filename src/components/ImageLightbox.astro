@@ -46,8 +46,25 @@ const roundButton =
     <div
       class="grid w-full max-w-[1200px] shrink-0 grid-cols-[1fr_auto_1fr] items-center gap-3"
     >
-      <p class="col-start-1 t-label-sm text-[color:rgb(255_255_255/0.9)]" data-lightbox-counter>
-        <span data-lightbox-index>1</span> / <span data-lightbox-total>1</span>
+      {/*
+        The counter, and a word for what the slide actually is.
+
+        "2 / 2" on its own does not tell a reader that the thing they just
+        stepped onto is a film rather than another photograph — which is exactly
+        how this went wrong: a video whose first frame resembles the photograph
+        before it is indistinguishable from not having advanced at all.
+      */}
+      <p class="col-start-1 flex items-center gap-2 t-label-sm text-[color:rgb(255_255_255/0.9)]">
+        <span data-lightbox-counter>
+          <span data-lightbox-index>1</span> / <span data-lightbox-total>1</span>
+        </span>
+        <span
+          class="rounded-full bg-[color:rgb(255_255_255/0.18)] px-2 py-0.5 t-label-xs"
+          data-lightbox-kind
+          hidden
+        >
+          Video
+        </span>
       </p>
 
       <!-- Zoom, on the client's "add one click to Zoom In & one click to Zoom
@@ -159,6 +176,37 @@ const roundButton =
           controls
           playsinline
           preload="metadata"></video>
+
+        {/*
+          The play control.
+
+          A <video controls> has a play button of its own, and it was not
+          enough: it is a thin native bar at the foot of the element, easy to
+          miss against a light frame, and with nothing else on screen saying
+          "video" the first thing a reader does is click the picture — which in
+          Chrome starts playback, so the film appears to begin for no reason.
+
+          This is deliberately NOT a full-bleed overlay. Covering the stage
+          would put a transparent button over the native control bar and take
+          the timeline away. The scrim ignores the pointer and only the disc is
+          clickable, so everything underneath still works.
+        */}
+        <button
+          type="button"
+          class="lightbox-play absolute inset-0 place-items-center"
+          data-lightbox-play
+          aria-label="Play video"
+        >
+          <span
+            class="grid size-20 place-items-center rounded-full bg-[color:rgb(255_255_255/0.94)]
+                   text-[color:var(--text-primary)] shadow-[0_8px_28px_rgb(4_10_16/0.4)]
+                   transition-transform duration-200 ease-[var(--ease-standard)]"
+          >
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M8 5.2v13.6a.6.6 0 0 0 .91.51l11.2-6.8a.6.6 0 0 0 0-1.02L8.91 4.69A.6.6 0 0 0 8 5.2Z" />
+            </svg>
+          </span>
+        </button>
 
         {/*
           The drag hint. The panning has always worked, but nothing on screen
@@ -279,6 +327,38 @@ const roundButton =
   [data-lightbox-stage].is-video {
     cursor: default;
     touch-action: auto;
+  }
+
+  /**
+   * The play disc, shown only on a paused video.
+   *
+   * The element spans the stage so the disc can be centred over the frame, but
+   * `pointer-events: none` on the box and `auto` on the disc means the only
+   * clickable part is the disc itself. Without that split it would sit over the
+   * native control bar and swallow the timeline — the button would work once
+   * and then make the player unusable.
+   */
+  .lightbox-play {
+    display: none;
+    pointer-events: none;
+    background: rgb(6 20 28 / 0.22);
+  }
+  .lightbox-play.is-on {
+    display: grid;
+  }
+  .lightbox-play > span {
+    pointer-events: auto;
+  }
+  .lightbox-play:hover > span {
+    transform: scale(1.06);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lightbox-play > span {
+      transition: none;
+    }
+    .lightbox-play:hover > span {
+      transform: none;
+    }
   }
   [data-lightbox-image] {
     transform-origin: center center;

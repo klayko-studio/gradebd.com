@@ -47,6 +47,8 @@ export function mountLightbox(id: string): Lightbox | null {
   const zoomOut = dialog.querySelector<HTMLButtonElement>('[data-lightbox-zoom-out]');
   const zoomReset = dialog.querySelector<HTMLButtonElement>('[data-lightbox-zoom-reset]');
   const zoomLevel = dialog.querySelector<HTMLElement>('[data-lightbox-zoom-level]');
+  const playButton = dialog.querySelector<HTMLButtonElement>('[data-lightbox-play]');
+  const kindLabel = dialog.querySelector<HTMLElement>('[data-lightbox-kind]');
 
   let slides: Slide[] = [];
   let current = 0;
@@ -54,6 +56,31 @@ export function mountLightbox(id: string): Lightbox | null {
 
   /** A video is shown, not zoomed — see the note in the component. */
   const showingVideo = () => slides[current]?.type === 'video';
+
+  /**
+   * The play disc follows the element's own state rather than being toggled by
+   * whoever last pressed something. The native control bar, a click on the frame
+   * and this button can all start or stop playback, so the only reading that is
+   * always right is the one the <video> reports.
+   */
+  const syncPlayButton = () => {
+    const show = showingVideo() && !!video && video.paused;
+    playButton?.classList.toggle('is-on', show);
+  };
+
+  if (video) {
+    for (const event of ['play', 'playing', 'pause', 'ended', 'emptied'] as const) {
+      video.addEventListener(event, syncPlayButton);
+    }
+  }
+
+  playButton?.addEventListener('click', () => {
+    if (!video) return;
+    // A rejected play() — an autoplay policy, a file that will not decode — must
+    // not leave the disc hidden over a video that never started.
+    void video.play().catch(() => undefined);
+    syncPlayButton();
+  });
 
   /**
    * Zoom, on the client's "the image should zoom in or zoom out on mouse scroll".
@@ -410,7 +437,9 @@ export function mountLightbox(id: string): Lightbox | null {
     if (caption) caption.textContent = slide.caption ?? '';
     if (tag) tag.textContent = slide.tag ?? '';
     if (indexLabel) indexLabel.textContent = String(current + 1);
+    kindLabel?.toggleAttribute('hidden', !isVideo);
     syncControls();
+    syncPlayButton();
     preload(current);
   };
 

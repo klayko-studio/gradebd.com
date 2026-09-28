@@ -53,9 +53,20 @@ const packLines = [item.pack_inner, item.pack_carton].filter(Boolean);
       src: view.src,
       alt: view.alt,
       type: view.kind,
-      // A video opens on the card photograph rather than on black, which is what
-      // the frame shows until enough of the file has arrived to decode one.
-      ...(view.kind === 'video' ? { poster: item.image.src } : {}),
+      /*
+        No poster, deliberately.
+
+        This used to borrow the card photograph, on the reasoning that a frame
+        of black while the file loads is worse than a picture. It is not: the
+        card photograph IS the first view in this same list, so stepping onto
+        the video showed a picture pixel-identical to the one before it and the
+        viewer looked stuck. A poster is right when it belongs to that piece of
+        media — the way a Gallery plate's own photograph does — and wrong when
+        it is lifted from a sibling slide.
+
+        `preload="metadata"` gets the video's own first frame in most browsers,
+        and the play disc says what it is either way.
+      */
     })),
   )}
 >
