@@ -701,6 +701,43 @@ questions asking for *ideas* rather than instructions, and were answered with so
   poster, so its `src` is the first view's and matching would open the viewer on the still every
   time.
 
+## The trade-supply voice survived in the SEO layer
+
+The second round of cuts took "B2B" and the invented trade claims out of the visible copy. It did
+not reach the **meta titles and descriptions**, because nobody reads those — so every page still
+described the company the way the client had rejected, and search results were the one place it
+still showed. All fourteen fields are rewritten in the client's own voice.
+
+Two things worth carrying:
+
+- **Home's title now matches production exactly** (`Grade Limited — Stationery`). Production had
+  already been corrected by hand; the seed was the stale copy, not the other way round. Checking
+  the live `<title>` against the seed is a cheap way to find that kind of drift.
+- **All five category descriptions were the same boilerplate sentence** — "Quoted by the carton for
+  schools, retailers and corporate buyers across Bangladesh." — appended to each. Beyond the voice,
+  five pages sharing a description is its own SEO problem. Each range now describes only the
+  sub-categories that actually exist, which matters because the mega-menu lists Highlighter, Marker
+  and Cutter Knife and **there are no SKUs for them**.
+
+**`backfill.mjs` cannot repair any of this on a live install.** Its allowlist carries `seo_title` and
+`seo_description` for `all_products` and `not_found` only, and no `summary` at all — everything else
+was written once by `content.mjs` at bootstrap and is editable only by hand after that. So a seed fix
+reaches local dev and a fresh bootstrap, and production keeps whatever it holds.
+
+### The contact FAQ states business policy nobody confirmed — still open
+
+Left deliberately untouched, because rewriting invented commercial terms into *different* invented
+terms is the same mistake twice. The five answers commit Grade in public to: volume pricing from
+twenty cartons upward, a one-carton minimum, custom branding on exercise books and files, delivery
+across Dhaka "on our own schedule" with freight partners elsewhere, and one-working-day quotes.
+None of it came from the client. `show_faqs` on the `contact` record hides the whole section in one
+click, which is the honest position until they supply real answers.
+
+`public/images/about/warehouse.jpg` is the related one: a dark stock shot of pallet racking on the
+About banner. The alt text is accurate, so that is a picture problem and not a copy one — but it is
+the owned-facility imagery `CLAUDE.md` warns against, and it needs a replacement from the client
+rather than a reworded alt.
+
 ## Everything visible is CMS content now
 
 The remaining hardcoded copy moved into Directus in one pass. What was left, and where it went:
