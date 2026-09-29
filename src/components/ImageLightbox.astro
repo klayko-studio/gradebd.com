@@ -209,9 +209,11 @@ const roundButton =
         </button>
 
         {/*
-          The drag hint. The panning has always worked, but nothing on screen
-          said so — the client zoomed in and asked for a way to reach the rest of
-          the picture. It only appears once there is something to drag to.
+          The pan hint. It only appears once there is something to move to, and
+          it retires itself — on a mouse the picture starts following the cursor
+          immediately, so the sentence is true for about one second before it
+          becomes noise. On touch it is replaced from the script, because a
+          finger has to drag.
         */}
         <p
           class="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full
@@ -220,7 +222,7 @@ const roundButton =
           data-lightbox-hint
           aria-hidden="true"
         >
-          Drag to move around
+          Move the cursor to look around
         </p>
       </div>
 
@@ -306,9 +308,14 @@ const roundButton =
   [data-lightbox-image] {
     -webkit-user-drag: none;
   }
+  /* A zoomed picture follows the cursor, so the cursor says "position matters"
+     rather than "pick this up". `grab` would promise a drag that no longer
+     exists on a mouse. */
   [data-lightbox-stage].is-zoomed {
-    cursor: grab;
+    cursor: crosshair;
   }
+  /* Still reachable on touch, where there is no hover and a drag is the only
+     way to reach the rest of the picture. */
   [data-lightbox-stage].is-panning {
     cursor: grabbing;
   }

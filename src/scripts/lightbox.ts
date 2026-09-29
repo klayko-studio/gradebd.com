@@ -104,21 +104,40 @@ export function mountLightbox(id: string): Lightbox | null {
    * against the element box would allow dragging the picture into the empty
    * bands beside it. Everything here works off the contained size instead.
    */
+  /**
+   * The frame's size, WITHOUT the transform.
+   *
+   * `getBoundingClientRect()` returns the element's visual box, which on a
+   * scaled, translated image is the scaled, translated one — so measuring the
+   * frame that way feeds the pan back into the calculation that produced it.
+   * With a relative drag that only caused the clamp to drift; with an absolute
+   * cursor mapping it is fatal, and it showed up as the left and right edges of
+   * the frame reporting the same pan. `offsetWidth`/`offsetHeight` are layout
+   * values and transforms do not touch them.
+   */
+  const frameSize = () => ({ w: image.offsetWidth, h: image.offsetHeight });
+
   const pictureSize = () => {
-    const box = image.getBoundingClientRect();
+    const { w: bw, h: bh } = frameSize();
     const nw = image.naturalWidth;
     const nh = image.naturalHeight;
-    if (!nw || !nh) return { w: box.width, h: box.height };
-    const fit = Math.min(box.width / nw, box.height / nh);
+    if (!nw || !nh) return { w: bw, h: bh };
+    const fit = Math.min(bw / nw, bh / nh);
     return { w: nw * fit, h: nh * fit };
   };
 
-  const clampPan = () => {
+  /** How far the picture can travel on each axis: half its overhang. */
+  const panLimits = () => {
     const { w, h } = pictureSize();
-    const box = image.getBoundingClientRect();
-    // Only the part of the scaled picture that overhangs the frame is reachable.
-    const limitX = Math.max(0, (w * zoom - box.width) / 2);
-    const limitY = Math.max(0, (h * zoom - box.height) / 2);
+    const { w: bw, h: bh } = frameSize();
+    return {
+      x: Math.max(0, (w * zoom - bw) / 2),
+      y: Math.max(0, (h * zoom - bh) / 2),
+    };
+  };
+
+  const clampPan = () => {
+    const { x: limitX, y: limitY } = panLimits();
     panX = Math.min(limitX, Math.max(-limitX, panX));
     panY = Math.min(limitY, Math.max(-limitY, panY));
   };
@@ -151,9 +170,15 @@ export function mountLightbox(id: string): Lightbox | null {
     window.clearTimeout(hintTimer);
     stage?.classList.add('hint-done');
   };
+  const hint = dialog.querySelector<HTMLElement>('[data-lightbox-hint]');
   const offerHint = () => {
     if (hintOffered || !stage) return;
     hintOffered = true;
+    // A finger cannot hover, so the sentence has to say the other thing. Which
+    // one is right is only known once a pointer has actually been used.
+    if (hint) {
+      hint.textContent = hasHover ? 'Move the cursor to look around' : 'Drag to move around';
+    }
     stage.classList.remove('hint-done');
     hintTimer = window.setTimeout(retireHint, 2600);
   };
@@ -187,6 +212,44 @@ export function mountLightbox(id: string): Lightbox | null {
    * to the centre of the frame — the right anchor when there is no pointer to
    * anchor to.
    */
+  /**
+   * Pan by where the cursor IS, not by how far it has moved — the client sent a
+   * recording of Amazon's viewer as the specification, and this is what it does.
+   *
+   * The mapping is absolute: the pointer at the left edge of the frame shows the
+   * left edge of the picture, the right edge shows the right edge, and
+   * everything between is linear. That is what makes it work with no button
+   * held — there is no gesture to start or finish, so moving the mouse is the
+   * whole interaction.
+   *
+   *   fx = 0   →  pan = +limit  (push the picture right, revealing its left)
+   *   fx = 1   →  pan = -limit
+   *   pan = limit * (1 - 2 * fx)
+   *
+   * Only the overhang is reachable, so at a zoom that does not overflow the
+   * frame on an axis the limit is 0 and that axis simply does not move.
+   */
+  const hoverPan = (clientX: number, clientY: number) => {
+    // The stage is the frame and is never transformed, so it is the one box on
+    // screen that can be measured while the image inside it is being moved.
+    const box = stage?.getBoundingClientRect();
+    if (!box || box.width === 0 || box.height === 0) return;
+
+    const { x: limitX, y: limitY } = panLimits();
+    const fx = Math.min(1, Math.max(0, (clientX - box.left) / box.width));
+    const fy = Math.min(1, Math.max(0, (clientY - box.top) / box.height));
+
+    panX = limitX * (1 - 2 * fx);
+    panY = limitY * (1 - 2 * fy);
+    applyZoom();
+  };
+
+  /** The last mouse position over the stage, so a wheel or button zoom can
+      re-apply the mapping without waiting for the next move event. */
+  let hoverX = 0;
+  let hoverY = 0;
+  let hasHover = false;
+
   const zoomAt = (factor: number, clientX?: number, clientY?: number) => {
     if (showingVideo()) return;
     const before = zoom;
@@ -216,8 +279,19 @@ export function mountLightbox(id: string): Lightbox | null {
     applyZoom();
   };
 
-  zoomIn?.addEventListener('click', () => zoomAt(BUTTON_STEP));
-  zoomOut?.addEventListener('click', () => zoomAt(1 / BUTTON_STEP));
+  /* After a button zoom the picture must sit where the cursor says it should,
+     not where the old pan left it — otherwise the next mouse move jumps. */
+  const afterButtonZoom = () => {
+    if (hasHover && zoom > 1) hoverPan(hoverX, hoverY);
+  };
+  zoomIn?.addEventListener('click', () => {
+    zoomAt(BUTTON_STEP);
+    afterButtonZoom();
+  });
+  zoomOut?.addEventListener('click', () => {
+    zoomAt(1 / BUTTON_STEP);
+    afterButtonZoom();
+  });
   zoomReset?.addEventListener('click', () => resetZoom());
 
   if (stage) {
@@ -231,19 +305,36 @@ export function mountLightbox(id: string): Lightbox | null {
         // Exponential, so one notch feels the same whatever the current zoom;
         // a linear step crawls when zoomed in and lurches when zoomed out.
         zoomAt(Math.exp(-event.deltaY * 0.002), event.clientX, event.clientY);
+
+        /*
+          A mouse wheel then defers to the hover mapping, so the scroll and the
+          cursor cannot disagree about where the picture should sit. `zoomAt`
+          anchors the point under the pointer; the mapping places the pointer's
+          fraction of the frame over the same fraction of the picture. They are
+          close but not identical, and without this the first mouse move after a
+          scroll produced a visible jump.
+        */
+        if (zoom > 1) {
+          hoverX = event.clientX;
+          hoverY = event.clientY;
+          hasHover = true;
+          hoverPan(event.clientX, event.clientY);
+        }
       },
       { passive: false },
     );
 
     /**
-     * One pointer pans, two pinch. Pointer events rather than touch events, so a
-     * mouse drag and a finger drag are the same code path and a trackpad's
-     * two-finger gesture — which arrives as a wheel event with ctrlKey — is
-     * already covered by the handler above.
+     * A mouse looks around by hovering; a finger has to drag.
      *
-     * A wheel does not exist on a phone, so without this the zoom the client
-     * asked for is desktop-only: you could open a pack shot on a phone and have
-     * no way to look closer at it, which is where looking closer matters most.
+     * The client's reference is Amazon, where a zoomed picture follows the
+     * cursor with no button held — so on a mouse there is no drag at all, and
+     * `hoverPan` above is the whole interaction. Dragging was explicitly not
+     * wanted ("No need to click to drag functionality").
+     *
+     * Touch is the exception and has to stay: a touch screen has no hover, so
+     * without a drag a reader on a phone could zoom into a pack shot and have no
+     * way to reach the rest of it. Two fingers still pinch.
      */
     const points = new Map<number, { x: number; y: number }>();
     let pinchDistance = 0;
@@ -273,7 +364,9 @@ export function mountLightbox(id: string): Lightbox | null {
         stage.classList.remove('is-panning');
         return;
       }
-      if (points.size === 1 && zoom > 1) {
+      // A mouse press starts nothing: on a mouse the picture is already
+      // following the cursor, and a drag on top of that fights it.
+      if (points.size === 1 && zoom > 1 && event.pointerType !== 'mouse') {
         // Stops the press turning into a text selection or a native image drag,
         // either of which ends with `pointercancel` and kills the pan.
         event.preventDefault();
@@ -294,7 +387,26 @@ export function mountLightbox(id: string): Lightbox | null {
      */
     stage.addEventListener('dragstart', (event) => event.preventDefault());
 
+    // Leaving the frame drops the remembered position, so a later button zoom
+    // does not re-apply a mapping for a cursor that is no longer there.
+    stage.addEventListener('pointerleave', (event) => {
+      if (event.pointerType === 'mouse') hasHover = false;
+    });
+
     stage.addEventListener('pointermove', (event) => {
+      /*
+        The hover case comes first, and it has to: a hovering mouse never fired
+        a `pointerdown`, so it is not in `points` and the guard below would send
+        it straight back out. This is the whole mouse interaction.
+      */
+      if (event.pointerType === 'mouse') {
+        hoverX = event.clientX;
+        hoverY = event.clientY;
+        hasHover = true;
+        if (!showingVideo() && zoom > 1) hoverPan(event.clientX, event.clientY);
+        return;
+      }
+
       const last = points.get(event.pointerId);
       if (!last) return;
       const dx = event.clientX - last.x;

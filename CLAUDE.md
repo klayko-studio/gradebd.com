@@ -624,6 +624,25 @@ questions asking for *ideas* rather than instructions, and were answered with so
   is big enough to drag and retires after ~2.6s or on the first drag; it is tracked with a boolean
   per slide, not by reading the class back, because panning calls `applyZoom` on every move event
   and a class check has the hint reappearing under the reader's own finger.
+- **Panning follows the cursor, Amazon-style — there is no mouse drag.** The client sent a screen
+  recording of Amazon's image viewer as the specification and said "no need to click to drag".
+  The mapping is **absolute**: the pointer at the left edge of the frame shows the left edge of the
+  picture, the right edge shows the right edge, linear between — `pan = limit * (1 - 2 * fraction)`.
+  That is what makes it work with no button held: there is no gesture to begin or end, so moving
+  the mouse *is* the interaction. Touch is the one exception and keeps drag-to-pan, because a touch
+  screen has no hover; two fingers still pinch. The wheel and the +/− buttons hand over to the same
+  mapping afterwards, or the first mouse move after a scroll jumps.
+  This is the third reading of one line of client feedback — "after zooming, user should be able to
+  move cursor to view different part of the image" — and the literal one was right all along. It was
+  first dismissed as a discoverability problem, then built as drag-to-pan. **Ask for a reference
+  before interpreting a UI request twice.**
+- **Never measure a transformed element with `getBoundingClientRect()` to compute its own
+  transform.** It returns the *visual* box, so the scale and translate you just applied are baked
+  into the number you use to decide the next one — a feedback loop. With the old relative drag it
+  only made the clamp drift; with the absolute cursor mapping it was fatal, and showed up as the
+  left and right edges of the frame reporting an identical pan. Use `offsetWidth`/`offsetHeight`
+  (layout values, untouched by transforms) for the frame's size and the untransformed stage's rect
+  for its position.
 - **An `<img>` is draggable by default, and that silently killed panning.** Press one with a real
   mouse and move: the browser starts its own drag-and-drop, which fires `pointercancel`, which is
   where the viewer gives the gesture up. The pan died on the first pixel of movement for every
