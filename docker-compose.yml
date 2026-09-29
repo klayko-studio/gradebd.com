@@ -37,6 +37,15 @@ services:
       # Seconds to hold a Directus response. 0 keeps in-place editing honest —
       # a moderator's save shows on the next reload.
       DIRECTUS_CACHE_TTL: ${DIRECTUS_CACHE_TTL:-0}
+      # Outgoing mail for the contact form. The site sends this itself now, so
+      # the credentials have to reach THIS container and not only Directus.
+      # Who receives it is a CMS field (site.enquiry_recipients), not an env var.
+      EMAIL_FROM: ${EMAIL_FROM:-}
+      EMAIL_SMTP_HOST: ${EMAIL_SMTP_HOST:-}
+      EMAIL_SMTP_PORT: ${EMAIL_SMTP_PORT:-465}
+      EMAIL_SMTP_USER: ${EMAIL_SMTP_USER:-}
+      EMAIL_SMTP_PASSWORD: ${EMAIL_SMTP_PASSWORD:-}
+      EMAIL_SMTP_SECURE: ${EMAIL_SMTP_SECURE:-true}
     depends_on:
       directus:
         condition: service_started

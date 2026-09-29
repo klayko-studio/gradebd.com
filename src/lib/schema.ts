@@ -132,6 +132,15 @@ export const siteSchema = z.object({
   opening_hours: z.string(),
   utility_message: z.string(),
   response_promise: z.string(),
+  /**
+   * Where a submitted enquiry is emailed, one address per line.
+   *
+   * In the CMS rather than the environment on purpose: who reads the enquiries
+   * is a business decision a moderator should be able to change, and it carries
+   * no secret. The SMTP credentials are the opposite and stay in the
+   * environment. An empty list stores the enquiry and sends nothing.
+   */
+  enquiry_recipients: z.array(z.string()).default([]),
   socials: z.array(
     z.object({
       platform: z.enum(['facebook', 'instagram', 'youtube', 'x', 'linkedin']),

@@ -59,20 +59,21 @@ const field =
       }
 
       {/*
-        The form sits on a card.
+        The form sits on a card, and the card runs the full rail.
 
-        The client asked what could be done with this section, and the answer was
-        mostly that it had no edges: white fields on the near-white watercolour
-        wash, with nothing to say where the form began or ended, so it read as
-        four boxes adrift on the page rather than as one thing to fill in. A
-        surface, a hairline and a soft shadow are the whole fix.
+        The card itself was the answer to "what can be done with this section":
+        white fields on the near-white watercolour wash had nothing to say where
+        the form began or ended, so it read as four boxes adrift rather than one
+        thing to fill in. A surface, a hairline and a soft shadow are that fix
+        and they stay.
 
-        Capped at 980px rather than running the full 1200 rail. A "Name" field
-        600px wide looks like a mistake, and a form the eye has to travel the
-        width of the screen to read is slower to fill in — the message box keeps
-        the space it actually uses.
+        The 980px cap that came with it does not. It was meant to stop a "Name"
+        field being 600px wide, but it also pulled the whole section in from the
+        full-width block the client had before — which is what they noticed and
+        did not want. The fields are held to a sensible measure by the two-column
+        grid inside instead, so the card spans the rail and nothing is 600px wide.
       */}
-      <form id="enquiry" class="mt-4 flex w-full max-w-[980px] flex-col" novalidate>
+      <form id="enquiry" class="mt-4 flex w-full flex-col" novalidate>
         <div
           class="flex flex-col gap-5 rounded-sharp border border-line-subtle bg-page p-6
                  shadow-[var(--shadow-card)] sm:p-8 lg:p-10"

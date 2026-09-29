@@ -343,6 +343,7 @@ export const getSite = (): Promise<Site> =>
         opening_hours: text(row.opening_hours),
         utility_message: text(row.utility_message),
         response_promise: text(row.response_promise),
+        enquiry_recipients: toLines(row.enquiry_recipients),
         address_lines: toLines(row.address),
         logo: img(row.logo, `${row.company_name} logo`),
         logo_reversed: img(row.logo_reversed, `${row.company_name} logo`),

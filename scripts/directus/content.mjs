@@ -148,6 +148,7 @@ export async function seedContent(client, { force = false } = {}) {
     opening_hours: site.opening_hours,
     utility_message: site.utility_message,
     response_promise: site.response_promise,
+    enquiry_recipients: lines(site.enquiry_recipients),
     // The client's own vector exports. SVG so the mark is crisp at any size and
     // on any screen — the PNGs it replaces were fixed-width raster.
     logo: await files.id('/images/brand/grade-logo.svg', `${site.company_name} logo`),

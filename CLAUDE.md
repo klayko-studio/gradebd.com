@@ -701,6 +701,51 @@ questions asking for *ideas* rather than instructions, and were answered with so
   poster, so its `src` is the first view's and matching would open the viewer on the still every
   time.
 
+## The contact form sends email
+
+`src/lib/mail.ts` (nodemailer) plus a send step in `src/pages/api/enquiry.ts`. What matters:
+
+- **Credentials in the environment, recipients in the CMS.** `site.enquiry_recipients` is a
+  textarea, one address per line, so a moderator can change who reads enquiries without a deploy;
+  an SMTP password must never sit in a database a moderator can open. An empty list stores the
+  enquiry and sends nothing.
+- **Gmail will not accept an ordinary account password.** Google removed "less secure app access"
+  in 2022, so SMTP needs a **16-character App Password** (which requires 2-Step Verification on the
+  account) or OAuth2. A normal password fails with `535-5.7.8 Username and Password not accepted`,
+  which is what the first supplied credential did — verified, not assumed. Everything else in the
+  path works; only the secret has to change.
+- **Storing and emailing are independent channels, and only both failing is an error.** The route
+  used to return 502 the instant the Directus write failed, which threw away the email that would
+  have rescued the lead — the one channel that does not need the CMS. A visitor is now only turned
+  away when nothing captured the enquiry.
+- The mail step is **awaited**, not fired and forgotten: a container runtime can end the request's
+  lifetime the moment the response is returned and kill an in-flight send silently.
+- `From` stays the authenticated account and the writer goes in `Reply-To` — Gmail rewrites a `From`
+  it does not own, and SPF would fail anyway.
+- The mail env has to reach the **site** container, not only Directus. `docker-compose.yml` passes
+  `EMAIL_*` to both now; it previously gave them to Directus alone.
+- `.env` gotcha: compose's parser rejects a bare `EMAIL_FROM="Grade Limited" <a@b.com>`. The whole
+  value needs one pair of quotes, or every `docker compose` command fails to read the file.
+
+## The client trimmed the filter panel and the form back
+
+Three corrections to work from the previous round, all on their instruction:
+
+- **The RANGE/TYPE labels, the panel border and the tinted band are gone.** The pills against plain
+  text tabs carry the distinction on their own; they kept one of the three signals and dropped the
+  rest.
+- **The enquiry card runs the full rail again.** The 980px cap was meant to stop a "Name" field
+  being 600px wide, but it pulled the section in from the full-width block they had before, which
+  is what they noticed. The two-column grid inside holds the fields to a sensible measure instead,
+  so the card spans the rail and nothing is 600px wide. The card itself stays.
+- **The viewer's frame is 4:3, because every product photograph is.** It used to be whatever the
+  flex row left over — 1200x708 on a 1440x900 laptop holding a 1200x900 picture, so `object-contain`
+  letterboxed ~128px down each side of every pack shot. **A percentage height is not clamped by an
+  ancestor's `max-height`:** the first attempt used `height: 100%` and sailed past the budget, put
+  the frame 30px below the fold and slid it under the top bar. The budget is named on the stage
+  itself now, and the ratio is held from whichever side binds — height on a wide window, width on a
+  narrow one, because `aspect-ratio` only holds while one dimension is `auto`.
+
 ## The trade-supply voice survived in the SEO layer
 
 The second round of cuts took "B2B" and the invented trade claims out of the visible copy. It did

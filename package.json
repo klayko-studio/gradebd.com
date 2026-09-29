@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Grade Limited \u2014 stationery catalogue and enquiry site",
+  "description": "Grade Limited — stationery catalogue and enquiry site",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
@@ -21,11 +21,13 @@
     "@directus/visual-editing": "^2.1.0",
     "astro": "^5.16.0",
     "gsap": "^3.13.0",
+    "nodemailer": "^10.0.12",
     "zod": "^3.25.76"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
     "@tailwindcss/vite": "^4.1.16",
+    "@types/nodemailer": "^8.0.2",
     "sharp": "^0.34.4",
     "tailwindcss": "^4.1.16",
     "typescript": "^5.9.3"

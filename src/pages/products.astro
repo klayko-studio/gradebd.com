@@ -96,21 +96,22 @@ const shownCount = (activeRange?.items ?? []).filter(
   <section class="section">
     <div class="rail flex flex-col gap-8">
       {/*
-        The two filter rows, as one control with two levels.
+        The two filter rows.
 
         The client's note was that they "look the same", and they did: both were
         a line of words with an accent rule under the chosen one, separated only
         by two points of type size. Which of them governed the other was
-        impossible to see, so the page read as ten loose words.
+        impossible to see.
 
-        They are told apart three ways now — the shape of the control (pressable
-        pills against plain text), the ground they sit on (white against the
-        tinted band), and a word naming each axis. Colour is deliberately NOT one
-        of them: see the note on `.range-pill[aria-current]` below.
+        The first answer told them apart three ways — shape, ground and a word
+        naming each axis — and the client kept only the first. The panel border,
+        the tinted band behind the sub-row and the RANGE/TYPE labels are all gone
+        on their instruction; the pills against plain text tabs carry the
+        distinction on their own. Colour is deliberately NOT used for it either:
+        see the note on `.range-pill[aria-current]` below.
       */}
-      <div class="overflow-hidden rounded-sharp border border-line-subtle bg-page">
-        <div class="flex flex-wrap items-center gap-x-4 gap-y-3 px-4 py-4 sm:px-6">
-          <span class="shrink-0 t-label-xs text-[color:var(--text-muted)]">Range</span>
+      <div class="flex flex-col gap-5">
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-3">
           <nav class="flex flex-wrap gap-2" aria-label="Product ranges">
             {
               categories.map((category) => (
@@ -134,19 +135,15 @@ const shownCount = (activeRange?.items ?? []).filter(
           row has to change with the range and it cannot be rebuilt from nothing
           client-side without duplicating the sub-category list in script.
 
-          The band itself hides with them: File & Folder is switched to one page
-          with no sub-categories, and an empty tinted strip with the word "Type"
-          on it is worse than no strip.
+          The row hides with them: File & Folder is switched to one page with no
+          sub-categories, and an empty gap where a filter used to be is worse
+          than no gap.
         */}
         <div
-          class:list={[
-            'border-t border-line-subtle bg-subtle px-4 py-3.5 sm:px-6',
-            subcategories.length === 0 ? 'hidden' : '',
-          ]}
+          class:list={[subcategories.length === 0 ? 'hidden' : '']}
           data-sub-band
         >
           <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
-            <span class="shrink-0 t-label-xs text-[color:var(--text-muted)]">Type</span>
             {
               categories.map((category) =>
                 category.hide_subcategory_tabs || category.subcategories.length === 0 ? null : (

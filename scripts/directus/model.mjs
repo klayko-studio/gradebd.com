@@ -183,6 +183,10 @@ export const COLLECTIONS = [
       F.string('opening_hours', { width: 'half' }),
       F.string('utility_message'),
       F.string('response_promise'),
+      F.lines(
+        'enquiry_recipients',
+        'Who gets an email when someone submits the contact form. One address per line. Leave empty and enquiries are still recorded, just not emailed.',
+      ),
       F.file('logo', 'Header lockup — the red wordmark, for the light blue bar.'),
       F.file('logo_reversed', 'All-white lockup for dark grounds.'),
       F.file('logo_reversed_stationary', 'White lockup carrying STATIONARY — used in the footer.'),

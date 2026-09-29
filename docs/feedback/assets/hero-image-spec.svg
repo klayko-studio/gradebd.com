@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1680" height="1010" viewBox="0 0 1680 1010">
+<defs>
+  <pattern id="hatch" width="9" height="9" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+    <line x1="0" y1="0" x2="0" y2="9" stroke="#EE1E2C" stroke-width="3.5" opacity="0.16"/>
+  </pattern>
+</defs>
+<rect width="1680" height="1010" fill="#F7FAFB"/>
+
+<text x="80" y="60" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#EE1E2C" text-anchor="start" letter-spacing="2.4">GRADE LIMITED</text>
+<text x="80" y="98" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="30" font-weight="600" fill="#1B2026" text-anchor="start">Hero photography — frame ratios and safe zones</text>
+<text x="80" y="130" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="400" fill="#565E68" text-anchor="start">The hero is full-bleed width × (100svh − 86px header), so its shape changes with every screen. Measured across seven real devices:</text>
+<text x="80" y="154" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="400" fill="#565E68" text-anchor="start">from 2.58:1 on an ultrawide monitor down to 0.52:1 on a phone held upright — a factor of five.</text>
+<text x="80" y="182" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#EE1E2C" text-anchor="start">Two exports are needed. One file can only guarantee 20% of the picture, whatever ratio it is shot at.</text>
+
+<!-- LANDSCAPE -->
+<text x="80" y="214" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#0A5273" text-anchor="start" letter-spacing="1.8">LANDSCAPE — laptops, desktops, ultrawide</text>
+<text x="80" y="238" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="18" font-weight="600" fill="#1B2026" text-anchor="start">Export 2400 × 1200 — ratio 2:1</text>
+<rect x="80" y="250" width="879.9999999999999" height="439.99999999999994" fill="#DCE5EA" stroke="#565E68" stroke-width="1.5"/>
+<rect x="80" y="250" width="491.03999999999996" height="439.99999999999994" fill="url(#hatch)"/>
+<rect x="134.63333333333333" y="299.1333333333333" width="770.3666666666666" height="341.7333333333333" fill="#5CB947" fill-opacity="0.15" stroke="#5CB947" stroke-width="3" stroke-dasharray="9 5"/>
+<line x1="571.04" y1="250" x2="571.04" y2="690" stroke="#EE1E2C" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="738.02" y="466" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="18" font-weight="700" fill="#2E6B24" text-anchor="middle" letter-spacing="1.6">SAFE ZONE</text>
+<text x="738.02" y="492" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="400" fill="#2E6B24" text-anchor="middle">2101 × 932 px</text>
+<text x="90" y="276" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" fill="#EE1E2C" text-anchor="start" letter-spacing="1.2">HEADLINE SITS HERE</text>
+<text x="90" y="296" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#EE1E2C" text-anchor="start">keep the subject out of this half</text>
+<text x="583.04" y="674" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0A5273" text-anchor="start">put the product here</text>
+<text x="80" y="722" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#565E68" text-anchor="start">Safe zone inset 149 px left and right, 134 px top and bottom.</text>
+<text x="80" y="744" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#565E68" text-anchor="start">Covers 1.75:1 (1440×900 laptop) through 2.58:1 (ultrawide). 68% of the picture survives.</text>
+<text x="80" y="766" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#565E68" text-anchor="start">Anything outside the dashed box is cropped away on some screen.</text>
+
+<!-- PORTRAIT -->
+<text x="1180" y="214" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#0A5273" text-anchor="start" letter-spacing="1.8">PORTRAIT — phones and tablets</text>
+<text x="1180" y="238" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="18" font-weight="600" fill="#1B2026" text-anchor="start">Export 1200 × 1800 — ratio 2:3</text>
+<rect x="1180" y="250" width="313.33333333333337" height="470.00000000000006" fill="#DCE5EA" stroke="#565E68" stroke-width="1.5"/>
+<rect x="1180" y="391.47" width="313.33333333333337" height="111.38999999999999" fill="url(#hatch)"/>
+<rect x="1215.7722222222221" y="289.68888888888887" width="241.7888888888889" height="390.36111111111114" fill="#5CB947" fill-opacity="0.15" stroke="#5CB947" stroke-width="3" stroke-dasharray="9 5"/>
+<line x1="1180" y1="391.47" x2="1493.3333333333335" y2="391.47" stroke="#EE1E2C" stroke-width="1.5" stroke-dasharray="5 4"/>
+<line x1="1180" y1="502.86" x2="1493.3333333333335" y2="502.86" stroke="#EE1E2C" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="1336.6666666666665" y="321.68888888888887" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="16" font-weight="700" fill="#2E6B24" text-anchor="middle" letter-spacing="1.4">SAFE ZONE</text>
+<text x="1336.6666666666665" y="343.68888888888887" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#2E6B24" text-anchor="middle">926 × 1495 px</text>
+<text x="1336.6666666666667" y="452.165" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" fill="#EE1E2C" text-anchor="middle" letter-spacing="1.2">HEADLINE BAND</text>
+<text x="1180" y="752" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#565E68" text-anchor="start">Safe zone inset 137 px left/right, 152 px top/bottom.</text>
+<text x="1180" y="774" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#565E68" text-anchor="start">Covers 0.52:1 (iPhone) through 0.80:1 (iPad).</text>
+<text x="1180" y="796" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#565E68" text-anchor="start">Keep the subject in the top or bottom third — the</text>
+<text x="1180" y="816" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#565E68" text-anchor="start">headline crosses the middle on a phone.</text>
+
+<!-- NOTE -->
+<rect x="80" y="842" width="1520" height="104" fill="#FFFFFF" stroke="#E2E8EC" stroke-width="1.5"/>
+<text x="104" y="874" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#1B2026" text-anchor="start">Why two files, and why the ratio alone will not fix it</text>
+<text x="104" y="900" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#565E68" text-anchor="start">A single image can only guarantee the overlap between the widest and narrowest frame, and that overlap is 20% of the picture at every ratio.</text>
+<text x="104" y="922" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#565E68" text-anchor="start">Shooting 2:1 loses it sideways; shooting square loses it top and bottom. The ratio decides where the loss falls, not how much of it there is.</text>
+<text x="104" y="948" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#0A5273" text-anchor="start">Shoot wide and re-crop for portrait — the same photograph, exported twice. No second shoot needed.</text>
+</svg>

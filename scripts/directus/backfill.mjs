@@ -140,6 +140,7 @@ export async function backfillContent(client, { dryRun = false } = {}) {
        install it already holds a value and `--fill-empty` will leave it alone —
        its wording has to be changed in Directus by hand. */
     response_promise: site.response_promise,
+    enquiry_recipients: lines(site.enquiry_recipients),
     footer_contact_heading: site.footer_contact_heading,
     footer_note: site.footer_note,
     footer_rights: site.footer_rights,

@@ -1,5 +1,7 @@
 import type { APIRoute } from 'astro';
 import { enquirySchema } from '../../lib/schema';
+import { getSite } from '../../lib/cms';
+import { mailConfigured, sendEnquiry } from '../../lib/mail';
 
 /** Pages are prerendered; this endpoint has to run per-request. */
 export const prerender = false;
@@ -86,8 +88,17 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     received_at: new Date().toISOString(),
   };
 
-  // With Directus configured, every enquiry is stored so none can be lost to a
-  // spam filter; a Directus Flow on this collection sends the email notification.
+  /*
+    Two independent places the enquiry can land: the Directus record and the
+    notification email. Both are attempted, and the visitor is only turned away
+    if BOTH fail.
+
+    This used to return 502 the moment the Directus write failed, which meant a
+    CMS outage also threw away the email that would have rescued the lead — the
+    one channel that does not depend on the CMS being up. They are separate
+    channels and are treated as such.
+  */
+  let stored = false;
   if (DIRECTUS_URL && DIRECTUS_TOKEN) {
     try {
       const res = await fetch(`${DIRECTUS_URL.replace(/\/$/, '')}/items/enquiries`, {
@@ -99,21 +110,53 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
         body: JSON.stringify(record),
       });
       if (!res.ok) throw new Error(`Directus responded ${res.status}`);
+      stored = true;
     } catch (error) {
-      // Never lose the lead to a logging failure — surface a route the buyer can use.
       console.error('[enquiry] could not be stored:', error);
-      return json(
-        {
-          ok: false,
-          message:
-            'We could not record your enquiry just now. Please email info@gradebd.com or call 01842-024378.',
-        },
-        502,
-      );
     }
   } else {
-    // No CMS yet: log it so nothing submitted during review is silently dropped.
-    console.info('[enquiry] received (no Directus configured yet):', record);
+    // No CMS configured: log it so nothing submitted during review is dropped.
+    console.info('[enquiry] received (no Directus configured):', record);
+  }
+
+  /*
+    The email goes out after the record is safe, and its failure is logged
+    rather than surfaced.
+
+    That order matters. The stored row is the thing that must not be lost; the
+    email is a convenience on top of it. Telling a visitor "that did not work"
+    because a mail server was slow would send them away from an enquiry that is
+    already captured, and they would either give up or submit it again.
+
+    Recipients come from the CMS so a moderator can change who reads them
+    without a deploy. Awaited rather than fired and forgotten: a serverless or
+    container runtime can end the request's lifetime the moment the response is
+    returned, which kills an in-flight send silently.
+  */
+  let mailed = false;
+  if (mailConfigured) {
+    try {
+      const site = await getSite();
+      const result = await sendEnquiry(record, site.enquiry_recipients);
+      mailed = result.sent;
+      if (!result.sent) console.warn('[enquiry] not emailed:', result.reason);
+    } catch (error) {
+      console.error('[enquiry] mail step failed:', error);
+    }
+  } else {
+    console.info('[enquiry] SMTP not configured — recorded but not emailed.');
+  }
+
+  // Nothing captured it. Now it is worth telling them, with a route that works.
+  if (!stored && !mailed) {
+    return json(
+      {
+        ok: false,
+        message:
+          'We could not record your enquiry just now. Please email info@gradebd.com or call 01842-024378.',
+      },
+      502,
+    );
   }
 
   return json({
