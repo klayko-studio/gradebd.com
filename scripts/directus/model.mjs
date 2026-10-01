@@ -424,11 +424,11 @@ export const COLLECTIONS = [
       F.text('map_embed_url', {
         note: 'The src of a Google Maps embed. Left empty, the site draws a labelled placeholder and makes no third-party request.',
       }),
-      F.boolean('show_faqs', {
-        default: true,
-        note: 'Show the FAQ section on the contact page. Off hides it without deleting anything.',
-      }),
-      F.o2m('faqs'),
+      // The questions themselves are edited in the FAQs collection, not here: two
+      // editors for one list confused moderators, and rows added there had no
+      // link back to this record. The relation stays (bootstrap seeds through
+      // it) but is hidden from this form.
+      { ...F.o2m('faqs'), meta: { ...F.o2m('faqs').meta, hidden: true } },
     ],
   }),
 

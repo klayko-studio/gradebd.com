@@ -12,9 +12,24 @@ const [contact, site] = await Promise.all([getContact(), getSite()]);
 const field =
   'w-full rounded-sharp border border-line bg-page px-5 py-4 t-body-md text-ink ' +
   'transition-colors placeholder:text-[color:var(--text-muted)] focus:border-line-brand focus:outline-none';
+
+// The questions as a FAQPage, so search can show them under the result.
+const faqLd = contact.faqs.length
+  ? [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: contact.faqs.map((faq) => ({
+          '@type': 'Question',
+          name: faq.question,
+          acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+        })),
+      },
+    ]
+  : [];
 ---
 
-<Base seo={contact.seo} active="contact">
+<Base seo={contact.seo} active="contact" jsonLd={faqLd}>
   <PageBanner
     eyebrow={contact.banner.eyebrow}
     title={contact.banner.title}
@@ -295,40 +310,11 @@ const field =
   </section>
 
   <!-- ── FAQ ───────────────────────────────────────────────────────────────
-       The pill is a label, not a control: every question is on the page from the
-       start and each opens on its own. That replaces the single show/hide button
-       from comment #37, which this design supersedes.
-
-       Whether the section appears at all is a switch in the CMS (`show_faqs`),
-       currently off. The questions are still there — turning it back on is one
-       toggle, not a rebuild. -->
-  <!--
-    With the list switched off, the pill still appears — the client asked for a
-    "Frequently Asked Questions" button that is there but does nothing yet. It is
-    rendered as a disabled <button> rather than a styled <span>: it reads as a
-    control to a screen reader the same way it does by eye, and says plainly that
-    it cannot be used.
-  -->
+       The questions come from the FAQs collection (/admin/content/faqs), which is
+       the one place moderators edit them. The section appears whenever there is
+       at least one; deleting them all removes it. -->
   {
-    !contact.show_faqs && contact.faq_heading && (
-      <section class="section pt-0">
-        <div class="rail flex justify-center">
-          <button
-            type="button"
-            disabled
-            aria-disabled="true"
-            class="cursor-default rounded-full bg-inverse px-7 py-3 font-sans t-label-md
-                   text-[color:var(--text-inverse)] opacity-90"
-          >
-            {contact.faq_heading}
-          </button>
-        </div>
-      </section>
-    )
-  }
-
-  {
-    contact.show_faqs && (
+    contact.faqs.length > 0 && (
   <section class="section pt-0">
     <div class="rail flex flex-col gap-10">
       {/* font-sans explicitly: this is an <h2>, and headings inherit the display
@@ -343,11 +329,13 @@ const field =
       <div
         class="border-t border-line-subtle"
         data-reveal
-        {...editable({ collection: 'contact', fields: 'faqs', mode: 'drawer' })}
       >
         {
           contact.faqs.map((faq) => (
-            <details class="group border-b border-line-subtle">
+            <details
+              class="group border-b border-line-subtle"
+              {...(faq.id ? editable({ collection: 'faqs', item: faq.id, fields: ['question', 'answer'], mode: 'popover' }) : {})}
+            >
               <summary
                 class="flex cursor-pointer list-none items-center gap-6 py-6 t-heading-sm
                        transition-colors hover:text-[color:var(--text-brand-strong)]"

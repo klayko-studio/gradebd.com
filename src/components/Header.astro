@@ -126,17 +126,22 @@ const linkOff = 'text-[color:var(--text-on-menu-muted)] hover:text-[color:var(--
                             {c.name}
                           </a>
                           {/*
-                            The sub-categories read as a list of what is in the
-                            range, not as links: the range name above them is the
-                            one place to click. They stopped being destinations
-                            when the category pages lost their filter rows, and a
-                            link that only scrolls to the top of the same page is
-                            worse than plain text.
+                            Each sub-category opens its range on that tab
+                            (`?sub=`, filtered on the server). A range that hides
+                            its tabs shows every item on one page, so its
+                            sub-categories link to the range itself.
                           */}
                           {c.subcategories.length > 0 && (
                             <ul class="flex flex-col gap-2">
                               {c.subcategories.map((sub) => (
-                                <li class="t-body-sm text-[color:var(--text-muted)]">{sub.name}</li>
+                                <li>
+                                  <a
+                                    href={c.hide_subcategory_tabs ? `/${c.slug}/` : `/${c.slug}/?sub=${sub.slug}`}
+                                    class="t-body-sm text-[color:var(--text-muted)] transition-colors hover:text-[color:var(--text-brand-strong)]"
+                                  >
+                                    {sub.name}
+                                  </a>
+                                </li>
                               ))}
                             </ul>
                           )}
@@ -219,38 +224,42 @@ const linkOff = 'text-[color:var(--text-on-menu-muted)] hover:text-[color:var(--
     <nav class="rail flex flex-col py-2" aria-label="Mobile">
       {
         nav.map((item) => (
-          <a
-            href={item.href}
-            aria-current={active === item.key ? 'page' : undefined}
-            class:list={[
-              'border-b border-[color:rgb(255_255_255/0.45)] py-3.5 t-nav last:border-0',
-              active === item.key
-                ? 'font-semibold text-[color:var(--text-on-menu)]'
-                : 'text-[color:var(--text-on-menu-muted)]',
-            ]}
-          >
-            {item.label}
-          </a>
+          <div class="border-b border-[color:rgb(255_255_255/0.45)] last:border-0">
+            <a
+              href={item.href}
+              aria-current={active === item.key ? 'page' : undefined}
+              class:list={[
+                'block py-3.5 t-nav',
+                active === item.key
+                  ? 'font-semibold text-[color:var(--text-on-menu)]'
+                  : 'text-[color:var(--text-on-menu-muted)]',
+              ]}
+            >
+              {item.label}
+            </a>
+            {/* The ranges sit directly under "Product Categories", where the
+                client marked them, rather than in a separate list at the end. */}
+            {item.key === 'categories' && (
+              <ul class="flex flex-col pb-3 ps-3">
+                {categories.map((c) => (
+                  <li>
+                    <a
+                      href={`/${c.slug}/`}
+                      class="flex items-center gap-2.5 py-2 t-label-md text-[color:var(--text-on-menu-muted)]"
+                    >
+                      <span
+                        class="h-2 w-2 shrink-0 rounded-full"
+                        style={`background:${c.accent ?? 'var(--bg-brand)'}`}
+                      />
+                      {c.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         ))
       }
-      <ul class="flex flex-col border-t border-[color:rgb(255_255_255/0.45)] pt-2 pb-4">
-        {
-          categories.map((c) => (
-            <li>
-              <a
-                href={`/${c.slug}/`}
-                class="flex items-center gap-2.5 py-2.5 t-label-md text-[color:var(--text-on-menu-muted)]"
-              >
-                <span
-                  class="h-2 w-2 shrink-0 rounded-full"
-                  style={`background:${c.accent ?? 'var(--bg-brand)'}`}
-                />
-                {c.name}
-              </a>
-            </li>
-          ))
-        }
-      </ul>
     </nav>
   </div>
 </header>

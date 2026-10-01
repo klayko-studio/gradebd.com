@@ -280,7 +280,6 @@ export async function seedContent(client, { force = false } = {}) {
     map_heading: contact.map_heading ?? '',
     faq_heading: contact.faq_heading ?? '',
     map_embed_url: contact.map_embed_url,
-    show_faqs: contact.show_faqs ?? true,
     faqs: contact.faqs.map((f, i) => ({ ...f, sort: i })),
   });
   console.log('   contact');

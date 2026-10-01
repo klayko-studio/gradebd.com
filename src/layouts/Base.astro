@@ -11,9 +11,11 @@ interface Props {
   seo: Seo;
   /** Which nav item is the current page. */
   active?: 'home' | 'about' | 'categories' | 'gallery' | 'contact';
+  /** Extra schema.org objects for this page, e.g. the Contact page's FAQPage. */
+  jsonLd?: Record<string, unknown>[];
 }
 
-const { seo, active } = Astro.props;
+const { seo, active, jsonLd = [] } = Astro.props;
 const site = await getSite();
 const categories = await getCategories();
 const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://www.gradebd.com').href;
@@ -36,6 +38,50 @@ const favicon = site.favicon?.src ?? null;
 const backgroundImage = site.background_image?.src
   ? `url('${site.background_image.src}')`
   : null;
+
+/**
+ * Structured data. Google's own summary of the company is built from whatever
+ * it can find, and today that is the old Facebook/LinkedIn copy calling Grade a
+ * "B2B marketplace". Stating who the company is, in the site's own words, on
+ * every page gives it a first-party source to prefer. Sitelinks under the result
+ * are Google's choice, but a named WebSite plus a clear menu is what it reads.
+ */
+const origin = (Astro.site ?? new URL('https://www.gradebd.com')).href;
+const absolute = (src?: string | null) => (src ? new URL(src, origin).href : undefined);
+const structuredData = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': `${origin}#organization`,
+    name: site.company_name,
+    alternateName: ['Grade', 'Grade Ltd', 'Grade Stationery'],
+    url: origin,
+    logo: absolute(site.logo?.src),
+    slogan: site.tagline || undefined,
+    description: site.seo?.description || seo.description,
+    foundingDate: String(site.founded_year),
+    email: site.email || undefined,
+    telephone: site.phone_href?.replace(/^tel:/, '') || site.phone,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: site.address_lines.slice(0, -1).join(', '),
+      addressLocality: 'Dhaka',
+      postalCode: '1205',
+      addressCountry: 'BD',
+    },
+    sameAs: site.socials.filter((s) => s.confirmed && s.url).map((s) => s.url),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${origin}#website`,
+    name: site.company_name,
+    alternateName: 'Grade Stationery',
+    url: origin,
+    publisher: { '@id': `${origin}#organization` },
+  },
+  ...jsonLd,
+];
 
 const faviconType =
   site.favicon?.mime ?? (favicon?.toLowerCase().endsWith('.svg') ? 'image/svg+xml' : undefined);
@@ -82,6 +128,10 @@ const faviconType =
       type="font/woff2"
       crossorigin="anonymous"
     />
+
+    {structuredData.map((data) => (
+      <script type="application/ld+json" set:html={JSON.stringify(data).replace(/</g, '\\u003c')} />
+    ))}
 
     <script is:inline>
       // Mark JS as available before first paint so reveal-on-scroll elements can

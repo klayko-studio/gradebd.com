@@ -27,7 +27,7 @@ const roundButton =
 
 <dialog {id} class="lightbox border-0 bg-transparent p-0" aria-label={label}>
   <div
-    class="relative flex h-full w-full flex-col items-center justify-center gap-4 p-4 md:p-8"
+    class="relative flex h-full w-full flex-col items-center justify-center gap-4 px-0 py-4 md:p-8"
     data-lightbox-backdrop
   >
     <!-- The close and zoom controls sit above the picture on every size, so they
@@ -44,7 +44,7 @@ const roundButton =
          moved up into the gap — on a video it ended up in the middle of the
          bar. -->
     <div
-      class="grid w-full max-w-[1200px] shrink-0 grid-cols-[1fr_auto_1fr] items-center gap-3"
+      class="grid w-full max-w-[1200px] shrink-0 grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 md:px-0"
     >
       {/*
         The counter, and a word for what the slide actually is.
@@ -124,10 +124,15 @@ const roundButton =
       </button>
     </div>
 
-    <div class="flex min-h-0 w-full max-w-[1200px] flex-1 items-center gap-3 md:gap-5">
+    {/*
+      On a phone the arrows float over the picture's edges instead of taking
+      ~110px of a 390px screen beside it, so the frame runs edge to edge — the
+      client's "bigger view", after the reference they sent.
+    */}
+    <div class="relative flex min-h-0 w-full max-w-[1200px] flex-1 items-center gap-3 md:gap-5">
       <button
         type="button"
-        class={`${roundButton} size-11 shrink-0 md:size-14`}
+        class={`${roundButton} absolute z-10 size-11 shrink-0 max-md:bg-[color:rgb(6_20_28/0.6)] md:static md:size-14 left-2`}
         data-lightbox-prev
         aria-label="Previous image"
       >
@@ -247,7 +252,7 @@ const roundButton =
 
       <button
         type="button"
-        class={`${roundButton} size-11 shrink-0 md:size-14`}
+        class={`${roundButton} absolute z-10 size-11 shrink-0 max-md:bg-[color:rgb(6_20_28/0.6)] md:static md:size-14 right-2`}
         data-lightbox-next
         aria-label="Next image"
       >

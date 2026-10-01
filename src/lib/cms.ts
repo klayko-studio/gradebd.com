@@ -503,7 +503,13 @@ export const getContact = (): Promise<Contact> =>
     contactSchema,
     async () => {
       const row = await api<Record<string, any>>(
-        `items/contact?fields=*,faqs.*,${file('banner_image')}`,
+        `items/contact?fields=*,${file('banner_image')}`,
+      );
+      // FAQs are read from their own collection — the one moderators edit at
+      // /admin/content/faqs — not through the contact record's relation. A row
+      // added there has no `contact` link, so the relation never saw it.
+      const faqRows = await api<Record<string, any>[]>(
+        'items/faqs?fields=id,question,answer,sort&sort=sort,id&limit=-1',
       );
       singletonIds.set('contact', row.id);
       return {
@@ -522,10 +528,9 @@ export const getContact = (): Promise<Contact> =>
         map_heading: row.map_heading ?? '',
         faq_heading: row.faq_heading ?? '',
         map_embed_url: row.map_embed_url || null,
-        show_faqs: row.show_faqs ?? true,
-        faqs: (row.faqs ?? [])
-          .sort((a: any, b: any) => (a.sort ?? 0) - (b.sort ?? 0))
-          .map((f: any) => ({ question: f.question, answer: f.answer })),
+        faqs: faqRows
+          .filter((f) => f.question && f.answer)
+          .map((f) => ({ id: f.id, question: f.question, answer: f.answer })),
       };
     },
     () => contactSeed,
