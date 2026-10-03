@@ -138,6 +138,13 @@ if (reduced) {
     });
   });
 
+  /**
+   * Trigger positions are measured once. Anything that changes the page's height
+   * without a resize (a collapsing section) announces it, so the triggers below it
+   * do not fire at the old scroll offsets.
+   */
+  window.addEventListener('layout:change', () => ScrollTrigger.refresh());
+
   /* ------------------------------------------------------------------- counters */
 
   /**

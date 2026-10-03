@@ -285,18 +285,52 @@ const faqLd = contact.faqs.length
   {
     contact.faqs.length > 0 && (
   <section class="section pt-0">
-    <div class="rail flex flex-col gap-10">
-      {/* font-sans explicitly: this is an <h2>, and headings inherit the display
-          serif, but the drawing sets this pill in the interface face. */}
-      <h2
-        class="self-center rounded-full bg-inverse px-7 py-3 font-sans t-label-md
-               text-[color:var(--text-inverse)]"
-      >
-        {contact.faq_heading}
+    <div class="rail flex flex-col">
+      {/* The pill is the heading *and* the disclosure for the whole list — the
+          client's call. Open by default. A button inside the <h2> rather than a
+          <details>/<summary>: a summary is a button, and a button flattens the
+          heading inside it, so screen-reader users would lose the section from
+          their heading list. The chevron only appears once the script has wired
+          the button, so without JavaScript this reads as the plain pill it was
+          and the list stays open.
+          font-sans explicitly: headings inherit the display serif, but the
+          drawing sets this pill in the interface face. */}
+      <h2 class="self-center font-sans t-label-md">
+        <button
+          type="button"
+          class="group inline-flex items-center gap-2.5 rounded-full bg-inverse px-7 py-3
+                 text-[color:var(--text-inverse)] transition-transform hover:-translate-y-px"
+          aria-expanded="true"
+          aria-controls="faq-list"
+          data-faq-toggle
+        >
+          {contact.faq_heading}
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden="true"
+            class="-mr-1 hidden transition-transform duration-300 group-aria-expanded:rotate-180"
+            data-faq-chevron
+          >
+            <path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
       </h2>
 
+      {/* Collapses by animating the row track 1fr → 0fr, which reaches the
+          content's real height without measuring it. `inert` when closed, so the
+          hidden questions leave the tab order and the accessibility tree. */}
       <div
-        class="border-t border-line-subtle"
+        id="faq-list"
+        class="grid grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-out
+               data-[collapsed]:grid-rows-[0fr]"
+        data-faq-list
+      >
+      <div class="min-h-0 overflow-hidden">
+      <div
+        class="mt-10 border-t border-line-subtle"
         data-reveal
       >
         {
@@ -327,11 +361,32 @@ const faqLd = contact.faqs.length
           ))
         }
       </div>
+      </div>
+      </div>
     </div>
   </section>
     )
   }
 </Base>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('[data-faq-toggle]');
+  const list = document.querySelector<HTMLElement>('[data-faq-list]');
+  if (toggle && list) {
+    toggle.querySelector('[data-faq-chevron]')?.classList.remove('hidden');
+    toggle.addEventListener('click', () => {
+      const open = toggle.getAttribute('aria-expanded') !== 'true';
+      toggle.setAttribute('aria-expanded', String(open));
+      list.toggleAttribute('data-collapsed', !open);
+      list.inert = !open;
+    });
+    // The page gets shorter or taller by the list's height, so scroll-driven
+    // motion below it (the footer's doodles) has to re-measure once it settles.
+    list.addEventListener('transitionend', (event) => {
+      if (event.target === list) window.dispatchEvent(new Event('layout:change'));
+    });
+  }
+</script>
 
 <script>
   const form = document.querySelector<HTMLFormElement>('#enquiry');
