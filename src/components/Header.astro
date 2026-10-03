@@ -220,16 +220,24 @@ const linkOff = 'text-[color:var(--text-on-menu-muted)] hover:text-[color:var(--
   </div>
 
   <!-- mobile panel -->
-  <div id="mobile-nav" hidden class="border-t border-[color:rgb(255_255_255/0.45)] bg-menu lg:hidden">
+  <!-- Capped at the space under the bar and scrollable on its own: the header is
+       sticky, so a panel taller than the screen (every range expanded) would
+       otherwise run off the bottom with no way to reach the end of it. -->
+  <div
+    id="mobile-nav"
+    hidden
+    class="max-h-[calc(100svh-var(--header-h))] overflow-y-auto overscroll-contain
+           border-t border-[color:rgb(255_255_255/0.45)] bg-menu lg:hidden"
+  >
     <nav class="rail flex flex-col py-2" aria-label="Mobile">
       {
-        nav.map((item) => (
-          <div class="border-b border-[color:rgb(255_255_255/0.45)] last:border-0">
+        nav.map((item) => {
+          const link = (
             <a
               href={item.href}
               aria-current={active === item.key ? 'page' : undefined}
               class:list={[
-                'block py-3.5 t-nav',
+                'block grow py-3.5 t-nav',
                 active === item.key
                   ? 'font-semibold text-[color:var(--text-on-menu)]'
                   : 'text-[color:var(--text-on-menu-muted)]',
@@ -237,28 +245,109 @@ const linkOff = 'text-[color:var(--text-on-menu-muted)] hover:text-[color:var(--
             >
               {item.label}
             </a>
-            {/* The ranges sit directly under "Product Categories", where the
-                client marked them, rather than in a separate list at the end. */}
-            {item.key === 'categories' && (
-              <ul class="flex flex-col pb-3 ps-3">
-                {categories.map((c) => (
-                  <li>
-                    <a
-                      href={`/${c.slug}/`}
-                      class="flex items-center gap-2.5 py-2 t-label-md text-[color:var(--text-on-menu-muted)]"
-                    >
-                      <span
-                        class="h-2 w-2 shrink-0 rounded-full"
-                        style={`background:${c.accent ?? 'var(--bg-brand)'}`}
-                      />
-                      {c.name}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        ))
+          );
+          if (item.key !== 'categories') {
+            return <div class="border-b border-[color:rgb(255_255_255/0.45)] last:border-0">{link}</div>;
+          }
+
+          /* The phone version of the mega-menu, as two levels of disclosure:
+             "Product Categories" opens the ranges, and each range opens its
+             sub-categories. The labels stay links — the chevron beside each one
+             is the separate control that expands it — so "Product Categories"
+             still reaches /products/ and a range still reaches its own page.
+             Open on a range page, so the menu starts from where the reader is. */
+          const open = active === 'categories';
+          return (
+            <div class="border-b border-[color:rgb(255_255_255/0.45)] last:border-0">
+              <div class="flex items-center gap-2">
+                {link}
+                <button
+                  type="button"
+                  class="group -me-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-full
+                         text-[color:var(--text-on-menu)]"
+                  aria-expanded={open ? 'true' : 'false'}
+                  aria-controls="mnav-ranges"
+                  aria-label={`${open ? 'Hide' : 'Show'} ${item.label}`}
+                  data-expand
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"
+                    class="transition-transform duration-200 group-aria-expanded:rotate-180">
+                    <path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Collapses by animating the row track 1fr → 0fr, which reaches the
+                  content's real height without measuring it; `inert` while closed
+                  keeps the hidden links out of the tab order. */}
+              <div
+                id="mnav-ranges"
+                class="grid grid-rows-[0fr] transition-[grid-template-rows] duration-300 ease-out
+                       data-[open]:grid-rows-[1fr]"
+                data-open={open ? '' : undefined}
+                inert={!open}
+              >
+                <ul class="flex min-h-0 flex-col overflow-hidden ps-3">
+                  {categories.map((c, i) => (
+                    <li class:list={[i === categories.length - 1 && 'pb-3']}>
+                      <div class="flex items-center gap-2">
+                        <a
+                          href={`/${c.slug}/`}
+                          class="flex grow items-center gap-2.5 py-2 t-label-md text-[color:var(--text-on-menu-muted)]"
+                        >
+                          <span
+                            class="h-2 w-2 shrink-0 rounded-full"
+                            style={`background:${c.accent ?? 'var(--bg-brand)'}`}
+                          />
+                          {c.name}
+                        </a>
+                        {c.subcategories.length > 0 && (
+                          <button
+                            type="button"
+                            class="group -me-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-full
+                                   text-[color:var(--text-on-menu-muted)]"
+                            aria-expanded="false"
+                            aria-controls={`mnav-${c.slug}`}
+                            aria-label={`Show ${c.name} sub-categories`}
+                            data-expand
+                          >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"
+                              class="transition-transform duration-200 group-aria-expanded:rotate-180">
+                              <path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
+                      {c.subcategories.length > 0 && (
+                        <div
+                          id={`mnav-${c.slug}`}
+                          class="grid grid-rows-[0fr] transition-[grid-template-rows] duration-300 ease-out
+                                 data-[open]:grid-rows-[1fr]"
+                          inert
+                        >
+                          {/* Same destinations as the desktop mega-menu: the range on
+                              that tab, or the range itself when it hides its tabs. */}
+                          <ul class="flex min-h-0 flex-col overflow-hidden ps-[18px]">
+                            {c.subcategories.map((sub) => (
+                              <li>
+                                <a
+                                  href={c.hide_subcategory_tabs ? `/${c.slug}/` : `/${c.slug}/?sub=${sub.slug}`}
+                                  class="block py-1.5 t-body-sm text-[color:var(--text-on-menu-muted)]"
+                                >
+                                  {sub.name}
+                                </a>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          );
+        })
       }
     </nav>
   </div>
@@ -278,6 +367,20 @@ const linkOff = 'text-[color:var(--text-on-menu-muted)] hover:text-[color:var(--
     // Morph the two bars into a cross rather than swapping icons.
     if (top) top.style.transform = open ? '' : 'translateY(5px) rotate(45deg)';
     if (bottom) bottom.style.transform = open ? '' : 'translateY(-5px) rotate(-45deg)';
+  });
+
+  // The panel's disclosures: each chevron opens the region it names.
+  panel?.querySelectorAll<HTMLButtonElement>('[data-expand]').forEach((button) => {
+    const region = document.getElementById(button.getAttribute('aria-controls') ?? '');
+    if (!region) return;
+    const label = button.getAttribute('aria-label') ?? '';
+    button.addEventListener('click', () => {
+      const open = button.getAttribute('aria-expanded') !== 'true';
+      button.setAttribute('aria-expanded', String(open));
+      button.setAttribute('aria-label', label.replace(/^(Show|Hide)/, open ? 'Hide' : 'Show'));
+      region.toggleAttribute('data-open', open);
+      region.inert = !open;
+    });
   });
 
   /**
