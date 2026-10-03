@@ -2,15 +2,65 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Project status
+## Commands
 
-This is a **greenfield project — no application code exists yet.** The repository currently holds only
-`readme.md` and client-supplied design inputs under `docs/client/`. There is no `package.json`, no build
-tooling, no tests, and no git repository. Any "how to build/lint/test" answer must come from scaffolding
-that a future session creates, not from something already here.
+Astro 5 (SSR) + Tailwind CSS v4 + GSAP, with Directus 11 as the CMS. Node ≥ 20.11.
 
-When scaffolding, create the project in the repository root (this directory *is* the project), and
-initialize git.
+```sh
+npm run dev              # http://localhost:4321 — also the "dev" entry in .claude/launch.json
+npm run check            # astro check (type-check) — the only static check there is
+npm run build            # astro check && astro build
+npm run build:fast       # build without the type-check
+npm run preview          # serve the build
+
+docker compose up -d --build                       # site :4321 + Directus :8055 + Postgres
+npm run directus:bootstrap                         # build an empty Directus: schema, images, content, token
+npm run directus:bootstrap -- --fill-empty --dry-run   # show which empty CMS fields the seed would fill
+npm run directus:bootstrap -- --fill-empty             # fill them (never overwrites a moderator's edit)
+npm run directus:schema                            # re-apply model changes only (create-only, see below)
+```
+
+**There is no test suite and no linter.** Verify changes with `npm run check` and by driving the dev
+server in the browser. With `DIRECTUS_URL` unset the site renders entirely from `src/content/*.json`,
+so no backend is needed to work on the frontend.
+
+**Do not run `scripts/seed.mjs`.** It is the original generator for `src/content/` and still carries the
+rejected trade-supply copy ("Cut the intermediaries…"); running it overwrites `about`, `gallery`,
+`contact`, `clients`, `reviews` and `categories.json` with that stale content. Edit the JSON directly.
+
+Deployment: Docker on a VPS behind host nginx (`nginx/`, runbook in `docs/deploy-vps.md`), or Netlify
+(`netlify.toml`). `astro.config.mjs` picks the adapter from `NETLIFY=true`. Production-content changes
+and deploys are logged in `docs/feedback/production-*.md`.
+
+## Architecture
+
+- **`src/lib/cms.ts` is the only module that knows where content comes from.** Each page calls a
+  reader (`getSite`, `getHome`, `getCategories`, `getCategory(slug)`, …). With `DIRECTUS_URL` set they
+  fetch from Directus; without it — or if Directus fails mid-request — they read the seed JSON. Both
+  paths are parsed by the Zod schemas in `src/lib/schema.ts`, so components never know which source
+  they got.
+- **The content model is declared three times and must be kept in step**: `src/lib/schema.ts` (Zod,
+  what the site accepts), `scripts/directus/model.mjs` (Directus collections/fields), and
+  `src/content/*.json` (seed). Plus the `backfill.mjs` allowlist if `--fill-empty` should reach the
+  field — see "Adding a CMS field is three steps" below.
+- **`editable()` in `cms.ts`** returns the `data-directus` attribute that makes a region editable in
+  the Directus Visual Editor. Components annotate their own fields with it. `src/scripts/visual-editing.ts`
+  loads the editor library only when the page is framed.
+- **Every page is server-rendered** (`output: 'server'`) so a CMS save shows on the next reload.
+  Routes: `index`, `about`, `gallery`, `contact`, `products` (all ranges), `[category]` (one template
+  for all five ranges), `404`, `sitemap.xml.ts` (reads the CMS, not the route table), `api/enquiry.ts`
+  (store in Directus + email via `src/lib/mail.ts`), and `cms/[id].ts` (the image/video proxy, forwards
+  `Range`).
+- **`src/layouts/Base.astro`** wraps every page: header, footer, search dialog, scroll-to-top, SEO
+  tags, the CMS-driven page background, and the single import of `src/scripts/motion.ts`.
+- **Client-side behaviour lives in `src/scripts/`** — `motion.ts` (GSAP), `lightbox.ts` (zoom/pan
+  viewer), `product-dialogs.ts` (shared by `products.astro` and `[category].astro`).
+- **Styling:** `src/styles/tokens.css` holds the CSS custom properties; `global.css` exposes only
+  semantic tokens to Tailwind via `@theme`. A utility name not in that map silently generates nothing.
+- **Config is read at run time** (`process.env` before `import.meta.env`) so one Docker image runs
+  anywhere. `SITE_URL` is the exception — baked in at build for canonicals.
+- `docs/cms.md` is the moderator/developer guide to the CMS; `docs/feedback/` holds each round of
+  client feedback with the reasoning behind what was built.
 
 ## The deliverable
 
@@ -51,25 +101,18 @@ show an unrelated industrial gas-detector business on the same domain. Treat thi
 hijacked WordPress install: **do not migrate the existing site**, and audit the domain and DNS before
 pointing anything live.
 
-## Planned stack (from `readme.md`)
+## The Visual CMS constraint
 
-- **Astro** for the frontend.
-- **Directus** as headless CMS, using **Directus Visual Editor / Visual CMS** so non-technical
-  moderators can edit content in-place on the rendered page.
-
-The Visual CMS requirement is the main architectural constraint, not an afterthought: every editable
-region has to carry Directus visual-editing attributes back to its collection/item/field. Design
-components so content flows from Directus through typed fetch helpers into components that annotate
-their own editable fields — avoid hardcoding copy, images, or lists that moderators will want to change
-(hero sliders, category names, vision/mission text, client logos, gallery images, FAQs).
-
-## Planned workflow (from `readme.md`)
-
-1. Generate a brand guideline. **Done** — see Design below.
-2. Design in Figma: wireframe → low-fi → hi-fi. **Done**, then revised — see the client verdict below.
-3. Then build with Astro + Directus. **Astro build done and running in Docker**; Directus not wired yet.
+In-place editing through the **Directus Visual Editor** is the main architectural constraint, not an
+afterthought: every editable region carries visual-editing attributes back to its
+collection/item/field. Avoid hardcoding copy, images, or lists that moderators will want to change
+(hero slides, category names, vision/mission text, client logos, gallery images, FAQs).
 
 ## Design (Figma)
+
+The sections below are a chronological record. Where an older section contradicts a newer one (which
+Figma page is "current", whether the build matches it, what the logo or footer looks like), **the
+later section and the code win.**
 
 File: `https://www.figma.com/design/wO94lV6gN0lfKHQT9zAkrJ/Website` (fileKey `wO94lV6gN0lfKHQT9zAkrJ`).
 Ten pages: `01 · Foundations` (brand guideline), `02 · Wireframes (low-fi)` (nine page frames),
@@ -375,8 +418,11 @@ red everywhere, or stay a footer-only colour.
 
 ### The client rejected the layout improvements on `05 · Hi-fi screens`
 
-They want the paper wireframes followed literally. `07 · Wireframe-exact (hi-fi)` is that version and is
-**the current design direction** — brand palette and type applied to the client's own layout, nothing
+*(Historical: superseded by pages `09`/`10`, which the build now follows. The lasting lesson is the
+first sentence — don't "improve" a layout the client drew.)*
+
+They want the paper wireframes followed literally. `07 · Wireframe-exact (hi-fi)` was that version and
+was then the design direction — brand palette and type applied to the client's own layout, nothing
 added. Do not "improve" its layout again without being asked. What that page does differently:
 
 - Header is logo + centred-right nav + search icon only. **No utility bar, no "Request a quote" button.**
@@ -392,8 +438,6 @@ added. Do not "improve" its layout again without being asked. What that page doe
   than the footer so the two adjacent navy blocks don't merge into one mass.
 
 Frames `05`/`06` are kept as the record of what was proposed and turned down; leave them alone.
-The Astro build still matches `05`, so the code and `07` have diverged — reconciling them is a separate
-job the user has not asked for yet.
 
 Design tokens live as Figma variables in two collections — `Primitives` (raw ramps, scoped `[]` so they
 stay out of pickers) and `Semantic` (aliases onto primitives, each carrying its `var(--…)` WEB code
