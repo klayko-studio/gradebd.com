@@ -308,7 +308,7 @@
           "src": "/images/products/neo-pencil-2b.webp",
           "alt": "Grade Neo Pencil 2B in its Grade retail pack",
           "width": 1200,
-          "height": 900
+          "height": 1200
         },
         "images": [
           {
@@ -316,7 +316,7 @@
             "src": "/images/products/neo-pencil-2b-red.webp",
             "alt": "Grade Neo Pencil 2B — alternative pack",
             "width": 1200,
-            "height": 900
+            "height": 1200
           }
         ]
       },
@@ -340,7 +340,7 @@
           "src": "/images/products/champ-pencil-hb.webp",
           "alt": "Grade Champ Pencil HB in its Grade retail pack",
           "width": 1200,
-          "height": 900
+          "height": 1200
         },
         "images": []
       },
@@ -364,7 +364,7 @@
           "src": "/images/products/champ-pencil-2b.webp",
           "alt": "Grade Champ Pencil 2B in its Grade retail pack",
           "width": 1200,
-          "height": 900
+          "height": 1200
         },
         "images": []
       },
@@ -387,7 +387,7 @@
           "src": "/images/products/champ-color-pencil.webp",
           "alt": "Grade Champ Color Pencil - Small in its Grade retail pack",
           "width": 1200,
-          "height": 900
+          "height": 1200
         },
         "images": []
       },
@@ -410,7 +410,7 @@
           "src": "/images/products/champ-color-pencil.webp",
           "alt": "Grade Champ Color Pencil - Big in its Grade retail pack",
           "width": 1200,
-          "height": 900
+          "height": 1200
         },
         "images": []
       },
@@ -434,7 +434,7 @@
           "src": "/images/products/champ-eraser-jar.webp",
           "alt": "Grade Champ Eraser – Small in its Grade retail pack",
           "width": 1200,
-          "height": 900
+          "height": 1200
         },
         "images": []
       },
@@ -458,7 +458,7 @@
           "src": "/images/products/champ-eraser-jar.webp",
           "alt": "Grade Champ Eraser – Big in its Grade retail pack",
           "width": 1200,
-          "height": 900
+          "height": 1200
         },
         "images": []
       },
@@ -503,7 +503,7 @@
           "src": "/images/products/champ-scale-30cm.webp",
           "alt": "Grade Champ Scale - 30 cm in its Grade retail pack",
           "width": 1200,
-          "height": 900
+          "height": 1200
         },
         "images": []
       },
@@ -526,7 +526,7 @@
           "src": "/images/products/champ-geometry-box.webp",
           "alt": "Grade Champ Pencil Box – Big in its Grade retail pack",
           "width": 1200,
-          "height": 900
+          "height": 1200
         },
         "images": []
       },
@@ -549,7 +549,7 @@
           "src": "/images/products/champ-geometry-box.webp",
           "alt": "Grade Champ Pencil Box – Medium in its Grade retail pack",
           "width": 1200,
-          "height": 900
+          "height": 1200
         },
         "images": []
       },
@@ -573,7 +573,7 @@
           "src": "/images/products/champ-clipboard.webp",
           "alt": "Grade Champ Clipboard - FC in its Grade retail pack",
           "width": 1200,
-          "height": 900
+          "height": 1200
         },
         "images": []
       },
@@ -597,7 +597,7 @@
           "src": "/images/products/champ-clipboard.webp",
           "alt": "Grade Champ Clipboard - A4 in its Grade retail pack",
           "width": 1200,
-          "height": 900
+          "height": 1200
         },
         "images": []
       },
@@ -764,7 +764,7 @@
           "src": "/images/products/xtreme-stapler-mini.webp",
           "alt": "Grade Xtreme Stapler - Mini in its Grade retail pack",
           "width": 1200,
-          "height": 900
+          "height": 1200
         },
         "images": []
       },
@@ -787,7 +787,7 @@
           "src": "/images/products/xtreme-stapler-big.webp",
           "alt": "Grade Xtreme Stapler - S01 Big in its Grade retail pack",
           "width": 1200,
-          "height": 900
+          "height": 1200
         },
         "images": []
       },
@@ -810,7 +810,7 @@
           "src": "/images/products/xtreme-stapler-big.webp",
           "alt": "Grade Xtreme Stapler S02 Big in its Grade retail pack",
           "width": 1200,
-          "height": 900
+          "height": 1200
         },
         "images": []
       },
@@ -832,7 +832,7 @@
           "src": "/images/products/xtreme-punch.webp",
           "alt": "Grade Xtreme Punch in its Grade retail pack",
           "width": 1200,
-          "height": 900
+          "height": 1200
         },
         "images": []
       },
@@ -855,7 +855,7 @@
           "src": "/images/products/xtreme-pin-remover.webp",
           "alt": "Grade Xtreme Pin Remover in its Grade retail pack",
           "width": 1200,
-          "height": 900
+          "height": 1200
         },
         "images": []
       },
@@ -877,7 +877,7 @@
           "src": "/images/products/xtreme-staples.webp",
           "alt": "Grade Xtreme Staples in its Grade retail pack",
           "width": 1200,
-          "height": 900
+          "height": 1200
         },
         "images": []
       }
@@ -1204,6 +1204,6 @@
         "name": "Dox"
       }
     ],
-    "hide_subcategory_tabs": true
+    "hide_subcategory_tabs": false
   }
 ]

@@ -471,7 +471,7 @@ export const COLLECTIONS = [
        */
       F.boolean('hide_subcategory_tabs', {
         width: 'half',
-        note: 'One page, no filter row. The client asked for this on File & Folder.',
+        note: 'One page, no filter row. Off on every range by default.',
       }),
       F.o2m('subcategories'),
       F.o2m('sub_brands', 'Shown as a filter row only when a range has two or more.'),

@@ -49,7 +49,9 @@ const {
   subcategory,
   range,
 } = Astro.props;
-const ratio = imageHeight === 'short' ? 'aspect-[16/10]' : 'aspect-[4/3]';
+// Product photographs are square (the client's 1:1, on every surface that shows
+// one); the short ratio is the range cards on Home, which carry scenes, not packs.
+const ratio = imageHeight === 'short' ? 'aspect-[16/10]' : 'aspect-square';
 
 /**
  * A card that opens a dialog is a button, not a link — it goes nowhere, and giving
