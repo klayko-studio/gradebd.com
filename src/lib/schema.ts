@@ -22,6 +22,15 @@ export const imageSchema = z.object({
   mime: z.string().optional(),
   width: z.number().int().positive().optional(),
   height: z.number().int().positive().optional(),
+  /**
+   * The part of the picture that must survive a crop, as percentages from the
+   * top-left. Set by a moderator with the focal point tool in Directus' own
+   * image editor; absent means the centre. Only the cover photos read it — they
+   * are the images cropped hardest, to a portrait strip on a phone.
+   */
+  focus: z
+    .object({ x: z.number().min(0).max(100), y: z.number().min(0).max(100) })
+    .optional(),
 });
 export type Image = z.infer<typeof imageSchema>;
 

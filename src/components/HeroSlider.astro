@@ -1,5 +1,6 @@
 ---
 import Button from './Button.astro';
+import { objectPosition } from '../lib/cms';
 import type { Home } from '../lib/schema';
 
 interface Props {
@@ -62,7 +63,13 @@ const { slides, edit = {} } = Astro.props;
           loading={i === 0 ? 'eager' : 'lazy'}
           fetchpriority={i === 0 ? 'high' : undefined}
           class="h-full w-full object-cover"
-          style={i === 0 ? 'transform:scaleX(-1)' : undefined}
+          style={
+            /* The focal point is in the file's own coordinates, so it needs no
+               flipping for the mirrored first slide: object-position picks the
+               region before the transform turns the element round. */
+            [objectPosition(slide.image), i === 0 && 'transform:scaleX(-1)'].filter(Boolean).join(';') ||
+            undefined
+          }
         />
       </div>
     ))

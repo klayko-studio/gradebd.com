@@ -159,7 +159,7 @@ export function assetUrl(id: string | null, params?: Record<string, string | num
  * than a validation error. Every nested key must carry its own prefix.
  */
 const file = (prefix: string): string =>
-  ['id', 'width', 'height', 'description', 'title', 'modified_on', 'type']
+  ['id', 'width', 'height', 'description', 'title', 'modified_on', 'type', 'focal_point_x', 'focal_point_y']
     .map((key) => `${prefix}.${key}`)
     .join(',');
 
@@ -244,7 +244,23 @@ type DirectusFile = {
   title?: string | null;
   modified_on?: string | null;
   type?: string | null;
+  /** Pixels from the top-left, set with the image editor's focal point tool. */
+  focal_point_x?: number | null;
+  focal_point_y?: number | null;
 } | null;
+
+/**
+ * Directus stores the focal point in pixels of the original; the page wants a
+ * percentage, which is what `object-position` takes and what survives a resize.
+ * Nothing set — or a file whose size Directus could not read — means the centre.
+ */
+function focus(file: DirectusFile): Image['focus'] {
+  if (!file?.width || !file.height || file.focal_point_x == null || file.focal_point_y == null) {
+    return undefined;
+  }
+  const pct = (value: number, size: number) => Math.min(100, Math.max(0, (value / size) * 100));
+  return { x: pct(file.focal_point_x, file.width), y: pct(file.focal_point_y, file.height) };
+}
 
 /**
  * A cache-busting token from the file's own modified time.
@@ -275,8 +291,21 @@ function img(file: DirectusFile, fallbackAlt = ''): Image {
     ...(file.type ? { mime: file.type } : {}),
     ...(file.width ? { width: file.width } : {}),
     ...(file.height ? { height: file.height } : {}),
+    ...(focus(file) ? { focus: focus(file) } : {}),
   };
 }
+
+/**
+ * `object-position` for a cropped cover photo, from its focal point.
+ *
+ * Percentages, not a computed offset: `80% 90%` lines the picture's 80/90 point
+ * up with the frame's, so a subject in the bottom-right corner stays in the
+ * bottom-right on a phone's portrait crop and the frame never runs past the
+ * picture's edge. The same value is harmless on a wide screen, where the crop
+ * is shallow and there is little to move.
+ */
+export const objectPosition = (image: Image): string | undefined =>
+  image.focus ? `object-position:${+image.focus.x.toFixed(2)}% ${+image.focus.y.toFixed(2)}%` : undefined;
 
 /** Every string array in Directus is a textarea, one value per line. */
 const toLines = (value: unknown): string[] =>

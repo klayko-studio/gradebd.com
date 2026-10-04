@@ -1,5 +1,6 @@
 ---
 import Eyebrow from './Eyebrow.astro';
+import { objectPosition } from '../lib/cms';
 import type { Image } from '../lib/schema';
 
 interface Props {
@@ -32,6 +33,7 @@ const stack = lines.length > 0;
     width={image.width}
     height={image.height}
     class="absolute inset-0 -z-10 h-full w-full object-cover"
+    style={objectPosition(image)}
     data-parallax
     {...editImage}
   />
