@@ -229,7 +229,7 @@ const shownCount = (activeRange?.items ?? []).filter(
     ))
   }
 
-  <ImageLightbox id="product-lightbox" label="Product images" captions={false} />
+  <ImageLightbox id="product-lightbox" label="Product images" captions={false} ratio={1} />
 
   {/* Data, not code — which range opens on which sub-category. */}
   <script is:inline type="application/json" data-first-sub set:html={JSON.stringify(firstSub)} />

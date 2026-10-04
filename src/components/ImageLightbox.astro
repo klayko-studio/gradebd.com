@@ -16,8 +16,22 @@ interface Props {
   label: string;
   /** Off for product photos, which carry no caption of their own. */
   captions?: boolean;
+  /**
+   * Width over height of the pictures this viewer shows, so the frame fits them
+   * exactly: 1 for product photographs, which are square; 4:3 for the Gallery.
+   */
+  ratio?: number;
 }
-const { id, label, captions = true } = Astro.props;
+const { id, label, captions = true, ratio = 4 / 3 } = Astro.props;
+
+/**
+ * The height left for the picture once the viewer's own chrome is taken off:
+ * the padding, the top bar and the gap under it, and the caption line where
+ * there is one. Measured, not padded — every spare pixel here comes straight
+ * off the picture, which is the whole complaint on a 13" laptop, where the
+ * window is barely 650px tall and the frame used to give up 192px of it.
+ */
+const budget = captions ? 'calc(100dvh - 8rem)' : 'calc(100dvh - 6rem)';
 
 const roundButton =
   'grid place-items-center rounded-full bg-[color:rgb(255_255_255/0.16)] text-white ' +
@@ -27,7 +41,8 @@ const roundButton =
 
 <dialog {id} class="lightbox border-0 bg-transparent p-0" aria-label={label}>
   <div
-    class="relative flex h-full w-full flex-col items-center justify-center gap-4 px-0 py-4 md:p-8"
+    class="relative flex h-full w-full flex-col items-center justify-center gap-3 px-0 py-4 md:px-8"
+    style={`--stage-budget:${budget};--stage-ratio:${ratio}`}
     data-lightbox-backdrop
   >
     <!-- The close and zoom controls sit above the picture on every size, so they
@@ -153,13 +168,13 @@ const roundButton =
         unchanged at rest.
       */}
       {/*
-        The frame is 4:3, because every product photograph is.
+        The frame takes the pictures' own ratio (`ratio`): square for products,
+        4:3 for the Gallery.
 
         It used to be whatever the flex row left over — 1200x708 on a 1440x900
         laptop, a 1.69:1 box holding a 1.33:1 picture, so `object-contain`
         letterboxed about 128px of dead space down each side of every pack shot.
-        The 18 real product images are all composited to 1200x900, so a 4:3 frame
-        is filled exactly by all of them and consistent for the stand-ins too.
+        A frame of the pictures' own ratio is filled exactly by every one of them.
 
         The outer element keeps the height budget and the centring; the inner one
         holds the ratio, and `data-lightbox-stage` moves onto it because that is
@@ -169,7 +184,7 @@ const roundButton =
       */}
       <div
         class="flex min-h-0 w-full flex-1 items-center justify-center"
-        style="max-height:calc(100dvh - 12rem)"
+        style="max-height:var(--stage-budget)"
       >
       <div
         class="lightbox-stage relative overflow-hidden"
@@ -324,29 +339,23 @@ const roundButton =
    * that does not depend on either being honoured.
    */
   /**
-   * 4:3, held from whichever side is binding.
+   * The picture's ratio, sized from whichever side is binding.
    *
-   * On a wide window the height budget is the limit, so the height is taken and
-   * the width derived; on a narrow one the width is, so it flips. Setting both
-   * would break the ratio — `aspect-ratio` only holds while one dimension is
-   * `auto`, and clamping the other with `max-width` silently drops it.
+   * The width is the smaller of the space beside the arrows and what the height
+   * budget allows at this ratio; the height then follows from `aspect-ratio`.
+   * Only the width is ever set — `aspect-ratio` holds only while one dimension
+   * is `auto` — and working it out from the budget replaces a viewport media
+   * query that guessed which side bound, and guessed wrong in between because
+   * the viewport is not the box the frame sits in.
+   *
+   * The budget is a length rather than `height: 100%`: a percentage height does
+   * NOT get clamped by an ancestor's `max-height`, so `height: 100%` sailed past
+   * it once and put the frame 30px below the fold and under the top bar.
    */
   .lightbox-stage {
-    /* The budget is named here rather than inherited: a percentage height does
-       NOT get clamped by an ancestor's `max-height`, so `height: 100%` sailed
-       past it and put the frame 30px below the fold and under the top bar. */
-    --stage-budget: calc(100dvh - 12rem);
-    aspect-ratio: 4 / 3;
-    height: var(--stage-budget);
-    width: auto;
-    max-width: 100%;
-  }
-  @media (max-aspect-ratio: 4 / 3) {
-    .lightbox-stage {
-      height: auto;
-      width: 100%;
-      max-height: var(--stage-budget);
-    }
+    aspect-ratio: var(--stage-ratio);
+    width: min(100%, calc(var(--stage-budget) * var(--stage-ratio)));
+    height: auto;
   }
 
   [data-lightbox-stage] {
