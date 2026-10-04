@@ -896,6 +896,25 @@ logged.
 fallback for when Directus is unreachable. Content changes have to be made against the instance —
 locally *and* on the server — or written into the seed and then applied with `--fill-empty`.
 
+## Square product photos, cover focal points (4 Oct)
+
+- **Product photographs are 1:1 everywhere** — cards, the dialog, and the viewer (`ratio={1}` on the
+  product pages' `ImageLightbox`; the Gallery's stays 4:3). The 18 pack shots are now the client's
+  own square originals resized to 1200x1200; the two 2:1 geometry boxes are squared by repeating
+  their edge rows, so the fill is the photograph's own background with no seam. **Do not composite
+  the originals onto `#f6f8f9`:** every original has an opaque near-white background, so that
+  leaves a visible white box — the old 4:3 composites had one too.
+- **The Gallery has its own copies** in `public/images/gallery/` (the old 4:3 composites), because
+  the bootstrap uploads one Directus file per *path*: a gallery plate and a product pointing at the
+  same path share one file, and squaring it would crop the Gallery's 5:3 tiles. In production, give
+  products new files — do not use Directus' "replace file" on a shared one.
+- **Cover photos honour Directus' own focal point** (`focal_point_x/y` on `directus_files`, set with
+  the focal point tool in the image editor, Directus ≥ 10.9). `cms.ts` turns the pixels into
+  percentages on `image.focus`, and `objectPosition()` applies them to the hero slides and every
+  `PageBanner`. No new CMS fields.
+- **File & Folder shows its sub-category tabs again** — `hide_subcategory_tabs` is off in the seed.
+  The switch is still there; production needs it unticked by hand.
+
 ## Information architecture
 
 `docs/client/wireframe/` holds nine photographed paper wireframes (WhatsApp images, filenames are not
