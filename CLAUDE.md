@@ -770,6 +770,13 @@ questions asking for *ideas* rather than instructions, and were answered with so
   `EMAIL_*` to both now; it previously gave them to Directus alone.
 - `.env` gotcha: compose's parser rejects a bare `EMAIL_FROM="Grade Limited" <a@b.com>`. The whole
   value needs one pair of quotes, or every `docker compose` command fails to read the file.
+- **The provider is Resend now, over SMTP — no code change, only `.env`.** Host `smtp.resend.com`,
+  user literally `resend`, password the API key. Gmail is out of the path. Until a domain is
+  verified in Resend the From must be `onboarding@resend.dev` and Resend delivers **only to the
+  account owner's address**. Port 2465 is Resend's answer to a host that blocks 465/587. Production
+  setup is step 9 of `docs/deploy-vps.md`. Tested end to end locally on 12 Oct to
+  `queryzone678@gmail.com`, which is also the seed's fallback recipient — the one used when
+  Directus is unreachable, which is exactly when the email is the only copy of the enquiry.
 
 ## The client trimmed the filter panel and the form back
 

@@ -94,8 +94,8 @@ services:
       CORS_ENABLED: 'true'
       CORS_ORIGIN: ${SITE_URL:-http://localhost:4321}
 
-      # Enquiry notifications. Directus sends these from a Flow on the
-      # `enquiries` collection; without SMTP configured it logs instead of sending.
+      # Directus' own mail (password resets, invites). Enquiry notifications are
+      # sent by the site, above; both read the same Resend settings from .env.
       EMAIL_TRANSPORT: ${EMAIL_TRANSPORT:-sendmail}
       EMAIL_FROM: ${EMAIL_FROM:-no-reply@gradebd.com}
       EMAIL_SMTP_HOST: ${EMAIL_SMTP_HOST:-}

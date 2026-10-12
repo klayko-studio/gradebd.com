@@ -226,6 +226,52 @@ It is a login page on the public internet.
   `nginx/admin.gradebd.com.conf`.
 - Give each moderator their own Directus account. Do not share the admin login.
 
+## 9 · Turn on enquiry email
+
+The contact form emails each enquiry through [Resend](https://resend.com). Three places, in order:
+
+**Resend dashboard.** Under **Domains**, add `gradebd.com` and put the DNS records it lists at the
+domain's DNS host; wait for it to show *Verified*. Under **API Keys**, create a key with *Sending
+access* for this server alone, so it can be revoked without touching anything else.
+
+Until the domain is verified, the From has to be `onboarding@resend.dev` and Resend delivers only to
+the address that owns the Resend account — enough to prove the path, not enough to go live.
+
+**`.env` on the server.**
+
+```ini
+EMAIL_TRANSPORT=smtp
+EMAIL_FROM="Grade Limited <notifications@gradebd.com>"   # any address on the verified domain
+EMAIL_SMTP_HOST=smtp.resend.com
+EMAIL_SMTP_PORT=465
+EMAIL_SMTP_USER=resend                                   # literally "resend"
+EMAIL_SMTP_PASSWORD=re_…                                 # the API key
+EMAIL_SMTP_SECURE=true
+```
+
+Keep the quotes around the whole `EMAIL_FROM` value — compose rejects it otherwise. Then:
+
+```bash
+docker compose up -d site directus
+```
+
+No rebuild: the site reads these at run time. Both containers take them; Directus uses them for its
+own mail (password resets, invites).
+
+**The CMS.** In the admin, **Site → Enquiry recipients**, one address per line. Who reads enquiries
+is a moderator's decision, so it lives there and not in `.env`. An empty list stores the enquiry and
+emails nobody.
+
+Check it: send a message from `/contact`, then
+
+```bash
+docker compose logs site --since 5m | grep enquiry
+```
+
+Silence means it was sent. `[enquiry] not emailed: …` carries the reason; a timeout means the VPS
+blocks outbound mail ports — set `EMAIL_SMTP_PORT=2465` (still implicit TLS) and restart. Resend's
+**Emails** page shows every send and whether it was delivered.
+
 ---
 
 ## Redeploying
@@ -237,7 +283,7 @@ docker compose up -d --build site
 
 nginx keeps serving throughout; downtime is the container swap. Changed `SITE_URL`? Same command —
 it is a build arg, so `--build` picks it up. Changed any other `DIRECTUS_*`? `docker compose up -d
-site` is enough, no rebuild.
+site` is enough, no rebuild. Changed `EMAIL_*`? `docker compose up -d site directus`.
 
 Changed the CMS model in `scripts/directus/model.mjs`?
 

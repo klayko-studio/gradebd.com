@@ -180,5 +180,6 @@ it over `ssh -L 8055:127.0.0.1:8055 user@vps` and leave it on loopback.
 - `favicon` and `og_image` on the `site` singleton are empty. Uploading a square
   PNG and a 1200x630 image is a two-minute job in the admin and makes every
   shared link look deliberate.
-- Enquiry email still needs a real SMTP provider in `.env`; without one Directus
-  logs the mail instead of sending it.
+- Enquiry email goes through Resend (`EMAIL_*` in `.env`, setup in
+  `docs/deploy-vps.md`). Who receives it is **Site → Enquiry recipients**, one
+  address per line; an empty list stores the enquiry and emails nobody.

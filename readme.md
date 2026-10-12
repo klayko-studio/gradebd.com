@@ -102,9 +102,9 @@ Inside Docker the two Directus URLs differ and both matter:
 ## Enquiries
 
 `POST /api/enquiry` validates with `enquirySchema`, stores the enquiry in Directus when configured,
-and logs it otherwise so nothing submitted during review is lost. Email notification is sent by a
-Directus Flow on the `enquiries` collection — set the `EMAIL_*` variables to a real SMTP provider
-before go-live, or Directus only logs the mail.
+and logs it otherwise so nothing submitted during review is lost. The site then emails it itself
+(`src/lib/mail.ts`) through Resend's SMTP relay, configured by the `EMAIL_*` variables in `.env`, to
+the addresses in the CMS field `site.enquiry_recipients`. Setup is in `docs/deploy-vps.md`.
 
 Spam handling: a hidden honeypot field (checked before validation, so a bot gets a plain success
 and learns nothing) plus a 5-per-10-minutes-per-IP limit. Behind a proxy, rate-limit upstream too.
